@@ -1,0 +1,17 @@
+{
+  "name": "motion-strobe-web",
+  "version": "1.15.5",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test test/*.test.mjs",
+    "start": "node serve.mjs"
+  },
+  "dependencies": {
+    "mp4box": "2.3.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}
