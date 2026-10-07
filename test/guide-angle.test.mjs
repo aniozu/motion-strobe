@@ -4,6 +4,14 @@ import {angleFromStroke,GuideEditor} from '../src/guide-editor.js';
 const near=(a,b)=>assert(Math.abs(a-b)<1e-8,`${a} != ${b}`);
 function lines(centers,grid){const paths=[],ctx={save(){},restore(){},beginPath(){},moveTo(x,y){paths.push([x,y]);},lineTo(x,y){paths.push([x,y]);},stroke(){}};drawAnnotations(ctx,centers,100,60,{grid:{enabled:true,points:false,...grid},labels:false});return paths;}
 const point={x:50,y:30,confidence:'manual'};
+test('grids independently select object 1, object 2, both or neither',()=>{
+ const points=[{...point,objectId:0},{x:80,y:40,confidence:'manual',objectId:1}];
+ assert.equal(lines(points,{}).length,8);
+ assert.deepEqual(lines(points,{object2:false}),lines([points[0]],{}));
+ assert.deepEqual(lines(points,{object1:false}),lines([points[1]],{}));
+ assert.deepEqual(lines(points,{object1:false,object2:false}),[]);
+ assert.deepEqual(lines([point],{object1:false}),[]);
+});
 test('rotated guides intersect the selected center, remain orthogonal and end at the image edges',()=>{
  const paths=lines([point],{angle:45});assert.equal(paths.length,4);
  [[80,0],[20,60],[20,0],[80,60]].forEach((p,i)=>p.forEach((v,j)=>near(paths[i][j],v)));
@@ -45,4 +53,12 @@ test('slider, numeric input, reset and keyboard stay synchronized; closing disca
  h.el('guideAngleNumber').value='8.5';h.el('guideAngleNumber').valueAsNumber=8.5;h.el('guideAngleNumber').oninput();assert.equal(h.editor.draft.angle,8.5);assert.equal(h.el('guideAngle').value,8.5);
  h.el('guideCanvas').onkeydown({key:'ArrowRight',shiftKey:true,preventDefault(){}});assert.equal(h.editor.draft.angle,13.5);h.el('resetGuideAngle').onclick();assert.equal(h.editor.draft.angle,0);
  h.editor.accept({blob:new Blob(['png']),size:{width:400,height:200}});h.el('guideDialog').close();h.images[0].onload();assert.equal(h.editor.image,null);assert.equal(h.applied.length,0);assert.equal(h.guide.angle,0);
+});
+test('object checkboxes remain a draft until applied and are restored when reopened',()=>{
+ const h=harness();assert.equal(h.el('guideObject1').checked,true);assert.equal(h.el('guideObject2').checked,true);
+ h.el('guideObject1').checked=false;h.el('guideObject1').oninput();assert.equal(h.editor.draft.object1,false);
+ h.el('guideDialog').close();assert.equal(h.guide.object1,true);assert.equal(h.applied.length,0);
+ h.editor.open({guide:h.guide,centers:[],labels:false});assert.equal(h.el('guideObject1').checked,true);
+ h.el('guideObject2').checked=false;h.el('guideObject2').oninput();h.el('applyGuides').onclick();
+ assert.equal(h.applied[0].object1,true);assert.equal(h.applied[0].object2,false);
 });

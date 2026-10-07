@@ -47,3 +47,11 @@ test('wheel zoom anchors the source point and skips zoom while processing; frame
  h.el('centerCanvas').onwheel({...point,deltaY:-100,preventDefault(){prevented=true;}});assert(prevented);assert(h.editor.viewport.scale>1);assert.deepEqual(h.editor.point(point),before);
  const scale=h.editor.viewport.scale;h.editor.select(0);assert.equal(h.editor.viewport.scale,scale);h.el('centerCanvas').onwheel({...point,deltaY:-100,preventDefault(){}});assert.equal(h.editor.viewport.scale,scale);
 });
+
+test('switching objects shows independent seeds and skipped frames without replacing the first object',()=>{
+ const h=editorHarness(),first={...h.data,objectId:0,anchors:[{index:6,x:100,y:50,mode:'center',source:'manual'}],seedIndex:6};
+ h.editor.setData(first);h.editor.select(1);h.editor.setBusy(false);h.modes[1].onclick();assert.equal(h.editor.seed().x,100);
+ const second={...h.data,objectId:1,centers:[{index:3,confidence:'unset'},{index:6,confidence:'skipped'},{index:9,x:250,y:80,confidence:'manual'}],anchors:[{index:6,mode:'skip'},{index:9,x:250,y:80,mode:'center',source:'manual'}],seedIndex:9};
+ h.editor.setData(second);h.editor.select(1);h.editor.setBusy(false);assert.equal(h.editor.mode,'none');assert.equal(h.editor.seed().x,250);
+ h.editor.setData(first);h.editor.select(1);h.editor.setBusy(false);assert.equal(h.editor.mode,'target');assert.equal(h.editor.seed().x,100);assert.equal(h.editor.centers[1].x,100);assert.equal(first.anchors.length,1);
+});

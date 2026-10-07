@@ -1,5 +1,5 @@
 import {GraphViewport,bindGraphNavigation} from './graph-viewport.js';
-import {graphData,graphTypes,fitGraph,graphNumber,fitEquation} from './graph-data.js';
+import {graphData,graphSeries,graphTypes,fitGraph,graphNumber,fitEquation} from './graph-data.js';
 import {formatSeconds} from './format.js';
 
 function bounds(values){
@@ -28,7 +28,7 @@ export function graphGeometry(width,height,type,ranges){
  return {xRange,yRange,area,label,yTicks,xLength};
 }
 
-export function drawGraph(canvas,points,type,unit,fit,ranges=sharedGraphRanges(points)){
+export function drawGraph(canvas,points,type,unit,fit,ranges=sharedGraphRanges(points),series=null){
  const width=canvas.clientWidth,height=canvas.clientHeight;if(!width||!height||!points.length)return;
  const dpr=Math.min(2,globalThis.devicePixelRatio||1);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);
@@ -49,19 +49,22 @@ export function drawGraph(canvas,points,type,unit,fit,ranges=sharedGraphRanges(p
  ctx.fillText(`${type.horizontal} (${type.horizontal==='t'?'s':unit})`,(area.left+area.right)/2,height-8);
  ctx.save();ctx.translate(Math.max(14,area.left-Math.max(50,yTicks.reduce((n,v)=>Math.max(n,label(v,type.vertical).length),0)*6.5+20)),(area.top+area.bottom)/2);ctx.rotate(-Math.PI/2);ctx.fillText(`${type.vertical} (${unit})`,0,0);ctx.restore();
  ctx.save();ctx.beginPath();ctx.rect(area.left,area.top,area.right-area.left,area.bottom-area.top);ctx.clip();
- ctx.fillStyle='#2359db';for(const p of points){ctx.beginPath();ctx.arc(x(p[type.horizontal]),y(p[type.vertical]),3.2,0,2*Math.PI);ctx.fill();}
- if(fit){
-  ctx.strokeStyle='#dc8623';ctx.lineWidth=2;ctx.beginPath();
+ const plots=series||[{points,fit,color:'#2359db',fitColor:'#dc8623'}];
+ for(const plot of plots){ctx.fillStyle=plot.color;for(const p of plot.points){ctx.beginPath();ctx.arc(x(p[type.horizontal]),y(p[type.vertical]),3.2,0,2*Math.PI);ctx.fill();}}
+ // All fitted curves are drawn after all measured points.
+ for(const plot of plots){const fit=plot.fit;if(!fit)continue;
+  ctx.strokeStyle=plot.fitColor||plot.color;ctx.lineWidth=2;ctx.beginPath();
   const curveMin=Math.max(fit.range.min,xRange.min),curveMax=Math.min(fit.range.max,xRange.max);
   const segments=fit.kind==='sine'?Math.max(200,Math.ceil((curveMax-curveMin)/fit.period*32)):200;
   if(curveMax>=curveMin)for(let i=0;i<=segments;i++){const value=curveMin+(curveMax-curveMin)*i/segments,px=x(value),py=y(fit.predict(value));if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}ctx.stroke();
  }
+
  ctx.restore();canvas.setAttribute('aria-label',`${type.title}グラフ。横軸${type.horizontal}、縦軸${type.vertical}。座標の単位は${unit}、時間の単位は秒。検出済み${points.length}点${fit?fit.kind==='sine'?'、sinフィット':`、${fit.degree}次の多項式フィット`:''}。`);
 }
 
 export class GraphPanel{
  constructor({onDetect}){
-  this.dialog=document.getElementById('graphsDialog');this.cards=[];this.active='yx';this.viewport=new GraphViewport();
+  this.dialog=document.getElementById('graphsDialog');this.cards=[];this.active='yx';this.objectId='both';this.viewport=new GraphViewport();
   const host=document.getElementById('graphCards');
   for(const type of graphTypes){
    const element=document.createElement('section');element.className='graph-card';element.dataset.graph=type.id;
@@ -78,18 +81,21 @@ export class GraphPanel{
   }
   this.tabs=[...document.querySelectorAll('[data-graph-tab]')];
   for(const tab of this.tabs)tab.onclick=()=>{this.active=tab.dataset.graphTab;this.selectTab();};
-  document.getElementById('graphDetect').onclick=()=>{this.dialog.close();onDetect();};
+  this.objectTabs=[...document.querySelectorAll('[data-graph-object]')];for(const button of this.objectTabs)button.onclick=()=>{this.objectId=button.dataset.graphObject==='both'?'both':Number(button.dataset.graphObject);if(this.source)this.update(this.source);};
+  document.getElementById('graphDetect').onclick=()=>{this.dialog.close();onDetect(this.objectId);};
   this.resize=new ResizeObserver(()=>this.draw());for(const card of this.cards)this.resize.observe(card.canvas);
   this.dialog.addEventListener('close',()=>{for(const card of this.cards)card.clearPointers();});
   this.selectTab();
  }
  open(data){this.update(data);this.dialog.showModal();requestAnimationFrame(()=>this.draw());}
  update(data){
-  this.data=graphData(data);this.viewport.set(sharedGraphRanges(this.data.points));
+  this.source=data;this.series=graphSeries(data,this.objectId);const points=this.series.flatMap(o=>o.points);this.data={points,unit:this.series[0]?.unit||'px',reason:this.series.find(o=>o.reason==='origin-missing')?'origin-missing':'undetected',excluded:this.series.reduce((n,o)=>n+o.excluded,0)};this.viewport.set(sharedGraphRanges(points));
+  for(const button of this.objectTabs){const active=button.dataset.graphObject===String(this.objectId);button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}
+
   const empty=document.getElementById('graphEmpty'),available=this.data.points.length>0;
   empty.hidden=available;document.getElementById('graphCards').hidden=!available;document.getElementById('graphTabs').hidden=!available;
-  document.getElementById('graphEmptyMessage').textContent=this.data.reason==='origin-missing'?'最初の抽出コマの物体位置を指定してください。その位置を原点にしてグラフを表示します。':'物体の位置がまだ検出されていません。「位置を検出」で中心を指定してください。';
-  document.getElementById('graphNote').textContent=available?`${this.data.points.length}点 · ${this.data.unit==='m'?'校正した軸・m単位':'未校正・px単位'} · 原点は最初の抽出コマの物体中心。時刻は時間範囲の開始から。${this.data.excluded?` 未指定・未検出・要確認・「なし」の${this.data.excluded}コマは除いています。`:''}`:'';
+  document.getElementById('graphEmptyMessage').textContent=this.data.reason==='origin-missing'?'物体1の最初の抽出コマで位置を指定してください。その位置を2物体共通の原点にします。':'物体の位置がまだ検出されていません。「位置を検出」で中心を指定してください。';
+  document.getElementById('graphNote').textContent=available?`${this.data.points.length}点 · ${this.data.unit==='m'?'校正した軸・m単位':'未校正・px単位'} · 原点は物体1の最初の抽出コマの中心で、2物体共通です。時刻は時間範囲の開始から。${this.data.excluded?` 未指定・未検出・要確認・「なし」の${this.data.excluded}コマは除いています。`:''}`:'';
   document.getElementById('graphPrecisionNote').hidden=!available;
   for(const card of this.cards){
    this.fitCard(card);
@@ -101,16 +107,21 @@ export class GraphPanel{
   requestAnimationFrame(()=>this.draw());
  }
  fitCard(card){
-  card.fit=null;const error=card.element.querySelector('.graph-fit-error'),details=card.element.querySelector('.graph-fit-details');error.hidden=true;details.hidden=true;
-  if(this.data?.points.length&&card.select.value!==''){
-   try{
-    card.fit=fitGraph(this.data.points.map(p=>({x:p[card.type.horizontal],y:p[card.type.vertical]})),card.select.value);
-    details.hidden=false;card.element.querySelector('.graph-equation').textContent=fitEquation(card.fit,card.type.vertical,card.type.horizontal);
-   }catch(e){error.textContent=e.message;error.hidden=false;}
+  card.fit=null;card.plots=this.series?.filter(o=>o.points.length).map(o=>({...o,fit:null}))||[];
+  const error=card.element.querySelector('.graph-fit-error'),details=card.element.querySelector('.graph-fit-details');error.hidden=true;details.hidden=true;
+  const equations=[],errors=[];
+  if(card.select.value!=='')for(const plot of card.plots){
+   try{plot.fit=fitGraph(plot.points.map(p=>({x:p[card.type.horizontal],y:p[card.type.vertical]})),card.select.value);equations.push(`${plot.label}: ${fitEquation(plot.fit,card.type.vertical,card.type.horizontal)}`);}
+   catch(e){errors.push(`${plot.label}: ${e.message}`);}
   }
-  card.element.querySelector('.fit-legend').hidden=!card.fit;this.drawCard(card);
+  card.fit=card.plots.find(p=>p.fit)?.fit||null;
+  if(equations.length){details.hidden=false;card.element.querySelector('.graph-equation').textContent=equations.join('\n');}
+  if(errors.length){error.hidden=false;error.textContent=errors.join('\n');}
+  const legend=card.element.querySelector('.graph-legend');legend.replaceChildren();for(const plot of card.plots){const span=document.createElement('span');span.className='object-legend';span.style.setProperty('--object-color',plot.color);span.textContent=plot.label;legend.append(span);}if(card.fit){const span=document.createElement('span');span.className='fit-legend';span.textContent='フィット';legend.append(span);}
+  this.drawCard(card);
  }
- drawCard(card){if(this.data?.points.length)drawGraph(card.canvas,this.data.points,card.type,this.data.unit,card.fit,this.viewport.ranges);}
+ drawCard(card){if(this.data?.points.length)drawGraph(card.canvas,this.data.points,card.type,this.data.unit,card.fit,this.viewport.ranges,card.plots);}
+
  scheduleDraw(){if(this.drawPending)return;this.drawPending=requestAnimationFrame(()=>{this.drawPending=null;this.draw();});}
  draw(){if(this.dialog.open)for(const card of this.cards)this.drawCard(card);}
 }

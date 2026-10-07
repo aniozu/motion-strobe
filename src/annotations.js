@@ -19,7 +19,7 @@ export function normalizeGuideAngle(value){
  angle%=180;if(angle>90)angle-=180;if(angle< -90)angle+=180;
  return Math.round(angle*10)/10||0;
 }
-export function gridOptions(grid={}){return {enabled:!!grid.enabled,vertical:grid.vertical!==false,horizontal:grid.horizontal!==false,angle:normalizeGuideAngle(grid.angle),color:/^#[0-9a-f]{6}$/i.test(grid.color)?grid.color:'#ffffff',thickness:Math.max(.5,Math.min(4,Number(grid.thickness)||1)),opacity:Math.max(.05,Math.min(1,Number(grid.opacity)||.25)),points:grid.points!==false};}
+export function gridOptions(grid={}){return {enabled:!!grid.enabled,vertical:grid.vertical!==false,horizontal:grid.horizontal!==false,angle:normalizeGuideAngle(grid.angle),color:/^#[0-9a-f]{6}$/i.test(grid.color)?grid.color:'#ffffff',thickness:Math.max(.5,Math.min(4,Number(grid.thickness)||1)),opacity:Math.max(.05,Math.min(1,Number(grid.opacity)||.25)),points:grid.points!==false,object1:grid.object1!==false,object2:grid.object2!==false};}
 // Clip an infinite guide to the photo, without rotating the photo or its coordinates.
 export function clippedGuideLine(point,direction,width,height){
  let first=-Infinity,last=Infinity;
@@ -48,18 +48,19 @@ export function drawAnnotations(ctx,centers,width,height,settings){
  const points=measuredCenters(centers),grid=gridOptions(settings.grid);
  ctx.save();
  if(grid.enabled){
+  const guidePoints=points.filter(p=>(p.objectId??0)===1?grid.object2:grid.object1);
   ctx.strokeStyle=grid.color;ctx.lineWidth=grid.thickness;ctx.globalAlpha=grid.opacity;ctx.beginPath();
   const xs=new Set(),ys=new Set(),radians=grid.angle*Math.PI/180;
   const basis=calibrationBasis(settings.calibration,{width,height});
   const horizontal=basis?.x||{x:Math.cos(radians),y:Math.sin(radians)},vertical=basis?.y||{x:-Math.sin(radians),y:Math.cos(radians)};
   const line=(p,direction)=>{const segment=clippedGuideLine(p,direction,width,height);if(segment){ctx.moveTo(segment[0].x,segment[0].y);ctx.lineTo(segment[1].x,segment[1].y);}};
-  for(const p of points){
+  for(const p of guidePoints){
    const x=Math.round(p.x*horizontal.x+p.y*horizontal.y),y=Math.round(p.x*vertical.x+p.y*vertical.y);
    if(grid.vertical&&!xs.has(x)){xs.add(x);line(p,vertical);}
    if(grid.horizontal&&!ys.has(y)){ys.add(y);line(p,horizontal);}
   }
   ctx.stroke();ctx.globalAlpha=1;
-  if(grid.points)for(const p of points){ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle=grid.color;ctx.strokeStyle='#10202d';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();}
+  if(grid.points)for(const p of guidePoints){ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle=grid.color;ctx.strokeStyle='#10202d';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();}
  }
  if(settings.labels){const used=[];for(const p of points)drawTimeLabel(ctx,p,width,height,used);}
  ctx.restore();

@@ -2,7 +2,7 @@
 // The adapter does not claim native browser decoder validation.
 import {createHash} from 'node:crypto';import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import {parseVideo} from '../src/media.js';
 const messages=[],decoded=[],convertedGuides=[],drawnLabels=[],drawnSpeedLabels=[];globalThis.self={};globalThis.postMessage=m=>messages.push(m);globalThis.ImageData=class{constructor(data,w,h){this.data=data;this.width=w;this.height=h;}};
-let origin;
+let origin,twoObjectScene=false;
 globalThis.EncodedVideoChunk=class{constructor(data){Object.assign(this,data);}};
 globalThis.VideoDecoder=class{
  static async isConfigSupported(config){return {supported:true,config};}
@@ -13,7 +13,7 @@ globalThis.VideoDecoder=class{
 };
 const encodedFrames=[];
 const baseline=await parseVideo(new Blob([await readFile(new URL('./fixtures/baseline.mp4',import.meta.url))]));const firstPacket=baseline.mp4.getSample(baseline.trak,0).data;
-globalThis.VideoFrame=class{constructor(canvas,options){Object.assign(this,options);this.pixels=new Uint8ClampedArray(canvas.pixels);this.guides=structuredClone(canvas.guides||[]);}close(){}};
+globalThis.VideoFrame=class{constructor(canvas,options){Object.assign(this,options);this.pixels=new Uint8ClampedArray(ArrayBuffer.isView(canvas)?canvas:canvas.pixels);this.guides=structuredClone(canvas.guides||[]);}close(){}};
 globalThis.VideoEncoder=class{
  static async isConfigSupported(config){return {supported:true,config};}
  constructor(callbacks){this.callbacks=callbacks;this.state='unconfigured';this.encodeQueueSize=0;}
@@ -22,7 +22,7 @@ globalThis.VideoEncoder=class{
  async flush(){}close(){this.state='closed';}
 };
 globalThis.OffscreenCanvas=class{
- constructor(w,h){this.width=w;this.height=h;const canvas=this;canvas.pixels=new Uint8ClampedArray(w*h*4);canvas.guides=[];this.ctx={save(){},restore(){},clearRect(){canvas.pixels.fill(0);},fillRect(x=0,y=0,w=canvas.width,h=canvas.height){for(let row=Math.max(0,Math.floor(y));row<Math.min(canvas.height,Math.ceil(y+h));row++)for(let col=Math.max(0,Math.floor(x));col<Math.min(canvas.width,Math.ceil(x+w));col++){const i=(row*canvas.width+col)*4;canvas.pixels.set([100,100,100,255],i);}},translate(){},rotate(){},scale(){},beginPath(){canvas.path=[];},moveTo(x,y){canvas.path.push(['m',x,y]);},lineTo(x,y){canvas.path.push(['l',x,y]);},stroke(){canvas.guides=structuredClone(canvas.path);},drawImage(frame){if(Number.isInteger(frame.index)){canvas.pixels.fill(100);for(let i=3;i<canvas.pixels.length;i+=4)canvas.pixels[i]=255;if(frame.index>0){canvas.pixels.set([240,10,10,255],(frame.index+100)*4);for(let y=30;y<39;y++)for(let x=50+frame.index*2;x<59+frame.index*2;x++)canvas.pixels.set([240,10,10,255],(y*canvas.width+x)*4);}}else if(frame.pixels){canvas.guides=structuredClone(frame.guides||[]);for(let i=0;i<Math.min(canvas.pixels.length,frame.pixels.length);i+=4)if(frame.pixels[i+3])canvas.pixels.set(frame.pixels.subarray(i,i+4),i);}},getImageData(){return new ImageData(new Uint8ClampedArray(canvas.pixels),canvas.width,canvas.height);},putImageData(image){canvas.pixels=new Uint8ClampedArray(image.data);},measureText(){return {width:20};},strokeText(text){drawnLabels.push(text);},fillText(text){drawnSpeedLabels.push(text);}};}
+ constructor(w,h){this.width=w;this.height=h;const canvas=this;canvas.pixels=new Uint8ClampedArray(w*h*4);canvas.guides=[];this.ctx={save(){},restore(){},clearRect(){canvas.pixels.fill(0);},fillRect(x=0,y=0,w=canvas.width,h=canvas.height){for(let row=Math.max(0,Math.floor(y));row<Math.min(canvas.height,Math.ceil(y+h));row++)for(let col=Math.max(0,Math.floor(x));col<Math.min(canvas.width,Math.ceil(x+w));col++){const i=(row*canvas.width+col)*4;canvas.pixels.set([100,100,100,255],i);}},translate(){},rotate(){},scale(){},beginPath(){canvas.path=[];},moveTo(x,y){canvas.path.push(['m',x,y]);},lineTo(x,y){canvas.path.push(['l',x,y]);},stroke(){canvas.guides=structuredClone(canvas.path);},drawImage(frame){if(Number.isInteger(frame.index)){canvas.pixels.fill(100);for(let i=3;i<canvas.pixels.length;i+=4)canvas.pixels[i]=255;if(frame.index>0){canvas.pixels.set([240,10,10,255],(frame.index+100)*4);for(let y=30;y<39;y++)for(let x=50+frame.index*2;x<59+frame.index*2;x++)canvas.pixels.set([240,10,10,255],(y*canvas.width+x)*4);if(twoObjectScene)for(let y=66;y<75;y++)for(let x=150+frame.index*2;x<159+frame.index*2;x++)canvas.pixels.set([10,10,240,255],(y*canvas.width+x)*4);}}else if(frame.pixels){canvas.guides=structuredClone(frame.guides||[]);for(let i=0;i<Math.min(canvas.pixels.length,frame.pixels.length);i+=4)if(frame.pixels[i+3])canvas.pixels.set(frame.pixels.subarray(i,i+4),i);}},getImageData(){const data=new Uint8ClampedArray(canvas.pixels);data.guides=structuredClone(canvas.guides);return new ImageData(data,canvas.width,canvas.height);},putImageData(image){canvas.pixels=new Uint8ClampedArray(image.data);},measureText(){return {width:20};},strokeText(text){drawnLabels.push(text);},fillText(text){drawnSpeedLabels.push(text);}};}
  getContext(){return this.ctx;}async convertToBlob(){convertedGuides.push(structuredClone(this.guides));return new Blob([this.pixels]);}
 };
 await import('../src/worker.js');
@@ -183,4 +183,64 @@ test('native decoder failure recovers photo and export with clean per-attempt st
   const result=messages.at(-1),reparsed=await parseVideo(result.blob);
   assert.equal(reparsed.clock.ordered.length,result.count);assert(closed>=2);
  }finally{globalThis.VideoDecoder=Native;}
+});
+
+test('two objects retain separate marks, annotations and tracking identity; video hold matches both-object photo',async()=>{
+ twoObjectScene=true;try{
+ const bytes=await readFile(new URL('./fixtures/projectile.mp4',import.meta.url));await send({type:'load',file:new Blob([bytes]),id:920});
+ const settings={first:1,last:20,reference:7,step:6,factor:1,background:0,maxDimension:640,sensitivity:30,labels:true,grid:{enabled:true,points:false}};
+ await send({type:'extract',...settings,id:921});assert.equal(messages.at(-1).type,'extracted');
+ const objects=[{id:0,anchors:[{index:1,x:54,y:34,mode:'center',source:'manual'},{index:7,x:66,y:34,mode:'center',source:'manual'}]},{id:1,anchors:[{index:1,x:154,y:70,mode:'center',source:'manual'},{index:7,mode:'skip'},{index:13,x:180,y:70,mode:'center',source:'manual'}]}];
+ drawnLabels.length=0;convertedGuides.length=0;await send({type:'compose',...settings,objects,id:922});const photo=messages.at(-1);assert.equal(photo.type,'composed',JSON.stringify(photo));
+ assert.equal(photo.objects.length,2);assert.equal(photo.objects[0].centers[0].x,54);assert.equal(photo.objects[1].centers[0].x,154);assert.equal(photo.objects[1].centers[1].confidence,'skipped');assert.equal(photo.objects[0].centers[1].confidence,'manual');assert.equal(photo.originCenter.x,54);
+ assert.deepEqual(drawnLabels,['0.0000 s','0.1000 s','0.0000 s','0.2000 s']);const guides=convertedGuides.at(-1);assert(guides.some(p=>p[1]===54));assert(guides.some(p=>p[1]===154));assert(guides.some(p=>p[1]===180));
+ encodedFrames.length=0;drawnLabels.length=0;await send({type:'export-video',...settings,objects,id:923});assert.equal(messages.at(-1).type,'video-exported',JSON.stringify(messages.at(-1)));
+ assert.deepEqual(encodedFrames.at(-1).guides,guides);
+ assert.equal(createHash('sha256').update(encodedFrames.at(-1).pixels).digest('hex'),createHash('sha256').update(new Uint8ClampedArray(await photo.blob.arrayBuffer())).digest('hex'));
+ // Tracking returns the requested identity and keeps its protected marks/skips.
+ await send({type:'auto-detect',...settings,objectId:1,anchors:objects[1].anchors,seedIndex:1,id:924});const tracked=messages.at(-1);assert.equal(tracked.type,'auto-detected',JSON.stringify(tracked));assert.equal(tracked.objectId,1);assert.equal(tracked.marks.find(p=>p.index===1).x,154);assert.equal(tracked.marks.find(p=>p.index===7).mode,'skip');assert.equal(objects[0].anchors[0].x,54);
+ }finally{twoObjectScene=false;}
+});
+
+test('delayed encoding retains every moving pose and freezes only requested samples',async()=>{
+ const NativeEncoder=globalThis.VideoEncoder,NativeFrame=globalThis.VideoFrame;
+ globalThis.VideoFrame=class extends NativeFrame{
+  constructor(source,options){super(source,options);if(source.pixels)this.pixels=source.pixels;}
+ };
+ globalThis.VideoEncoder=class extends NativeEncoder{
+  constructor(callbacks){super(callbacks);this.pending=[];}
+  configure(config){assert.equal(config.latencyMode,'quality');super.configure(config);}
+  encode(frame){this.pending.push({timestamp:frame.timestamp,duration:frame.duration,pixels:frame.pixels,guides:frame.guides});}
+  async flush(){for(const frame of this.pending)super.encode(frame);this.pending=[];}
+ };
+ try{
+  const bytes=await readFile(new URL('./fixtures/projectile.mp4',import.meta.url));await send({type:'load',file:new Blob([bytes]),id:990});
+  await send({type:'extract',first:2,last:20,reference:8,step:3,background:0,maxDimension:640,id:991});
+  encodedFrames.length=0;
+  await send({type:'export-video',first:2,last:20,reference:8,step:3,factor:1,sensitivity:30,labels:false,id:992});
+  assert.equal(messages.at(-1).type,'video-exported',JSON.stringify(messages.at(-1)));
+  const captured=[2,5,8,11,14,17,20],live=encodedFrames.slice(0,19);
+  assert.equal(live.length,19);
+  for(let n=0;n<live.length;n++){
+   const index=n+2;assert.equal(live[n].timestamp,Math.round(n/60*1e6));
+   for(let pose=2;pose<=20;pose++)assert.equal(live[n].pixels[(pose+100)*4],pose===index||(captured.includes(pose)&&pose<=index)?240:100,`moving frame ${index}, pose ${pose}`);
+  }
+  for(const frame of encodedFrames.slice(19))for(let pose=2;pose<=20;pose++)assert.equal(frame.pixels[(pose+100)*4],captured.includes(pose)?240:100);
+ }finally{globalThis.VideoFrame=NativeFrame;globalThis.VideoEncoder=NativeEncoder;}
+});
+
+test('240 fps playback does not insert short live frames at off-cadence capture events',async()=>{
+ const bytes=Buffer.from(await readFile(new URL('./fixtures/projectile.mp4',import.meta.url))),p=bytes.indexOf(Buffer.from('elst'));assert(p>0);
+ // Original 60 fps media is played four times faster, making movie PTS 240 fps.
+ bytes.writeUInt32BE(450,p+12);bytes.writeInt16BE(4,p+20);bytes.writeInt16BE(0,p+22);
+ await send({type:'load',file:new Blob([bytes]),id:993});assert.equal(messages.at(-1).type,'loaded');
+ await send({type:'extract',first:2,last:20,reference:8,step:3,background:0,maxDimension:640,id:994});
+ encodedFrames.length=0;await send({type:'export-video',first:2,last:20,reference:8,step:3,factor:1,sensitivity:30,labels:false,id:995});
+ assert.equal(messages.at(-1).type,'video-exported',JSON.stringify(messages.at(-1)));
+ const live=encodedFrames.slice(0,6),expected=[2,6,10,14,18,20];
+ assert.deepEqual(live.map(f=>f.timestamp),expected.map(n=>Math.round((n-2)/240*1e6)));
+ const captures=[2,5,8,11,14,17,20];
+ for(let n=0;n<live.length;n++)for(let pose=2;pose<=20;pose++)assert.equal(live[n].pixels[(pose+100)*4],pose===expected[n]||(captures.includes(pose)&&pose<=expected[n])?240:100,`movie frame ${expected[n]}, pose ${pose}`);
+ const parsed=await parseVideo(messages.at(-1).blob);
+ assert.deepEqual(parsed.clock.playbackTimes.slice(0,6),live.map(f=>f.timestamp/1e6));
 });

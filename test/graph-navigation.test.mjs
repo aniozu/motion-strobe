@@ -100,3 +100,13 @@ test('diagonal and vertical pinches use separate dimensions without collapsing a
  mock.send('pointerdown',{pointerId:1,clientX:200,clientY:50});mock.send('pointerdown',{pointerId:2,clientX:201,clientY:150});
  mock.send('pointermove',{pointerId:2,clientX:202,clientY:250});close(view.scales.x,1);close(view.scales.y,2);
 });
+
+test('both objects draw distinct colors and every fitted curve follows all measured points',()=>{
+ const events=[];const ctx={scale(){},fillRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){events.push(`stroke:${this.strokeStyle}`);},fillText(){},save(){},restore(){},translate(){},rotate(){},rect(){},clip(){},arc(){},fill(){events.push(`point:${this.fillStyle}`);}};
+ const canvas={clientWidth:400,clientHeight:230,getContext:()=>ctx,setAttribute(){}};
+ const first=[{t:0,x:0,y:0},{t:1,x:1,y:2}],second=[{t:0,x:3,y:4},{t:1,x:4,y:6}];
+ const plots=[{points:first,color:'#2359db',fit:fitGraph(first.map(p=>({x:p.t,y:p.y})),'1')},{points:second,color:'#e67819',fit:fitGraph(second.map(p=>({x:p.t,y:p.y})),'1')}];
+ drawGraph(canvas,[...first,...second],graphTypes[2],'px',plots[0].fit,base,plots);
+ assert.equal(events.filter(e=>e==='point:#2359db').length,2);assert.equal(events.filter(e=>e==='point:#e67819').length,2);
+ const lastPoint=Math.max(events.lastIndexOf('point:#2359db'),events.lastIndexOf('point:#e67819'));assert(events.lastIndexOf('stroke:#2359db')>lastPoint);assert(events.lastIndexOf('stroke:#e67819')>lastPoint);
+});

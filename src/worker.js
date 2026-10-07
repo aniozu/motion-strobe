@@ -10,10 +10,13 @@ import {foregroundMask,mergeLayer,drawAnnotations,drawCornerBadge} from './annot
 import {pickObjectCenter,centersFromMarks,findCandidates,trackCandidates} from './tracking.js';
 let media,cache=new Map(),background,size,job=0,activeDecoder,activeEncoder,photoBase=null;
 const yieldTurn=()=>new Promise(r=>setTimeout(r,0));
-function centersFor(m){
+function centersFor(m,marks=m.anchors||[]){
  const clock=analysisClock(media.clock,m.captureFps);
- return centersFromMarks(framePlan(m.first,m.last,m.reference,m.step,1,clock),m.anchors||[],size.width,size.height)
+ return centersFromMarks(framePlan(m.first,m.last,m.reference,m.step,1,clock),marks,size.width,size.height)
   .map(p=>({...p,time:frameTime(clock,p.index)-frameTime(clock,m.first),recordedTime:frameTime(media.clock,p.index),playbackTime:frameTime(media.clock,p.index,true),approximate:false}));
+}
+function tracksFor(m){
+ return (m.objects||[{id:0,anchors:m.anchors||[]}]).map((object,n)=>({id:object.id??n,centers:centersFor(m,object.anchors||[])}));
 }
 self.onmessage=async({data:m})=>{
  if(Number.isInteger(m.timeDecimals))setTimeDecimals(m.timeDecimals);
@@ -73,7 +76,7 @@ self.onmessage=async({data:m})=>{
   if(job!==current)return;
   send('progress',{stage:'コマ間の動きを照合中',value:.95});await yieldTurn();if(job!==current)return;
   const marks=trackCandidates(frames,size.width,size.height,m.anchors||[],m.seedIndex);
-  if(job===current)send('auto-detected',{marks});
+  if(job===current)send('auto-detected',{marks,objectId:m.objectId??0});
  }else if(m.type==='guide-preview'){
   if(!photoBase)throw Error('写真を作成してからグリッドを設定してください。');
   if(!photoBase.blob){
@@ -88,12 +91,12 @@ self.onmessage=async({data:m})=>{
   const blob=await canvas.convertToBlob({type:'image/png'});if(job===current)send('tracking-preview',{blob,index:m.index,size});
  }else if(m.type==='export-video'){
   if(!media||!background)throw Error('写真を作成してから動画を作成してください。');
-  const centers=centersFor(m);
-  const result=await exportVideo({media,cache,background,size,settings:{...m,centers,calibration:withCalibrationOrigin(m.calibration,centers,size)},cancelled:()=>job!==current,onProgress:p=>send('progress',p),onDiagnostic:diagnostics=>send('diagnostic',{diagnostics}),setActive:(decoder,encoder)=>{if(decoder||job===current){activeDecoder=decoder;activeEncoder=encoder;}}});
+  const tracks=tracksFor(m),centers=tracks.flatMap(o=>o.centers.map(p=>({...p,objectId:o.id})));
+  const result=await exportVideo({media,cache,background,size,settings:{...m,centers,calibration:withCalibrationOrigin(m.calibration,tracks[0].centers,size)},cancelled:()=>job!==current,onProgress:p=>send('progress',p),onDiagnostic:diagnostics=>send('diagnostic',{diagnostics}),setActive:(decoder,encoder)=>{if(decoder||job===current){activeDecoder=decoder;activeEncoder=encoder;}}});
   if(result&&job===current)send('video-exported',result);
  }else if(m.type==='compose'){
   if(!background)throw Error('画像を抽出してください。');const indices=framePlan(m.first,m.last,m.reference,m.step,m.factor,analysisClock(media.clock,m.captureFps));
-  const allCenters=centersFor(m);const centers=allCenters.filter(p=>indices.includes(p.index));
+  const tracks=tracksFor(m),allCenters=tracks[0].centers,centers=tracks.flatMap(o=>o.centers.filter(p=>indices.includes(p.index)).map(p=>({...p,objectId:o.id})));
   const key=JSON.stringify([indices,m.sensitivity]);
   if(photoBase?.key!==key){
    const out=new Uint8ClampedArray(background);
@@ -109,7 +112,7 @@ self.onmessage=async({data:m})=>{
   drawAnnotations(ctx,centers,size.width,size.height,{...m,calibration:withCalibrationOrigin(m.calibration,allCenters,size)});
   if(m.photoRate)drawCornerBadge(ctx,size.width,size.height,`${m.samplingRate.toFixed(1)} コマ/秒`);
   send('progress',{stage:'指定したグリッドを反映中',value:.95});
-  const blob=await canvas.convertToBlob({type:'image/png'});if(job!==current)return;send('composed',{blob,count:indices.length,centers,size,indices,originCenter:allCenters[0]});
+  const blob=await canvas.convertToBlob({type:'image/png'});if(job!==current)return;send('composed',{blob,count:indices.length,centers:tracks[0].centers.filter(p=>indices.includes(p.index)),objects:tracks.map(o=>({...o,centers:o.centers.filter(p=>indices.includes(p.index))})),size,indices,originCenter:allCenters[0]});
  }
  }catch(e){if(job===current)send('error',{message:e.message||String(e),diagnostics:e.diagnostics||null});}
 };

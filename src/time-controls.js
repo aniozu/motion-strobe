@@ -1,4 +1,16 @@
 import {frameTime,indexAtTime} from './frame-clock.js';
+export function samplingLimits(state){
+ const seconds=frameTime(state,state.end)-frameTime(state,state.start);
+ return {seconds,frames:Math.max(1,Math.floor(seconds/state.period+1e-8))};
+}
+export function bindFrameInput(input,{point,getState,onChange}){
+ input.onkeydown=event=>{
+  if(!['ArrowUp','ArrowDown'].includes(event.key))return;
+  event.preventDefault();const state=getState(),[low,high]=pointBounds(state,point);
+  const value=Math.max(low,Math.min(high,state[point]+(event.key==='ArrowUp'?1:-1)));
+  if(value!==state[point])onChange(point,value);
+ };
+}
 export function pointBounds(state,point){
  const max=Math.max(0,state.count-1);
  if(point==='start')return [0,Math.max(0,state.end-1)];

@@ -1,5 +1,20 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {bindFrameNudges,applyTimePoint} from '../src/time-controls.js';import {Timeline,fitTimelineView} from '../src/timeline.js';
+import {bindFrameNudges,bindFrameInput,samplingLimits,applyTimePoint} from '../src/time-controls.js';import {Timeline,fitTimelineView} from '../src/timeline.js';
+test('sampling limit follows the selected range instead of a fixed two seconds',()=>{
+ assert.deepEqual(samplingLimits({start:10,end:310,period:1/60}),{seconds:5,frames:300});
+ const s={start:1,end:3,period:.04,times:[0,.03,.075,.11]};
+ assert.deepEqual(samplingLimits(s),{seconds:.08,frames:2});
+ s.end=2;assert.deepEqual(samplingLimits(s),{seconds:.045,frames:1});
+});
+test('reference input arrow keys move one actual frame even with irregular timestamps',()=>{
+ const state={count:5,start:1,end:4,reference:2,times:[0,.004,.009,.013,.02],playbackTimes:[0,.004,.009,.013,.02],period:.005};
+ const input={},video={pause(){}};let prevented=0;
+ bindFrameInput(input,{point:'reference',getState:()=>state,onChange:(p,v)=>applyTimePoint(state,p,v,false,video)});
+ const key=k=>input.onkeydown({key:k,preventDefault(){prevented++;}});
+ key('ArrowUp');assert.equal(state.reference,3);assert.equal(video.currentTime,.013);
+ key('ArrowDown');assert.equal(state.reference,2);key('ArrowDown');key('ArrowDown');assert.equal(state.reference,1);
+ key('ArrowUp');assert.equal(state.reference,2);assert.equal(prevented,5);
+});
 function controls(period=1/60){const state={count:301,start:60,end:240,background:54,reference:90,period};let auto=true;const video={currentTime:0,paused:0,pause(){this.paused++;}},buttons=['start','end','background','reference'].flatMap(point=>[-1,1].map(nudge=>({dataset:{timePoint:point,nudge:String(nudge)}})));const bound=bindFrameNudges({buttons,getState:()=>state,onChange:(point,value)=>{auto=applyTimePoint(state,point,value,auto,video);bound.update();}});bound.update();return {state,video,buttons,bound,button:(point,nudge)=>buttons.find(b=>b.dataset.timePoint===point&&Number(b.dataset.nudge)===nudge),auto:()=>auto};}
 test('all four time controls move by exactly one source frame and seek the paused video to that frame',()=>{
  for(const period of [1/60,1/30,1001/60000])for(const point of ['start','end','background','reference']){

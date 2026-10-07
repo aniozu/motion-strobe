@@ -1,0 +1,6 @@
+Motion Strobe 1.17.3 GitHub update package
+Fresh npm ci and two builds completed.
+165 tests passed; 0 failed.
+Japanese/English assets and links checked at root and project paths.
+BAT uses ASCII and CRLF, backs up before copying, preserves .git and .github.
+Windows BAT execution was not available in this environment.

@@ -8,12 +8,10 @@ test('English and Japanese routes keep the same controls and link to each other'
  const ids=s=>[...s.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]).sort();
  assert.deepEqual(ids(en),ids(jp));
  assert.match(jp,/lang="ja"/);assert.match(en,/lang="en"/);
- const base=jp.match(/<base href="([^"]+)">/)[1];
- assert.equal(en.match(/<base href="([^"]+)">/)[1],base);
- assert.equal(jp.match(/class="language-switch" href="([^"]+)"/)[1],base+'en/');
- assert.equal(en.match(/class="language-switch" href="([^"]+)"/)[1],base);
+ assert.match(jp,/class="language-switch" href="en\/"/);
+ assert.match(en,/class="language-switch" href="\.\/"/);
  assert.match(en,/src="app\.en\.js\?v=/);assert.match(en,/src="opening\.en\.js\?v=/);
-
+ assert.match(en,/<base href="\.\.\/">/);
  assert.match(en,/Analyze motion from video/);
  assert.match(en,/Center grid/);
  assert.doesNotMatch(en.replace('日本語',''),/[\u3040-\u30ff\u3400-\u9fff]/);

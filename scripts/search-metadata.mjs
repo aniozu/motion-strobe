@@ -1,6 +1,6 @@
 import {readFile,writeFile} from 'node:fs/promises';
 
-const origin=(process.env.SITE_URL || 'http://localhost:8080').replace(/\/$/,'');
+const origin=(process.env.SITE_URL||'https://aniozu.github.io/motion-strobe').replace(/\/+$/,'');
 const pages=[
  {lang:'ja',file:'dist/index.html',path:'/',locale:'ja_JP',title:'Motion Strobe｜無料のストロボ合成・動画で運動解析',description:'動画から一定間隔で動きを切り取り、ストロボ写真・動画を無料で作成。物体の位置検出、座標の校正、運動のグラフ表示や関数フィットに対応。スマホ・iPad・PCのブラウザで使えます。'},
  {lang:'en',file:'dist/en/index.html',path:'/en/',locale:'en_US',title:'Motion Strobe | Free Video Motion Analysis & Strobe Photos',description:'Create strobe photos and videos for free. Track object positions, calibrate distances, and analyze motion with graphs and curve fitting in your browser.'}

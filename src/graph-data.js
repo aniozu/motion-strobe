@@ -1,3 +1,4 @@
+import {objectSeries} from './object-data.js';
 import {fitSine} from './sine-fit.js';
 export {fitSine} from './sine-fit.js';
 import {calibrationBasis,coordinateOrigin,physicalCoordinates} from './calibration.js';
@@ -70,4 +71,11 @@ export function fitEquation(fit,dependent,independent){
  if(fit.kind!=='sine')return polynomialEquation(fit,dependent,independent);
  const shifted=fit.reference===0?independent:`(${independent} ${fit.reference<0?'+':'−'} ${graphNumber(Math.abs(fit.reference))})`;
  return `${dependent} = ${graphNumber(fit.amplitude)} sin(${graphNumber(fit.omega)} ${shifted} ${fit.phase<0?'−':'+'} ${graphNumber(Math.abs(fit.phase))}) ${fit.offset<0?'−':'+'} ${graphNumber(Math.abs(fit.offset))}`;
+}
+
+export function graphSeries(data={},selection='both'){
+ return objectSeries(data,true).filter(o=>selection==='both'||o.id===selection).map(o=>({
+  id:o.id,label:`物体${o.id+1}`,color:o.id===1?'#e67819':'#2359db',
+  ...graphData(o.data)
+ }));
 }
