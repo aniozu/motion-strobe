@@ -220,3 +220,20 @@ html[lang=en] .auto-detect-action #autoDetect{min-width:0;white-space:normal}
  html[lang=en] .workspace .steps>button .step-name{display:block}
  html[lang=en] .workspace .steps>button[data-short]::after{content:none}
 }
+
+/* Compact sampling summary and optional reference controls. */
+.workspace .sampling-metrics{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,.8fr);gap:8px;align-items:baseline}
+.workspace .sampling-metrics .interval-input{min-width:0;flex-wrap:nowrap}
+.workspace .sampling-metrics .interval-input input{width:100%;min-width:0;font-size:24px}
+.workspace .sampling-rate,.workspace .sampling-metrics .sample-count{display:flex;align-items:baseline;gap:3px;min-width:0;flex-wrap:wrap}
+.workspace .sampling-rate output,.workspace .sample-count-number{font-size:24px;line-height:1.2;font-variant-numeric:tabular-nums}
+.workspace .sampling-rate span,.workspace .sample-count>span{font-size:12px;white-space:nowrap;color:var(--muted)}
+.workspace .reference-details{margin:8px 0 0;border-top:1px solid var(--line);padding-top:7px}
+.workspace .reference-details summary{font-size:14px;font-weight:600;cursor:pointer;list-style:none;display:flex;gap:6px;align-items:center}
+.workspace .reference-details summary::before{content:'▾';font-size:12px}.workspace .reference-details[open] summary::before{content:'▴'}
+.workspace #samplingPanel .reference-field{margin-top:7px}
+.workspace .shutter-option{margin:7px 0!important}.shutter-option.is-disabled{opacity:.45}
+.workspace #rangeTimeline{margin-top:0;margin-bottom:10px}
+@media(max-height:600px) and (orientation:landscape){.workspace .sampling-rate output,.workspace .sample-count-number,.workspace .sampling-metrics .interval-input input{font-size:22px}.workspace .reference-details{margin-top:5px;padding-top:5px}}
+
+.workspace .metric-item{min-width:0}.workspace .metric-caption{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}.workspace .sampling-rate{white-space:nowrap}

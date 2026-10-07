@@ -64,3 +64,10 @@ export function drawAnnotations(ctx,centers,width,height,settings){
  if(settings.labels){const used=[];for(const p of points)drawTimeLabel(ctx,p,width,height,used);}
  ctx.restore();
 }
+
+export function drawCornerBadge(ctx,width,height,label){
+ const fontSize=Math.max(18,Math.min(30,Math.round(width*.033))),padding=Math.round(fontSize*.55);
+ ctx.save();ctx.font=`700 ${fontSize}px system-ui, sans-serif`;const badgeWidth=Math.ceil(ctx.measureText(label).width+padding*2),badgeHeight=fontSize+padding;
+ const x=width-badgeWidth-padding,y=padding;ctx.fillStyle='rgba(12,24,36,.78)';ctx.fillRect(x,y,badgeWidth,badgeHeight);
+ ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.fillText(label,x+padding,y+badgeHeight/2);ctx.restore();
+}

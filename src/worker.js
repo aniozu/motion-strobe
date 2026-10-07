@@ -1,3 +1,4 @@
+import {shutterAudioConfig} from './shutter-audio.js';
 import {decodeRange,runDecodeRecovery,DecodeFailure} from './decode-recovery.js';
 import {analysisClock,frameTime} from './frame-clock.js';
 import {setTimeDecimals} from './format.js';
@@ -5,7 +6,7 @@ import {withCalibrationOrigin} from './calibration.js';
 import {parseVideo} from './media.js';
 import {exportVideo} from './video-export.js';
 import {framePlan,outputSize} from './sampling.js';
-import {foregroundMask,mergeLayer,drawAnnotations} from './annotations.js';
+import {foregroundMask,mergeLayer,drawAnnotations,drawCornerBadge} from './annotations.js';
 import {pickObjectCenter,centersFromMarks,findCandidates,trackCandidates} from './tracking.js';
 let media,cache=new Map(),background,size,job=0,activeDecoder,activeEncoder,photoBase=null;
 const yieldTurn=()=>new Promise(r=>setTimeout(r,0));
@@ -26,7 +27,7 @@ self.onmessage=async({data:m})=>{
   const parsed=await parseVideo(m.file,p=>{if(job!==current)throw Error('キャンセル');send('progress',{stage:'動画を読み込み中',value:p*.9});});if(job!==current)return;
   if(!(await VideoDecoder.isConfigSupported(parsed.config)).supported)throw Error('この動画形式はブラウザーで処理できません。H.264形式のMP4でお試しください。');
   media=parsed;const {clock,track,rotation}=media;
-  send('loaded',{metadata:{fps:clock.fps,period:clock.period,times:clock.times,playbackTimes:clock.playbackTimes,variableTiming:clock.variable,hasRateEdits:clock.hasRateEdits,count:clock.ordered.length,width:rotation%180?track.video.height:track.video.width,height:rotation%180?track.video.width:track.video.height,rotation,codec:track.codec,approximateTiming:clock.approximate,canExportVideo:typeof VideoEncoder!=='undefined'}});
+  send('loaded',{metadata:{fps:clock.fps,period:clock.period,times:clock.times,playbackTimes:clock.playbackTimes,variableTiming:clock.variable,hasRateEdits:clock.hasRateEdits,count:clock.ordered.length,width:rotation%180?track.video.height:track.video.width,height:rotation%180?track.video.width:track.video.height,rotation,codec:track.codec,approximateTiming:clock.approximate,canShutterSound:!!(await shutterAudioConfig()),canExportVideo:typeof VideoEncoder!=='undefined'}});
  }else if(m.type==='extract'){
   if(!media)throw Error('動画を選び直してください。');
   cache.clear();background=null;photoBase=null;
@@ -106,6 +107,7 @@ self.onmessage=async({data:m})=>{
   if(job!==current)return;
   const canvas=new OffscreenCanvas(size.width,size.height),ctx=canvas.getContext('2d');ctx.putImageData(new ImageData(photoBase.pixels,size.width,size.height),0,0);
   drawAnnotations(ctx,centers,size.width,size.height,{...m,calibration:withCalibrationOrigin(m.calibration,allCenters,size)});
+  if(m.photoRate)drawCornerBadge(ctx,size.width,size.height,`${Number(m.samplingRate.toFixed(4))} コマ/秒`);
   send('progress',{stage:'指定したグリッドを反映中',value:.95});
   const blob=await canvas.convertToBlob({type:'image/png'});if(job!==current)return;send('composed',{blob,count:indices.length,centers,size,indices,originCenter:allCenters[0]});
  }

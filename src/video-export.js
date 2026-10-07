@@ -1,7 +1,8 @@
+import {shutterAudioConfig,shutterEventTimes,addShutterAudio} from './shutter-audio.js';
 import {decodeRange,runDecodeRecovery} from './decode-recovery.js';
 import {analysisClock,frameTime} from './frame-clock.js';
 import {createFile} from 'mp4box';
-import {foregroundMask,mergeLayer,drawAnnotations} from './annotations.js';
+import {foregroundMask,mergeLayer,drawAnnotations,drawCornerBadge} from './annotations.js';
 export {foregroundMask,drawTimeLabel} from './annotations.js';
 import {framePlan} from './sampling.js';
 export function videoPlan(first,last,sourceFps,maxFps=60){const stride=Math.max(1,Math.ceil(sourceFps/maxFps));return {stride,fps:sourceFps/stride,count:Math.floor((last-first)/stride)+1};}
@@ -16,10 +17,7 @@ export function videoPlaybackSpeed(value){const speed=Number(value??1);if(![1,.5
 export function slowedTimestampUs(seconds,speed){return Math.round(seconds/videoPlaybackSpeed(speed)*1e6);}
 export function drawSpeedBadge(ctx,width,height,speed){
  if(speed===1)return;
- const label=`×${speed}`;const fontSize=Math.max(18,Math.min(30,Math.round(width*.033))),padding=Math.round(fontSize*.55);
- ctx.save();ctx.font=`700 ${fontSize}px system-ui, sans-serif`;const badgeWidth=Math.ceil(ctx.measureText(label).width+padding*2),badgeHeight=fontSize+padding;
- const x=width-badgeWidth-padding,y=padding;ctx.fillStyle='rgba(12,24,36,.78)';ctx.fillRect(x,y,badgeWidth,badgeHeight);
- ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.fillText(label,x+padding,y+badgeHeight/2);ctx.restore();
+ drawCornerBadge(ctx,width,height,`×${speed}`);
 }
 export class Mp4Writer{
  constructor(width,height,durationUs){this.file=createFile();this.file.init({timescale:1e6,duration:durationUs,brands:['isom','iso6','avc1','mp41']});this.width=width;this.height=height;this.durationUs=durationUs;this.track=null;this.bytes=0;this.count=0;this.lastTimestamp=-1;}
@@ -44,10 +42,10 @@ async function exportVideoAttempt({media,cache,background,size,settings,cancelle
  if(typeof VideoEncoder==='undefined'||typeof VideoFrame==='undefined')throw Error('このブラウザーはMP4の書き出しに未対応です。写真の保存は引き続き使えます。');
  const {first,last,reference,step,factor,sensitivity}=settings,speed=videoPlaybackSpeed(settings.playbackSpeed);
  const indices=framePlan(first,last,reference,step,factor,analysisClock(media.clock,settings.captureFps));if(indices.some(n=>!cache.has(n)))throw Error('写真を作り直してから動画を作成してください。');
- const lastSample=indices.at(-1);
+ const lastSample=indices.at(-1);const audioConfig=settings.shutterSound?await shutterAudioConfig():null;if(settings.shutterSound&&!audioConfig)throw Error('このブラウザーはシャッター音の書き出しに未対応です。音をオフにしてお試しください。');
  let plan,config,width,height;
  for(const maxFps of [60,30]){
-  plan=timedVideoPlan(first,lastSample,media.clock,maxFps);const scale=Math.min(1,(maxFps===60?960:720)/Math.max(size.width,size.height));width=Math.max(2,Math.floor(size.width*scale/2)*2);height=Math.max(2,Math.floor(size.height*scale/2)*2);
+  plan=timedVideoPlan(first,lastSample,media.clock,maxFps);plan.indices=[...new Set([...plan.indices,...indices])].sort((a,b)=>a-b);plan.count=plan.indices.length;const scale=Math.min(1,(maxFps===60?960:720)/Math.max(size.width,size.height));width=Math.max(2,Math.floor(size.width*scale/2)*2);height=Math.max(2,Math.floor(size.height*scale/2)*2);
   const candidate={codec:maxFps===60?'avc1.420028':'avc1.42001f',width,height,framerate:Math.max(1,plan.fps*speed),bitrate:Math.max(1e6,Math.min(8e6,Math.round(width*height*plan.fps*speed*.14))),latencyMode:'realtime',avc:{format:'avc'}};
   try{const support=await VideoEncoder.isConfigSupported(candidate);if(support.supported){config=support.config;break;}}catch{}
  }
@@ -87,6 +85,7 @@ async function exportVideoAttempt({media,cache,background,size,settings,cancelle
    }
    await encoder.flush();})(),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('動画処理が停止しました。範囲を短くしてお試しください。')),45000);})]);}finally{clearTimeout(timeout);}
   if(cancelled())return;if(failure)throw failure;if(rendered!==totalCount||writer.count!==totalCount)throw Error('動画の全コマを作成できませんでした。範囲を短くしてお試しください。');
+  if(audioConfig){diagnostic.phase='シャッター音の書き出し';await addShutterAudio({writer,events:shutterEventTimes(indices,first,media.clock,speed),config:audioConfig,cancelled,onProgress,setActive});if(cancelled())return;}
   diagnostic.phase='MP4の仕上げ';onProgress({stage:'MP4を仕上げ中',value:.99});await yieldTurn();if(cancelled())return;const blob=writer.finish();return {blob,width,height,fps:plan.fps*speed,count:writer.count,lastSample,holdSeconds:1,playbackSpeed:speed};
  }finally{if(decoder&&decoder.state!=='closed')decoder.close();if(encoder&&encoder.state!=='closed')encoder.close();setActive(null,null);}
 }

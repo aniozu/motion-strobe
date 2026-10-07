@@ -26,7 +26,7 @@ test('button zoom always keeps start, end and background visible even across rep
 });
 test('timeline zoom uses all configured sampling points and keeps pinch/pan available',()=>{
  globalThis.ResizeObserver=class{observe(){}};globalThis.devicePixelRatio=1;
- const ctx={scale(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){},fillText(){}};
+ const ctx={fillRect(){},scale(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){},fillText(){}};
  const canvas={clientWidth:300,clientHeight:56,addEventListener(){},getContext:()=>ctx,setAttribute(){}};
  const state={count:301,stage:'sampling',start:90,end:150,background:60,reference:120,period:1/60},timeline=new Timeline(canvas,{getState:()=>state,onChange(){},onActive(){}});
  timeline.reset();timeline.setActive('reference');for(let i=0;i<10;i++)timeline.zoom(.5);
@@ -36,5 +36,5 @@ test('timeline zoom uses all configured sampling points and keeps pinch/pan avai
 });
 
 test('sampling initially fits the selected start and end with a small margin, excluding a distant background',()=>{
- globalThis.ResizeObserver=class{observe(){}};globalThis.devicePixelRatio=1;const ctx={scale(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){},fillText(){}};const canvas={clientWidth:320,clientHeight:56,addEventListener(){},getContext:()=>ctx,setAttribute(){}};const state={count:1001,stage:'sampling',start:600,end:720,reference:650,background:20,period:1/60};const timeline=new Timeline(canvas,{getState:()=>state,onChange(){},onActive(){}});timeline.reset();timeline.fitSelection();assert(timeline.low<600);assert(timeline.high>720);assert(timeline.high-timeline.low<150);assert(timeline.low>500);
+ globalThis.ResizeObserver=class{observe(){}};globalThis.devicePixelRatio=1;const ctx={fillRect(){},scale(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){},fillText(){}};const canvas={clientWidth:320,clientHeight:56,addEventListener(){},getContext:()=>ctx,setAttribute(){}};const state={count:1001,stage:'sampling',start:600,end:720,reference:650,background:20,period:1/60};const timeline=new Timeline(canvas,{getState:()=>state,onChange(){},onActive(){}});timeline.reset();timeline.fitSelection();assert(timeline.low<600);assert(timeline.high>720);assert(timeline.high-timeline.low<150);assert(timeline.low>500);
 });

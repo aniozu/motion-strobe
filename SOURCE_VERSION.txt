@@ -1,3 +1,2 @@
-Motion Strobe 1.13.4
-Based on release 1.13.3 commit 412323bb57a5fa5d26bf6de049ed79933e7f5f81
-Bounded decoder retries, exact source timestamps, processing diagnostics.
+Motion Strobe 1.16.0
+GitHub Pages update based on aniozu/motion-strobe commit 905240a.

@@ -267,5 +267,14 @@
   "画像を抽出してください。": "Extract images first.",
   "画像が不足しています。範囲の画面から作り直してください。": "Missing image data. Recreate the photo from the time range step.",
   "写真を合成中 ": "Compositing photo ",
-  "指定したグリッドを反映中": "Applying crosshairs"
+  "指定したグリッドを反映中": "Applying crosshairs",
+  "何秒ごとに画像を取り出すかを選びます。秒数は動画の整数コマ分に合わせます。±は抽出する間隔を1コマ分ずつ変えます。コマ/秒は1秒あたりに取り出す画像の数、総枚数は実際に合成する画像の数です。基準は「基準を調整」を開くと変更できます。": "Choose how often to extract an image. The interval is rounded to a whole number of video frames. The ± buttons adjust it by one source frame. Frames/s shows the number of extracted images per second; Total images shows how many images will be combined. Expand Adjust reference to change the sampling anchor.",
+  "写真の右上にコマ/秒を表示できます。時刻と、物体中心の縦横線もそれぞれオン・オフできます。時刻の小数桁数は設定で変更できます。表示するには「位置を検出」で中心を指定します。未指定・未検出・要確認・「なし」のコマには表示しません。": "You can display frames/s in the top-right corner of the photo. Time labels and object-center guides can also be turned on or off. Choose the time precision in Settings. Time labels and guides require measured centers in Detect positions; unset, missing, uncertain, or skipped frames are excluded.",
+  "表示中の写真または動画を保存・共有します。写真はPNG、動画はMP4です。「シャッター音」をオンにすると、抽出したコマに合わせた短い音を追加できます。元動画の音声は含めません。共有に対応しないブラウザーでは保存に切り替わります。": "Save or share the photo or video currently shown. Photos are PNG files and videos are MP4 files. Enable Shutter sound to add a short click at each extracted frame. Original audio is not included. If sharing is unavailable, the file is downloaded instead.",
+  "シャッター音を作成できませんでした。": "Could not create the shutter sound.",
+  "音声処理が停止しました。": "Audio processing stalled.",
+  "シャッター音を作成中": "Creating shutter sound",
+  "このブラウザーはシャッター音の書き出しに未対応です。音をオフにしてお試しください。": "This browser cannot export shutter audio. Turn off Shutter sound and try again.",
+  "シャッター音の書き出し": "Exporting shutter audio",
+  " コマ/秒": " frames/s"
 }

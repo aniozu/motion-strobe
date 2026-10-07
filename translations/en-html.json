@@ -183,5 +183,9 @@
   "720 px · 軽い": "720 px · faster",
   "960 px · 標準": "960 px · standard",
   "1280 px · 高画質": "1280 px · high resolution",
-  "画像枚数が多い場合は、メモリに合わせて解像度を下げます。": "For many images, resolution is reduced to fit available memory."
+  "画像枚数が多い場合は、メモリに合わせて解像度を下げます。": "For many images, resolution is reduced to fit available memory.",
+  "コマ/秒": "frames/s",
+  "総枚数": "Total images",
+  "基準を調整": "Adjust reference",
+  "シャッター音": "Shutter sound"
 }
