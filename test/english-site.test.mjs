@@ -15,7 +15,7 @@ test('English and Japanese routes keep the same controls and link to each other'
  assert.match(en,/src="app\.en\.js\?v=/);assert.match(en,/src="opening\.en\.js\?v=/);
 
  assert.match(en,/Analyze motion from video/);
- assert.match(en,/Center guides/);
+ assert.match(en,/Center grid/);
  assert.doesNotMatch(en.replace('日本語',''),/[\u3040-\u30ff\u3400-\u9fff]/);
 });
 

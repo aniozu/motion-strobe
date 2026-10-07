@@ -2,10 +2,10 @@ import {openingAnimationEnabled} from './opening-preference.js';
 // These are actual non-looping GIFs, independent of the user's video results.
 export const homeExamples=[{
  id:'projectile',
- gif:'opening-projectile.gif?v=1.16.2',
- start:'opening-projectile-start.webp?v=1.16.2',
- poster:'opening-projectile-poster.webp?v=1.16.2',
- alt:'物体の像と中心の縦横線が順に重なるストロボアニメーション'
+ gif:'opening-projectile.gif?v=1.16.3',
+ start:'opening-projectile-start.webp?v=1.16.3',
+ poster:'opening-projectile-poster.webp?v=1.16.3',
+ alt:'物体の像と中心のグリッドが順に重なるストロボアニメーション'
 }];
 const installed=new WeakMap();
 function loadGif(state){

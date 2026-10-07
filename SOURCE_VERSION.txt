@@ -1,2 +1,2 @@
-Motion Strobe 1.16.2
-GitHub Pages update based on aniozu/motion-strobe 1.16.0.
+Motion Strobe 1.16.3
+Compact reference controls, detection summary, display and video settings layout.

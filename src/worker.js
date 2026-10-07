@@ -75,7 +75,7 @@ self.onmessage=async({data:m})=>{
   const marks=trackCandidates(frames,size.width,size.height,m.anchors||[],m.seedIndex);
   if(job===current)send('auto-detected',{marks});
  }else if(m.type==='guide-preview'){
-  if(!photoBase)throw Error('写真を作成してから縦横線を設定してください。');
+  if(!photoBase)throw Error('写真を作成してからグリッドを設定してください。');
   if(!photoBase.blob){
    const canvas=new OffscreenCanvas(size.width,size.height);
    canvas.getContext('2d').putImageData(new ImageData(photoBase.pixels,size.width,size.height),0,0);
