@@ -230,7 +230,7 @@ html[lang=en] .auto-detect-action #autoDetect{min-width:0;white-space:normal}
 .workspace .sampling-rate span,.workspace .sample-count>span{font-size:12px;white-space:nowrap;color:var(--muted)}
 .workspace .reference-details{margin:8px 0 0;border-top:1px solid var(--line);padding-top:7px}
 .workspace .reference-details summary{font-size:14px;font-weight:600;cursor:pointer;list-style:none;display:flex;gap:6px;align-items:center}
-.workspace .reference-details summary::-webkit-details-marker{display:none}.workspace .reference-chevron{font-size:12px;transform:rotate(180deg);transition:transform .15s}.workspace .reference-details[open] .reference-chevron{transform:none}
+.workspace .reference-details summary::-webkit-details-marker{display:none}.workspace .reference-chevron::before{content:'▾';font-size:12px}.workspace .reference-details[open] .reference-chevron::before{content:'▴'}
 .workspace #samplingPanel .reference-field{margin-top:7px}
 .workspace .shutter-option{margin:7px 0!important}.shutter-option.is-disabled{opacity:.45}
 .workspace #rangeTimeline{margin-top:0;margin-bottom:10px}
@@ -251,18 +251,53 @@ html[lang=en] .auto-detect-action #autoDetect{min-width:0;white-space:normal}
 
 /* Keep video controls together above file actions. */
 .result-video-settings{grid-column:1/-1}
-.workspace #resultPanel .video-settings-options{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.workspace #resultPanel .video-speed-row,.workspace #resultPanel .shutter-option{margin:0!important}
-.workspace #resultPanel .video-speed-row{gap:6px;font-weight:400;white-space:nowrap}
-.workspace #resultPanel .shutter-option{white-space:nowrap}
+/* Keep the full speed value visible; wrap the shutter option when needed. */
+.workspace #resultPanel .video-settings-options{display:flex;flex-wrap:wrap;justify-content:start;align-items:center;gap:6px 8px;margin:0;min-width:0;font-size:14px;font-weight:400}
+.workspace #resultPanel .video-settings-options>label[for="videoSpeed"]{white-space:nowrap}
+/* Separate the visible value from the native picker so platform arrows cannot clip digits. */
+.workspace #resultPanel .video-speed-picker{position:relative;display:inline-flex;align-items:center;justify-content:space-between;gap:16px;flex:0 0 auto;min-width:7em;min-height:38px;padding:7px 12px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);font-size:16px;line-height:1.25}
+.workspace #resultPanel #videoSpeedValue{display:block;flex:none;min-width:max-content;white-space:nowrap;font-variant-numeric:tabular-nums}
+.workspace #resultPanel .video-speed-picker::after{content:"";width:7px;height:7px;flex:none;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);pointer-events:none}
+.workspace #resultPanel .video-speed-picker select{position:absolute;inset:0;width:100%;height:100%;max-width:none;min-width:0;margin:0;padding:0;opacity:0;cursor:pointer;font-size:16px}
+.workspace #resultPanel .video-speed-picker:focus-within{outline:3px solid #7eaaff;outline-offset:3px}
+.workspace #resultPanel .video-speed-picker:has(select:disabled){background:#eef0f2;color:#89929b;border-color:#d7dde2}
+.workspace #resultPanel .video-speed-picker select:disabled{cursor:not-allowed}
+.workspace #resultPanel .video-settings-options>.shutter-option{margin:0!important;gap:5px;white-space:nowrap;font-size:14px;font-weight:400}
+.workspace #resultPanel .video-settings-options>.shutter-option input{width:14px;height:14px;margin:0;flex:0 0 14px}
 .workspace #resultPanel .display-options{gap:6px 10px}
 .workspace #resultPanel .guide-row{flex:0 1 auto;min-width:0;flex-wrap:wrap}
 .workspace #resultPanel .guide-row .check{white-space:normal}
 .workspace .reference-details summary .help-small{margin:0}
 .workspace #samplingPanel .reference-field .time-point{display:block}
-.detection-result-dialog{width:min(420px,calc(100vw - 24px))}
-.detection-result-count{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:12px 0}
-.detection-result-count output{font-size:28px;font-weight:600;font-variant-numeric:tabular-nums}
-.detection-result-note{color:var(--muted);font-size:14px}
-.detection-result-dialog p{line-height:1.6}
-.detection-result-dialog>.primary{width:100%;margin-top:8px}
+
+/* Keep frame selection above the independent object controls. */
+.center-time-heading{margin:0 0 3px;min-height:0}
+.center-time-heading h3{font-size:14px;font-weight:600;margin:0}
+.center-dialog .object-tabs{margin:6px 0 8px;flex-shrink:0}
+.object-tabs button{min-height:30px;padding:5px 10px;font-size:14px}
+.object-tabs button[data-detect-object="1"].active,.object-tabs button[data-graph-object="1"].active{background:#fff0db;color:#a45c00}
+.auto-detect-group{min-width:0;display:flex;flex-direction:column;gap:3px}
+.auto-detection-result{font-size:14px;line-height:1.2;font-weight:600;font-variant-numeric:tabular-nums;text-align:center;color:var(--muted)}
+.workspace #samplingPanel .video-frame-rate{display:block;width:max-content;max-width:100%;margin:3px 0 8px;padding:3px 7px;min-height:26px;white-space:normal;text-align:left;font-size:12px;line-height:1.4}
+.graphs-dialog>.object-tabs{width:min(100%,360px);margin:0 0 8px}
+.graph-legend .object-legend{display:inline-flex;align-items:center;gap:5px}
+.graph-legend .object-legend::before{background:var(--object-color)}
+.graph-fit-details .graph-equation{white-space:pre-line}
+
+@media(max-width:759px) and (orientation:portrait){.center-controls .auto-detect-group{flex:1}.center-controls .auto-detect-group .auto-detect-action{width:100%}}
+
+/* Reference controls operate in exact source frames. */
+.workspace .reference-details summary{min-height:36px;font-size:var(--editor-heading-size);line-height:1.3;gap:8px}
+.workspace .reference-chevron{display:grid;place-items:center;min-width:32px;height:32px;margin-left:auto}
+.workspace .reference-chevron::before{font-size:22px;line-height:1}
+#referenceTime{appearance:textfield}
+#referenceTime::-webkit-inner-spin-button,#referenceTime::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.guide-objects{display:flex;flex-wrap:wrap;gap:8px 18px;min-width:0;margin:0 0 12px;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.guide-objects legend{font-size:14px;padding:0 4px}
+.guide-objects .check{margin:0;font-size:14px}
+
+/* Size the interval for the selected decimal precision, wrapping metrics on narrow screens. */
+.workspace .sampling-metrics{display:flex;flex-wrap:wrap;gap:8px 12px}
+.workspace .sampling-metrics .metric-item{flex:1 0 auto;min-width:0;max-width:100%}
+.workspace .sampling-metrics .interval-input{width:auto;max-width:100%}
+.workspace .sampling-metrics .interval-input input{flex:0 1 auto;width:var(--interval-width,5.8ch);max-width:calc(100% - 2ch)}
