@@ -40,6 +40,6 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   if(error.code==='EADDRINUSE'&&port!==0){console.log('Port is busy. Choosing a free local port.');server.listen(0,'127.0.0.1');}
   else{console.error(error.message);process.exitCode=1;}
  });
- server.on('listening',()=>console.log(`\nMotion Strobe 1.16.0\nOpen: http://localhost:${server.address().port}\nStop: Ctrl+C\n`));
+ server.on('listening',()=>console.log(`\nMotion Strobe 1.16.2\nOpen: http://localhost:${server.address().port}\nStop: Ctrl+C\n`));
  server.listen(port,'127.0.0.1');
 }

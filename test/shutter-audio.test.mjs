@@ -12,7 +12,8 @@ test('shutter timing follows actual playback PTS and all three speeds, without a
   assert(samples.subarray(Math.round(events.at(-1)*48000)+wave.length).every(v=>v===0));
  }
 });
-test('AAC muxing decodes to correctly timed clicks including encoder priming, with silent final hold',async()=>{
+test('AAC muxing decodes to correctly timed clicks including encoder priming, with silent final hold',async t=>{
+ try{execFileSync('ffmpeg',['-version'],{stdio:'ignore'});execFileSync('ffprobe',['-version'],{stdio:'ignore'});}catch(error){if(error.code==='ENOENT'){t.skip('FFmpeg / ffprobe unavailable');return;}throw error;}
  const folder=await mkdtemp(join(tmpdir(),'strobe-audio-'));
  try{
   const baseline=await parseVideo(new Blob([await readFile(new URL('./fixtures/baseline.mp4',import.meta.url))]));

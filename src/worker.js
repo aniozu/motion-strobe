@@ -107,7 +107,7 @@ self.onmessage=async({data:m})=>{
   if(job!==current)return;
   const canvas=new OffscreenCanvas(size.width,size.height),ctx=canvas.getContext('2d');ctx.putImageData(new ImageData(photoBase.pixels,size.width,size.height),0,0);
   drawAnnotations(ctx,centers,size.width,size.height,{...m,calibration:withCalibrationOrigin(m.calibration,allCenters,size)});
-  if(m.photoRate)drawCornerBadge(ctx,size.width,size.height,`${Number(m.samplingRate.toFixed(4))} コマ/秒`);
+  if(m.photoRate)drawCornerBadge(ctx,size.width,size.height,`${m.samplingRate.toFixed(1)} コマ/秒`);
   send('progress',{stage:'指定したグリッドを反映中',value:.95});
   const blob=await canvas.convertToBlob({type:'image/png'});if(job!==current)return;send('composed',{blob,count:indices.length,centers,size,indices,originCenter:allCenters[0]});
  }

@@ -1,2 +1,2 @@
-Motion Strobe 1.16.0
-GitHub Pages update based on aniozu/motion-strobe commit 905240a.
+Motion Strobe 1.16.2
+GitHub Pages update based on aniozu/motion-strobe 1.16.0.
