@@ -356,5 +356,6 @@
   "球の放物運動": "Projectile motion of a ball",
   "サッカーボールの放物運動": "Projectile motion of a soccer ball",
   "スーパーボールのバウンド": "Bouncing superball",
-  "トンカチ": "Hammer motion"
+  "トンカチ": "Hammer motion",
+  "物体1・物体2を選び、線・中心点の表示と色・太さ・不透明度を設定します。中心点の大きさは0.2〜5倍で調整できます。": "Choose object 1, object 2 or both, then set lines, center points, color, line thickness and opacity. Center point size can be adjusted from 0.2× to 5×."
 }

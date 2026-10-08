@@ -17,6 +17,10 @@ export class GuideEditor{
   for(const id of ['guidePoints','guideObject1','guideObject2','guideColor','guideThickness','guideOpacity'])this.$(id).oninput=()=>{
    this.draft=gridOptions({...this.draft,object1:this.$('guideObject1').checked,object2:this.$('guideObject2').checked,points:this.$('guidePoints').checked,color:this.$('guideColor').value,thickness:Number(this.$('guideThickness').value),opacity:Number(this.$('guideOpacity').value)/100});this.update();
   };
+  this.$('guidePointScale').oninput=()=>this.setPointScale(this.$('guidePointScale').value);
+  this.$('guidePointScaleNumber').oninput=()=>{const input=this.$('guidePointScaleNumber');if(input.value!==''&&Number.isFinite(input.valueAsNumber))this.setPointScale(input.valueAsNumber,true);};
+  this.$('guidePointScaleNumber').onchange=()=>this.update();
+  this.$('guidePointScaleNumber').onblur=()=>this.update();
   this.$('applyGuides').onclick=()=>{const settings={...this.draft};this.dialog.close();this.onApply(settings);};
   this.canvas.onpointerdown=e=>{if(!this.image||this.calibration||e.isPrimary===false)return;this.canvas.setPointerCapture(e.pointerId);this.drag={start:this.point(e),end:this.point(e),pointerId:e.pointerId};this.schedule();};
   this.canvas.onpointermove=e=>{if(this.drag?.pointerId!==e.pointerId)return;this.drag.end=this.point(e);const angle=angleFromStroke(this.drag.start,this.drag.end);if(angle!==null)this.setAngle(angle);};
@@ -42,9 +46,12 @@ export class GuideEditor{
  error(message){this.$('guidePreviewStatus').hidden=false;this.$('guidePreviewStatus').textContent=message;this.canvas.setAttribute('aria-busy','false');}
  point(e){const r=this.canvas.getBoundingClientRect();return {x:Math.max(0,Math.min(this.canvas.width,(e.clientX-r.left)*this.canvas.width/r.width)),y:Math.max(0,Math.min(this.canvas.height,(e.clientY-r.top)*this.canvas.height/r.height))};}
  setAngle(value,keepInput=false){if(this.calibration)return;const angle=Number(value);if(!Number.isFinite(angle))return;this.draft={...this.draft,angle:normalizeGuideAngle(Math.max(-90,Math.min(90,angle)))};this.update(keepInput);}
- update(keepInput=false){
+ setPointScale(value,keepInput=false){const scale=Number(value);if(!Number.isFinite(scale))return;this.draft={...this.draft,pointScale:Math.round(Math.max(.2,Math.min(5,scale))*10)/10};this.update(false,keepInput);}
+ update(keepInput=false,keepPointInput=false){
   for(const [id,key] of [['guidePoints','points'],['guideObject1','object1'],['guideObject2','object2'],['guideColor','color'],['guideThickness','thickness']]){if(['points','object1','object2'].includes(key))this.$(id).checked=this.draft[key];else this.$(id).value=this.draft[key];}
   this.$('guideAngle').value=this.draft.angle;if(!keepInput)this.$('guideAngleNumber').value=this.draft.angle;this.$('guideOpacity').value=Math.round(this.draft.opacity*100);this.$('guideOpacityValue').textContent=`${Math.round(this.draft.opacity*100)}%`;
+  this.$('guidePointScale').value=this.draft.pointScale;if(!keepPointInput)this.$('guidePointScaleNumber').value=this.draft.pointScale;
+  for(const id of ['guidePointScale','guidePointScaleNumber'])this.$(id).disabled=!this.draft.points;
   const mode=this.draft.vertical?(this.draft.horizontal?'both':'vertical'):(this.draft.horizontal?'horizontal':'none');
   for(const b of this.buttons){b.classList.toggle('active',b.dataset.guideLines===mode);b.setAttribute('aria-pressed',String(b.dataset.guideLines===mode));}this.schedule();
  }

@@ -62,3 +62,25 @@ test('object checkboxes remain a draft until applied and are restored when reope
  h.el('guideObject2').checked=false;h.el('guideObject2').oninput();h.el('applyGuides').onclick();
  assert.equal(h.applied[0].object1,true);assert.equal(h.applied[0].object2,false);
 });
+
+test('center size changes the dot and outline together while retaining measured coordinates and object filtering',()=>{
+ const centers=[{x:24.5,y:31.25,confidence:'manual',objectId:0},{x:70,y:40,confidence:'manual',objectId:1},{x:40,y:20,confidence:'skipped'}],original=structuredClone(centers);
+ for(const scale of [.2,1,5]){
+  const dots=[],outlines=[],ctx={save(){},restore(){},beginPath(){},stroke(){outlines.push(this.lineWidth);},fill(){},arc(x,y,r){dots.push([x,y,r]);}};
+  drawAnnotations(ctx,centers,100,60,{grid:{enabled:true,vertical:false,horizontal:false,pointScale:scale,object2:false}});
+  assert.deepEqual(dots,[[24.5,31.25,3*scale]]);assert.equal(outlines.at(-1),1.5*scale);assert.deepEqual(centers,original);
+ }
+ assert.equal(gridOptions({}).pointScale,1);assert.equal(gridOptions({pointScale:'bad'}).pointScale,1);assert.equal(gridOptions({pointScale:99}).pointScale,5);assert.equal(gridOptions({pointScale:-10}).pointScale,.2);
+});
+test('center-size slider and numeric draft synchronize, validate limits, cancel and apply independently of coordinates',()=>{
+ const h=harness(),centers=structuredClone(h.editor.centers);
+ h.el('guidePoints').checked=true;h.el('guidePoints').oninput();assert.equal(h.el('guidePointScale').disabled,false);
+ h.el('guidePointScale').value=5;h.el('guidePointScale').oninput();assert.equal(h.editor.draft.pointScale,5);assert.equal(h.el('guidePointScaleNumber').value,5);
+ h.el('guidePointScaleNumber').value='2.7';h.el('guidePointScaleNumber').valueAsNumber=2.7;h.el('guidePointScaleNumber').oninput();assert.equal(h.editor.draft.pointScale,2.7);assert.equal(h.el('guidePointScale').value,2.7);
+ h.el('guidePointScaleNumber').value='';h.el('guidePointScaleNumber').valueAsNumber=NaN;h.el('guidePointScaleNumber').oninput();assert.equal(h.editor.draft.pointScale,2.7);h.el('guidePointScaleNumber').onblur();assert.equal(h.el('guidePointScaleNumber').value,2.7);
+ h.el('guidePointScaleNumber').value='99';h.el('guidePointScaleNumber').valueAsNumber=99;h.el('guidePointScaleNumber').oninput();h.el('guidePointScaleNumber').onchange();assert.equal(h.editor.draft.pointScale,5);assert.equal(h.el('guidePointScaleNumber').value,5);
+ assert.deepEqual(h.editor.centers,centers);h.el('guideDialog').close();assert.equal(h.guide.pointScale,1);assert.equal(h.applied.length,0);
+ h.editor.open({guide:h.guide,centers,labels:false});assert.equal(h.el('guidePointScale').value,1);
+ h.el('guidePoints').checked=true;h.el('guidePoints').oninput();h.el('guidePointScale').value=5;h.el('guidePointScale').oninput();h.el('applyGuides').onclick();assert.equal(h.applied[0].pointScale,5);
+ h.editor.open({guide:h.applied[0],centers,labels:false});assert.equal(h.el('guidePointScaleNumber').value,5);
+});

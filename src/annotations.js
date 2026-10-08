@@ -19,7 +19,7 @@ export function normalizeGuideAngle(value){
  angle%=180;if(angle>90)angle-=180;if(angle< -90)angle+=180;
  return Math.round(angle*10)/10||0;
 }
-export function gridOptions(grid={}){return {enabled:!!grid.enabled,vertical:grid.vertical!==false,horizontal:grid.horizontal!==false,angle:normalizeGuideAngle(grid.angle),color:/^#[0-9a-f]{6}$/i.test(grid.color)?grid.color:'#ffffff',thickness:Math.max(.5,Math.min(4,Number(grid.thickness)||1)),opacity:Math.max(.05,Math.min(1,Number(grid.opacity)||.25)),points:grid.points!==false,object1:grid.object1!==false,object2:grid.object2!==false};}
+export function gridOptions(grid={}){return {enabled:!!grid.enabled,vertical:grid.vertical!==false,horizontal:grid.horizontal!==false,angle:normalizeGuideAngle(grid.angle),color:/^#[0-9a-f]{6}$/i.test(grid.color)?grid.color:'#ffffff',thickness:Math.max(.5,Math.min(4,Number(grid.thickness)||1)),opacity:Math.max(.05,Math.min(1,Number(grid.opacity)||.25)),points:grid.points!==false,pointScale:Math.max(.2,Math.min(5,Number(grid.pointScale)||1)),object1:grid.object1!==false,object2:grid.object2!==false};}
 // Clip an infinite guide to the photo, without rotating the photo or its coordinates.
 export function clippedGuideLine(point,direction,width,height){
  let first=-Infinity,last=Infinity;
@@ -60,7 +60,7 @@ export function drawAnnotations(ctx,centers,width,height,settings){
    if(grid.horizontal&&!ys.has(y)){ys.add(y);line(p,horizontal);}
   }
   ctx.stroke();ctx.globalAlpha=1;
-  if(grid.points)for(const p of guidePoints){ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle=grid.color;ctx.strokeStyle='#10202d';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();}
+  if(grid.points)for(const p of guidePoints){ctx.beginPath();ctx.arc(p.x,p.y,3*grid.pointScale,0,Math.PI*2);ctx.fillStyle=grid.color;ctx.strokeStyle='#10202d';ctx.lineWidth=1.5*grid.pointScale;ctx.fill();ctx.stroke();}
  }
  if(settings.labels){const used=[];for(const p of points)drawTimeLabel(ctx,p,width,height,used);}
  ctx.restore();

@@ -208,5 +208,7 @@
   "動画のフレームレートと時刻情報": "Video frame rate and timing",
   "スロー動画の時刻が再生用に書き換えられている場合だけ「撮影fpsで補正」を選びます。撮影fpsが分かり、全コマが残っている一定fpsの動画に使えます。": "Choose Correct using capture fps only if a slow-motion video’s timestamps were rewritten for playback. Use it when the capture fps is known, constant, and no frames are missing.",
   "撮影fpsは自動では推測しません。不明な場合は「ファイルのコマ時刻」を使ってください。": "Capture fps is not guessed automatically. If it is unknown, use File frame times.",
-  "そのまま": "Original"
+  "そのまま": "Original",
+  "中心点の大きさ（倍率）": "Center point size multiplier",
+  "中心点の大きさ": "Center point size"
 }
