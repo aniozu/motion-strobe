@@ -349,5 +349,12 @@
   "そのまま": "Original",
   "動画のコマ順の復元に必要なメモリが不足しました。": "Insufficient memory to restore video frame order.",
   "動画の必要なコマをすべて復元できませんでした。": "Could not restore all required video frames.",
-  "復元コマの確認": "Checking restored frames"
+  "復元コマの確認": "Checking restored frames",
+  "等速直線運動": "Uniform linear motion",
+  "斜面を下る物体": "Motion down an inclined plane",
+  "サッカーボールの自由落下": "Free fall of a soccer ball",
+  "球の放物運動": "Projectile motion of a ball",
+  "サッカーボールの放物運動": "Projectile motion of a soccer ball",
+  "スーパーボールのバウンド": "Bouncing superball",
+  "トンカチ": "Hammer motion"
 }

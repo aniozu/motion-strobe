@@ -371,3 +371,7 @@ GitHub ActionsでFFmpeg・ffprobeをテスト前に導入。ローカル環境�
 - コマ順の入れ替え・重複・欠落と再試行、シャッター音の同期、最終写真の一致、キャンセルを自動テストで検証。iPadOS 17.5.1実機と問題のHEVC動画での検証は未実施（今回利用可能なIMG_0220.movは30 fps H.264で、ログの240 fps HEVC動画とは異なる）。
 
 Software audio dependencies: Mediabunny and @mediabunny/aac-encoder 1.61.3 (MPL-2.0); the latter includes a libavcodec/FFmpeg AAC WASM build. Distribution notices are in dist/THIRD-PARTY-LICENSES.txt.
+
+## 1.17.6 高校物理のサンプル動画
+
+サンプル一覧を等速直線運動、斜面を下る物体、サッカーボールの自由落下、球の放物運動、サッカーボールの放物運動、スーパーボールのバウンド、トンカチの順に変更。台車に取り付けたばね振り子は一覧から外した。2026-10-08提供の未解析MP4を無変換で追加し、提供PNGを選択時のサムネイルに使用。「解析済」のMP4とMOVは収録しない。球の放物運動は既存の動画を使い、新しいPNGを割り当てた。縦長サムネイルも切り取らず全体を表示する。旧台車動画は回帰テスト用に保持。

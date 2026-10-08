@@ -1,3 +1,3 @@
-Motion Strobe 1.17.5
-Based on current published 1.17.4 commit d85d944e6a22b0d60fe2a6000a91833baa48b4da
-Local software AAC fallback and ordered video frame composition.
+Motion Strobe 1.17.6
+Based on published 1.17.5 commit 4f5a7f44b28b438426ebcb14b5c61dd03a95af26
+Seven physics samples with supplied MP4 videos and PNG thumbnails.
