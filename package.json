@@ -1,6 +1,6 @@
 {
   "name": "motion-strobe-web",
-  "version": "1.17.3",
+  "version": "1.17.5",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,8 @@
     "start": "node serve.mjs"
   },
   "dependencies": {
+    "@mediabunny/aac-encoder": "1.61.3",
+    "mediabunny": "1.61.3",
     "mp4box": "2.3.0"
   },
   "devDependencies": {

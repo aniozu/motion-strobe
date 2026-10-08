@@ -1,6 +1,8 @@
-Motion Strobe 1.17.3 GitHub update package
-Fresh npm ci and two builds completed.
-165 tests passed; 0 failed.
-Japanese/English assets and links checked at root and project paths.
-BAT uses ASCII and CRLF, backs up before copying, preserves .git and .github.
-Windows BAT execution was not available in this environment.
+Motion Strobe 1.17.5 GitHub BAT update package
+Derived from published source commit 4f5a7f44b28b438426ebcb14b5c61dd03a95af26.
+Application source matches the published version; GitHub Pages path handling is retained from the previous update package.
+Japanese and English bundles include software AAC fallback.
+Windows BAT and PowerShell execution, and iPad hardware, were not available for verification.
+GitHub Pages export: build completed and all 170 tests passed.
+Japanese/English links and local assets validated under /motion-strobe/.
+ZIP integrity and exact application-source parity verified.

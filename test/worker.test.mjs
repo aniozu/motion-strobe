@@ -244,3 +244,41 @@ test('240 fps playback does not insert short live frames at off-cadence capture 
  const parsed=await parseVideo(messages.at(-1).blob);
  assert.deepEqual(parsed.clock.playbackTimes.slice(0,6),live.map(f=>f.timestamp/1e6));
 });
+
+test('late HEVC-style outputs and duplicate callbacks export in exact planned order with matching overlays',async()=>{
+ const Native=globalThis.VideoDecoder;
+ globalThis.VideoDecoder=class extends Native{
+  async flush(){const chunks=this.pending.sort((a,b)=>a.timestamp-b.timestamp);for(let n=0;n<chunks.length;n+=3){
+   for(const chunk of chunks.slice(n,n+3).reverse())this.callbacks.output({timestamp:chunk.timestamp,index:Math.round((chunk.timestamp-origin)*60/1e6),close(){}});
+   if(n%9===0)this.callbacks.output({timestamp:chunks[n].timestamp,index:Math.round((chunks[n].timestamp-origin)*60/1e6),close(){}});
+  }this.pending=[];}
+ };
+ try{
+  origin=undefined;const bytes=await readFile(new URL('./fixtures/projectile.mp4',import.meta.url));await send({type:'load',file:new Blob([bytes]),id:1500});
+  const settings={first:2,last:50,reference:2,step:6,factor:1,background:0,maxDimension:640,sensitivity:30,labels:false};
+  await send({type:'extract',...settings,id:1501});assert.equal(messages.at(-1).type,'extracted');
+  await send({type:'compose',...settings,id:1502});const photo=messages.at(-1);assert.equal(photo.type,'composed');
+  encodedFrames.length=0;await send({type:'export-video',...settings,id:1503});assert.equal(messages.at(-1).type,'video-exported',JSON.stringify(messages.at(-1)));
+  const live=encodedFrames.slice(0,49);assert.equal(live.length,49);
+  for(let n=0;n<live.length;n++){assert.equal(live[n].timestamp,Math.round(n/60*1e6));assert.equal(live[n].pixels[(n+2+100)*4],240);}
+  assert.equal(live[5].pixels[(8+100)*4],100);assert.equal(live[6].pixels[(8+100)*4],240);
+  assert.equal(createHash('sha256').update(encodedFrames.at(-1).pixels).digest('hex'),createHash('sha256').update(new Uint8Array(await photo.blob.arrayBuffer())).digest('hex'));
+ }finally{globalThis.VideoDecoder=Native;}
+});
+
+test('a missing planned frame triggers fresh decode recovery rather than exporting an incomplete video',async()=>{
+ const Native=globalThis.VideoDecoder;let skip=true;
+ globalThis.VideoDecoder=class extends Native{
+  async flush(){if(skip){skip=false;this.pending=this.pending.filter(c=>Math.abs(c.timestamp-origin-100000)>1);}await super.flush();}
+ };
+ try{
+  origin=undefined;const bytes=await readFile(new URL('./fixtures/projectile.mp4',import.meta.url));await send({type:'load',file:new Blob([bytes]),id:1510});
+  const settings={first:2,last:20,reference:2,step:6,factor:1,background:0,maxDimension:640,sensitivity:30,labels:false};
+  skip=false;await send({type:'extract',...settings,id:1511});assert.equal(messages.at(-1).type,'extracted');
+  skip=true;encodedFrames.length=0;await send({type:'export-video',...settings,id:1512});assert.equal(messages.at(-1).type,'video-exported',JSON.stringify(messages.at(-1)));
+  const report=messages.filter(m=>m.id===1512&&m.type==='diagnostic').at(-1).diagnostics;
+  assert.equal(report.recovered,true);assert.equal(report.attempts[0].phase,'復元コマの確認');assert.deepEqual(report.attempts[0].missingFrames,[7]);
+  assert.equal(report.attempts.at(-1).status,'成功');
+  const parsed=await parseVideo(messages.at(-1).blob);assert.equal(parsed.clock.ordered.length,79);
+ }finally{globalThis.VideoDecoder=Native;}
+});

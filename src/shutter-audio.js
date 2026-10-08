@@ -20,8 +20,9 @@ export function shutterBlock(first,length,events,wave=shutterWaveform(),rate=shu
  return out;
 }
 export async function shutterAudioConfig(){
- if(typeof AudioEncoder==='undefined'||typeof AudioData==='undefined')return null;
- try{const support=await AudioEncoder.isConfigSupported({codec:'mp4a.40.2',sampleRate:shutterSampleRate,numberOfChannels:1,bitrate:96000});return support.supported?support.config:null;}catch{return null;}
+ const config={codec:'mp4a.40.2',sampleRate:shutterSampleRate,numberOfChannels:1,bitrate:96000};
+ if(typeof AudioEncoder!=='undefined'&&typeof AudioData!=='undefined'){try{const support=await AudioEncoder.isConfigSupported(config);if(support.supported)return support.config;}catch{}}
+ return typeof WebAssembly==='object'&&typeof Worker!=='undefined'?{...config,software:true}:null;
 }
 function descriptor(tag,data){const size=data.length,bytes=[];let n=size;do{bytes.unshift(n&127);n>>>=7;}while(n);for(let i=0;i<bytes.length-1;i++)bytes[i]|=128;return [tag,...bytes,...data];}
 export function aacDescription(description){
@@ -46,6 +47,11 @@ export function addAudioPackets(writer,packets,description,config){
  }
 }
 export async function addShutterAudio({writer,events,config,cancelled,onProgress,setActive}){
+ if(config.software){
+  const {encodeSoftwareShutter}=await import(new URL('software-aac.js?v=1.17.5',import.meta.url).href);
+  const audio=await encodeSoftwareShutter({durationUs:writer.durationUs,events,config,cancelled,onProgress,setActive});
+  if(!cancelled())addAudioPackets(writer,audio.packets,audio.description,config);return;
+ }
  let failure,description,lastActivity=Date.now();const packets=[],rate=config.sampleRate,frames=Math.ceil(writer.durationUs*rate/1e6),wave=shutterWaveform(rate);
  const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
  const encoder=new AudioEncoder({error:error=>failure=error,output:(chunk,metadata)=>{

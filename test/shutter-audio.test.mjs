@@ -41,3 +41,41 @@ test('audio encoder cancellation closes resources and does not add an audio trac
  globalThis.AudioEncoder=class{constructor(){this.state='configured';this.encodeQueueSize=0;}configure(){}encode(){cancel=true;}async flush(){}close(){closed=true;this.state='closed';}};
  try{await addShutterAudio({writer:{durationUs:3e6,file:{addTrack(){muxed=true;}}},events:[0],config:{sampleRate:48000},cancelled:()=>cancel,onProgress(){},setActive(){}});assert(closed);assert(!muxed);}finally{Object.assign(globalThis,saved);}
 });
+
+test('iPad-style missing AudioEncoder selects the local software AAC backend',async()=>{
+ const {shutterAudioConfig}=await import('../src/shutter-audio.js');
+ const saved={AudioEncoder:globalThis.AudioEncoder,AudioData:globalThis.AudioData,Worker:globalThis.Worker};
+ try{globalThis.AudioEncoder=undefined;globalThis.AudioData=undefined;globalThis.Worker=class{};
+  const config=await shutterAudioConfig();assert.equal(config.software,true);assert.equal(config.sampleRate,48000);
+ }finally{Object.assign(globalThis,saved);}
+});
+test('actual WASM AAC works without AudioEncoder/AudioData, preserves click timing and the silent hold',async t=>{
+ try{execFileSync('ffmpeg',['-version'],{stdio:'ignore'});execFileSync('ffprobe',['-version'],{stdio:'ignore'});}catch(error){if(error.code==='ENOENT'){t.skip('FFmpeg / ffprobe unavailable');return;}throw error;}
+ const {encodeSoftwareShutter}=await import('../src/software-aac.js');
+ const folder=await mkdtemp(join(tmpdir(),'strobe-software-aac-'));
+ try{
+  const baseline=await parseVideo(new Blob([await readFile(new URL('./fixtures/baseline.mp4',import.meta.url))]));
+  for(const speed of [1,.5,.25]){
+   const duration=1/speed+1,events=[0,.1/speed,.4/speed,.7/speed];
+   const audio=await encodeSoftwareShutter({durationUs:duration*1e6,events,config:{sampleRate:48000,bitrate:96000}});
+   assert(audio.packets.length);assert.equal(audio.packets[0].timestamp,-21333);
+   const writer=new Mp4Writer(320,240,duration*1e6),packet=baseline.mp4.getSample(baseline.trak,0).data;
+   writer.add({timestamp:0,type:'key',byteLength:packet.length,copyTo:out=>out.set(packet)},{decoderConfig:baseline.config},duration*1e6);
+   addAudioPackets(writer,audio.packets,audio.description,{sampleRate:48000});
+   const path=join(folder,'out.mp4');await writeFile(path,new Uint8Array(await writer.finish().arrayBuffer()));
+   const probe=JSON.parse(execFileSync('ffprobe',['-v','error','-show_streams','-of','json',path],{encoding:'utf8'}));
+   const track=probe.streams.find(s=>s.codec_type==='audio');assert.equal(track.codec_name,'aac');assert(Math.abs(Number(track.start_time))<.0001);
+   const decoded=execFileSync('ffmpeg',['-v','error','-i',path,'-map','0:a:0','-f','f32le','-acodec','pcm_f32le','-'],{maxBuffer:4e6});
+   const pcm=new Float32Array(decoded.buffer.slice(decoded.byteOffset,decoded.byteOffset+decoded.byteLength));
+   for(const time of events){let peak=0,at=0;for(let n=Math.max(0,Math.round((time-.01)*48000));n<Math.round((time+.035)*48000);n++)if(Math.abs(pcm[n])>peak){peak=Math.abs(pcm[n]);at=n;}
+    assert(peak>.04);assert(Math.abs(at/48000-time)<.01,`${speed}: ${time} peak ${at/48000}`);
+   }
+   assert(pcm.subarray(Math.round((events.at(-1)+.1)*48000)).every(v=>Math.abs(v)<.002));
+  }
+ }finally{await rm(folder,{recursive:true,force:true});}
+});
+test('canceling software AAC does not return or mux unfinished packets',async()=>{
+ const {encodeSoftwareShutter}=await import('../src/software-aac.js');let cancel=false,active,cleared=false;
+ const value=await encodeSoftwareShutter({durationUs:10e6,events:[.1],config:{sampleRate:48000,bitrate:96000},cancelled:()=>cancel,onProgress(){cancel=true;active.close();},setActive:(_,encoder)=>{if(encoder)active=encoder;else cleared=true;}});
+ assert.equal(value,undefined);assert.equal(active.state,'closed');assert(cleared);
+});

@@ -1,0 +1,7 @@
+If automatic workflow detection stops, replace only the FFmpeg installation step with:
+
+      - name: Prepare FFmpeg tools
+        run: bash scripts/ensure-ffmpeg.sh
+
+Keep the existing checkout, Node.js setup, build, tests and Pages deployment steps.
+The scripts/ensure-ffmpeg.sh file must be committed together with the workflow change.

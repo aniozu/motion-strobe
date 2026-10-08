@@ -71,7 +71,7 @@
   "感度の説明": "About Sensitivity",
   "表示": "Display",
   "表示の説明": "About Display",
-  "時刻": "Time labels",
+  "時刻": "Time",
   "物体中心のグリッド": "Center grid",
   "グリッドの設定": "Grid settings",
   "物体の位置検出": "Object position detection",
@@ -164,7 +164,7 @@
   "校正を解除": "Clear calibration",
   "動画の時刻": "Video timing",
   "解析に使う時刻": "Time used for analysis",
-  "ファイルのコマ時刻": "Frame timestamps in file",
+  "ファイルのコマ時刻": "File frame times",
   "撮影fpsで補正": "Correct using capture fps",
   "撮影fps": "Capture fps",
   "スロー動画の時刻が再生用に書き換えられている場合だけ、撮影時のfpsを指定します。一定fpsで撮影し、全コマが残っている動画に使えます。120・240 fpsを自動で推測しません。": "Only enter the capture frame rate when slow-motion editing has rewritten the timestamps. This works for constant-rate recordings with all original frames present. The app does not infer 120 or 240 fps automatically.",
@@ -185,7 +185,7 @@
   "1280 px · 高画質": "1280 px · high resolution",
   "画像枚数が多い場合は、メモリに合わせて解像度を下げます。": "For many images, resolution is reduced to fit available memory.",
   "コマ/秒": "frames/s",
-  "総枚数": "Total images",
+  "総枚数": "Total frames",
   "基準を調整": "Adjust reference",
   "シャッター音": "Shutter sound",
   "動画の設定": "Video settings",
@@ -204,5 +204,9 @@
   "全コマ自動検出の成功数": "Successful frames from automatic detection",
   "グラフに表示する物体": "Objects to plot",
   "x・y軸は同じ長さ。原点は物体1の最初のコマの中心で、2物体共通です。": "The x and y axes have equal lengths. Both objects share the origin at Object 1’s center in the first frame.",
-  "グリッドを表示する物体": "Objects with grid"
+  "グリッドを表示する物体": "Objects with grid",
+  "動画のフレームレートと時刻情報": "Video frame rate and timing",
+  "スロー動画の時刻が再生用に書き換えられている場合だけ「撮影fpsで補正」を選びます。撮影fpsが分かり、全コマが残っている一定fpsの動画に使えます。": "Choose Correct using capture fps only if a slow-motion video’s timestamps were rewritten for playback. Use it when the capture fps is known, constant, and no frames are missing.",
+  "撮影fpsは自動では推測しません。不明な場合は「ファイルのコマ時刻」を使ってください。": "Capture fps is not guessed automatically. If it is unknown, use File frame times.",
+  "そのまま": "Original"
 }

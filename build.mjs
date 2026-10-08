@@ -5,7 +5,7 @@ import {localizeJavaScript} from './scripts/localize.mjs';
 import {stripSearchMetadata,writeSearchMetadata} from './scripts/search-metadata.mjs';
 
 const version=JSON.parse(await readFile('package.json','utf8')).version;
-await build({entryPoints:['src/app.js','src/worker.js','src/opening.js'],outdir:'dist',bundle:true,format:'esm',target:['es2022'],minify:true,legalComments:'eof'});
+await build({entryPoints:['src/app.js','src/worker.js','src/opening.js','src/software-aac.js'],outdir:'dist',bundle:true,format:'esm',target:['es2022'],minify:true,legalComments:'eof'});
 
 const jsTranslations=JSON.parse(await readFile('translations/en-js.json','utf8'));
 const enPlugin={name:'english-text',setup(build){build.onLoad({filter:/\.js$/},async args=>{
@@ -13,10 +13,11 @@ const enPlugin={name:'english-text',setup(build){build.onLoad({filter:/\.js$/},a
  let source=await readFile(args.path,'utf8');
  source=localizeJavaScript(source,jsTranslations).code;
  if(basename(args.path)==='app.js')source=source.replace("'worker.js?v=", "'worker.en.js?v=");
+ source=source.replace("'software-aac.js?v=","'software-aac.en.js?v=");
  source=source.replaceAll('1.14.3',version);
  return {contents:source,loader:'js'};
 });}};
-await build({entryPoints:['src/app.js','src/worker.js','src/opening.js'],outdir:'dist',outExtension:{'.js':'.en.js'},bundle:true,format:'esm',target:['es2022'],minify:true,legalComments:'eof',plugins:[enPlugin]});
+await build({entryPoints:['src/app.js','src/worker.js','src/opening.js','src/software-aac.js'],outdir:'dist',outExtension:{'.js':'.en.js'},bundle:true,format:'esm',target:['es2022'],minify:true,legalComments:'eof',plugins:[enPlugin]});
 
 const htmlTranslations=JSON.parse(await readFile('translations/en-html.json','utf8'));
 let html=stripSearchMetadata(await readFile('dist/index.html','utf8')).replaceAll('href="en/"','href="/en/"').replace(/\bv=\d+\.\d+\.\d+/g,`v=${version}`);
