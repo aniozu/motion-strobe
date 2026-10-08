@@ -87,6 +87,17 @@ export const samples=[
 ];
 export function installSamples({onChoose}){
  const dialog=document.getElementById('samplesDialog'),list=document.getElementById('sampleList');
- for(const sample of samples){const button=document.createElement('button');button.type='button';button.className='sample-card';const image=document.createElement('img');image.src=sample.poster;image.alt='';image.loading='lazy';const title=document.createElement('span');title.textContent=sample.title;button.append(image,title);button.onclick=()=>{dialog.close();onChoose(sample);};list.append(button);}
+ list.replaceChildren();
+ for(let first=0;first<samples.length;first+=2){
+  const row=document.createElement('div');row.className='sample-row';
+  for(const sample of samples.slice(first,first+2)){
+   const button=document.createElement('button');button.type='button';button.className='sample-card';
+   const thumbnail=document.createElement('span');thumbnail.className='sample-thumbnail';
+   const image=document.createElement('img');image.src=sample.poster;image.alt='';image.loading='lazy';thumbnail.append(image);
+   const title=document.createElement('span');title.className='sample-title';title.textContent=sample.title;
+   button.append(thumbnail,title);button.onclick=()=>{dialog.close();onChoose(sample);};row.append(button);
+  }
+  list.append(row);
+ }
  document.getElementById('tryDemo').onclick=()=>dialog.showModal();
 }

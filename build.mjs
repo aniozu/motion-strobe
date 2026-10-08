@@ -29,7 +29,7 @@ html=html.replace('<html lang="ja">','<html lang="en">')
  .replace('<a class="language-switch" href="/en/" lang="en" hreflang="en" aria-label="Switch to English">English</a>','')
  .replace('<div class="header-actions">','<div class="header-actions"><a class="language-switch" href="./" lang="ja" hreflang="ja" aria-label="Switch to Japanese">日本語</a>')
  .replace(`src="opening.js?v=${version}"`,`src="opening.en.js?v=${version}"`)
- .replace(`src="app.js?v=${version}"`,`src="app.en.js?v=${version}"`);
+ .replace(/src="app\.js(\?[^"]*)?"/g,'src="app.en.js$1"');
 await mkdir('dist/en',{recursive:true});await writeFile('dist/en/index.html',html);
 
 let japanese=stripSearchMetadata(await readFile('dist/index.html','utf8')).replaceAll('href="en/"','href="/en/"').replace(/\bv=\d+\.\d+\.\d+/g,`v=${version}`);
