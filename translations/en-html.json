@@ -210,5 +210,8 @@
   "撮影fpsは自動では推測しません。不明な場合は「ファイルのコマ時刻」を使ってください。": "Capture fps is not guessed automatically. If it is unknown, use File frame times.",
   "そのまま": "Original",
   "中心点の大きさ（倍率）": "Center point size multiplier",
-  "中心点の大きさ": "Center point size"
+  "中心点の大きさ": "Center point size",
+  "モーションストロボ ホーム": "Motion Strobe home",
+  "モーションストロボ": "Motion Strobe",
+  "モーションストロボは、動画から一定間隔で動きを切り取り、ストロボ写真・動画を作成します。": "Sample motion at regular intervals to create a strobe photo or video."
 }

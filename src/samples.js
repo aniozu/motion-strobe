@@ -123,6 +123,7 @@ export const samples=[
 ];
 export function installSamples({onChoose}){
  const dialog=document.getElementById('samplesDialog'),list=document.getElementById('sampleList');
+ installSampleBackdropDismiss(dialog);
  list.replaceChildren();
  for(let first=0;first<samples.length;first+=2){
   const row=document.createElement('div');row.className='sample-row';
@@ -136,4 +137,25 @@ export function installSamples({onChoose}){
   list.append(row);
  }
  document.getElementById('tryDemo').onclick=()=>dialog.showModal();
+}
+
+// Native dialog backdrops retarget events to the dialog itself. Its padding is inside.
+export function installSampleBackdropDismiss(dialog){
+ let press=null;
+ const outside=e=>{
+  const box=dialog.getBoundingClientRect();
+  return e.target===dialog&&(e.clientX<box.left||e.clientX>box.right||e.clientY<box.top||e.clientY>box.bottom);
+ };
+ dialog.addEventListener('pointerdown',e=>{
+  press=e.isPrimary!==false&&e.button===0&&outside(e)?{id:e.pointerId,x:e.clientX,y:e.clientY}:null;
+ });
+ dialog.addEventListener('pointermove',e=>{
+  if(press&&e.pointerId===press.id&&Math.hypot(e.clientX-press.x,e.clientY-press.y)>10)press=null;
+ });
+ dialog.addEventListener('pointercancel',()=>{press=null;});
+ dialog.addEventListener('click',e=>{
+  const dismiss=press&&dialog.open&&outside(e);press=null;
+  if(dismiss)dialog.close();
+ });
+ dialog.addEventListener('close',()=>{press=null;});
 }

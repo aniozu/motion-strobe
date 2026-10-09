@@ -362,5 +362,6 @@
   "等速直線運動（上から）": "Uniform straight-line motion (top view)",
   "ハンマーの放物運動": "Projectile motion of a hammer",
   "2物体の衝突": "Collision of two objects",
-  "単振り子の運動": "Simple pendulum motion"
+  "単振り子の運動": "Simple pendulum motion",
+  "モーションストロボ": "Motion Strobe"
 }
