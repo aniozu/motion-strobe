@@ -1,12 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
   <rect width="1024" height="1024" rx="224" fill="#0B2438"/>
-  <g fill="none" stroke="#FFFFFF" stroke-width="5" opacity="0.13">
-    <path d="M184 148V876 M330 148V876 M508 148V876 M686 148V876 M840 148V876 M128 330H904 M128 447H904 M128 730H904"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="10" opacity="0.28">
+    <path d="M184 148V876 M348 148V876 M512 148V876 M676 148V876 M840 148V876 M128 330H904 M128 430H904 M128 730H904"/>
   </g>
-  <path d="M164 774 C360 258 694 258 860 774" fill="none" stroke="#29C7B8" stroke-width="26" stroke-linecap="round" opacity="0.32"/>
-  <circle cx="184" cy="732" r="58" fill="#F7FAFC"/>
-  <circle cx="330" cy="452" r="58" fill="#D9F7F3"/>
-  <circle cx="508" cy="330" r="58" fill="#83E1D7"/>
-  <circle cx="686" cy="442" r="58" fill="#29C7B8"/>
-  <circle cx="840" cy="728" r="58" fill="#0CA595"/>
+  <!-- Equal time intervals: y = 330 + 400 * ((x - 512) / 328)^2. -->
+  <path d="M184 730 Q512 -70 840 730" fill="none" stroke="#29C7B8" stroke-width="26" stroke-linecap="round" opacity="0.32"/>
+  <circle cx="184" cy="730" r="58" fill="#F7FAFC"/>
+  <circle cx="348" cy="430" r="58" fill="#D9F7F3"/>
+  <circle cx="512" cy="330" r="58" fill="#83E1D7"/>
+  <circle cx="676" cy="430" r="58" fill="#29C7B8"/>
+  <circle cx="840" cy="730" r="58" fill="#0CA595"/>
 </svg>

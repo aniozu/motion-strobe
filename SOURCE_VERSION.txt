@@ -1,3 +1,3 @@
-Motion Strobe 1.17.10
-Based on published source fef2d8d37f4e2e9f2d1f259ade045ba348684f2d
-Responsive sample rows with existing card sizes.
+Motion Strobe 1.17.11
+Based on published source bdd8a9871d53f9fd2394e1ada536d63615e005df
+Aligned logo parabola and positions; clearer logo grid with unchanged colors.
