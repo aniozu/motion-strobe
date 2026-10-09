@@ -5,13 +5,13 @@ import {safeVideoBlob,probeVideoBlob} from './media-source.js';
 import {frameTime,indexAtTime,analysisClock} from './frame-clock.js';
 import {GraphPanel} from './graph-panel.js';
 import {CalibrationEditor} from './calibration-editor.js';import {calibrationBasis,coordinateOrigin} from './calibration.js';import {installSamples} from './samples.js';import {framePlan} from './sampling.js';import {formatSeconds as fmt,setTimeDecimals} from './format.js';import {Timeline} from './timeline.js';import {bindFrameNudges,bindFrameInput,samplingLimits,applyTimePoint} from './time-controls.js';import {installContextHelp} from './context-help.js';import {CenterEditor} from './center-editor.js';import {gridOptions} from './annotations.js';import {GuideEditor} from './guide-editor.js';import {replaceFrameMark} from './tracking.js';import {coordinateTable,coordinateText} from './coordinates.js';
-const $=id=>document.getElementById(id);const workerUrl=new URL('worker.js?v=1.17.9',import.meta.url);let worker=new Worker(workerUrl,{type:'module'});
+const $=id=>document.getElementById(id);const workerUrl=new URL('worker.js?v=1.17.10',import.meta.url);let worker=new Worker(workerUrl,{type:'module'});
 let preferences={interval:.1,resolution:960,timeDecimals:2,openingAnimation:true};try{preferences={...preferences,...JSON.parse(localStorage.getItem('motion-strobe-preferences')||'{}')};}catch{}
 if(!Number.isFinite(preferences.interval)||preferences.interval<=0)preferences.interval=.1;if(![720,960,1280].includes(preferences.resolution))preferences.resolution=960;
 preferences.timeDecimals=setTimeDecimals(preferences.timeDecimals);preferences.openingAnimation=preferences.openingAnimation!==false;
 let state={stage:'range',count:2,period:1/60,fps:60,start:0,end:1,background:0,reference:0,step:6,factor:1},videoUrl,resultUrl,resultBlob,sourceFile,extracted=false,task=null,debounce,toastTimer,lastFocus,requestId=0,demoAbort,exportBlob,exportUrl,exportSettings,activeView='photo',sampleSelection=false,backgroundAuto=true,loadStallTimer;
 let sourceClock=null,previewDetached=false,lastDiagnostics=null,lastFailedOperation=null,sampleProgress=false;
-const appVersion='1.17.9';
+const appVersion='1.17.10';
 let guide=gridOptions(preferences.grid),anchors=[],centerData=null,seedIndex=null,calibration=null;
 let activeObject=0,objectTracks=[{id:0,anchors:[],seedIndex:null,summary:null},{id:1,anchors:[],seedIndex:null,summary:null}],resultData=null;
 function stashObject(){objectTracks[activeObject].anchors=anchors;objectTracks[activeObject].seedIndex=seedIndex;}
