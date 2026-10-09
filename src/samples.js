@@ -1,14 +1,26 @@
-// Ordered from introductory kinematics through collisions and rigid-body motion.
+// Ordered from kinematics through projectile motion, collisions, and oscillations.
 export const samples=[
  {
   "id": "constant-speed",
-  "title": "等速直線運動",
+  "title": "等速直線運動（横から）",
   "bytes": 7969234,
   "video": "sample-constant-speed.mp4",
   "poster": "sample-constant-speed.png",
   "range": {
    "start": 0.85,
    "end": 1.6,
+   "background": 0
+  }
+ },
+ {
+  "id": "constant-speed-top",
+  "title": "等速直線運動（上から）",
+  "bytes": 552135,
+  "video": "sample-constant-speed_2.mp4",
+  "poster": "sample-constant-speed_2.png",
+  "range": {
+   "start": 0.95,
+   "end": 1.65,
    "background": 0
   }
  },
@@ -61,6 +73,18 @@ export const samples=[
   }
  },
  {
+  "id": "hammer",
+  "title": "ハンマーの放物運動",
+  "bytes": 3122594,
+  "video": "sample-hammer.mp4",
+  "poster": "sample-hammer.png",
+  "range": {
+   "start": 1.45,
+   "end": 2.35,
+   "background": 0
+  }
+ },
+ {
   "id": "bouncing-ball",
   "title": "スーパーボールのバウンド",
   "bytes": 2534186,
@@ -73,14 +97,26 @@ export const samples=[
   }
  },
  {
-  "id": "hammer",
-  "title": "トンカチ",
-  "bytes": 3122594,
-  "video": "sample-hammer.mp4",
-  "poster": "sample-hammer.png",
+  "id": "two-body-collision",
+  "title": "2物体の衝突",
+  "bytes": 4257453,
+  "video": "sample-constant-2body-collision.mp4",
+  "poster": "sample-constant-2body-collision.png",
   "range": {
-   "start": 1.45,
-   "end": 2.35,
+   "start": 2.5,
+   "end": 3.95,
+   "background": 0
+  }
+ },
+ {
+  "id": "pendulum",
+  "title": "単振り子の運動",
+  "bytes": 21627883,
+  "video": "sample-pendulum.mp4",
+  "poster": "sample-pendulum.png",
+  "range": {
+   "start": 0,
+   "end": 3.4,
    "background": 0
   }
  }

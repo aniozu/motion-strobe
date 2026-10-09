@@ -357,5 +357,10 @@
   "サッカーボールの放物運動": "Projectile motion of a soccer ball",
   "スーパーボールのバウンド": "Bouncing superball",
   "トンカチ": "Hammer motion",
-  "物体1・物体2を選び、線・中心点の表示と色・太さ・不透明度を設定します。中心点の大きさは0.2〜5倍で調整できます。": "Choose object 1, object 2 or both, then set lines, center points, color, line thickness and opacity. Center point size can be adjusted from 0.2× to 5×."
+  "物体1・物体2を選び、線・中心点の表示と色・太さ・不透明度を設定します。中心点の大きさは0.2〜5倍で調整できます。": "Choose object 1, object 2 or both, then set lines, center points, color, line thickness and opacity. Center point size can be adjusted from 0.2× to 5×.",
+  "等速直線運動（横から）": "Uniform straight-line motion (side view)",
+  "等速直線運動（上から）": "Uniform straight-line motion (top view)",
+  "ハンマーの放物運動": "Projectile motion of a hammer",
+  "2物体の衝突": "Collision of two objects",
+  "単振り子の運動": "Simple pendulum motion"
 }
