@@ -213,5 +213,5 @@
   "中心点の大きさ": "Center point size",
   "モーションストロボ ホーム": "Motion Strobe home",
   "モーションストロボ": "Motion Strobe",
-  "モーションストロボは、動画から一定間隔で動きを切り取り、ストロボ写真・動画を作成します。": "Sample motion at regular intervals to create a strobe photo or video."
+  "モーションストロボは、動画から一定間隔で動きを切り取り、<br>ストロボ写真・動画を作成します。": "Motion Strobe samples motion from video at regular intervals<br>to create strobe photos and videos."
 }

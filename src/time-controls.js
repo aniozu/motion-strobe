@@ -1,15 +1,34 @@
 import {frameTime,indexAtTime} from './frame-clock.js';
+import {formatSeconds} from './format.js';
 export function samplingLimits(state){
  const seconds=frameTime(state,state.end)-frameTime(state,state.start);
  return {seconds,frames:Math.max(1,Math.floor(seconds/state.period+1e-8))};
 }
 export function bindFrameInput(input,{point,getState,onChange}){
+ let edited=false;
+ // A rounded display value must never be read back after a frame nudge.
+ // Only an actual edit to the seconds field chooses a frame by timestamp.
+ input.oninput=()=>{edited=true;};
+ input.onchange=()=>{
+  if(!edited)return;
+  edited=false;
+  const value=input.value.trim()===''?NaN:Number(input.value);
+  if(Number.isFinite(value))onChange(point,indexAtTime(getState(),value));
+  update();
+ };
+ function update(){
+  edited=false;const state=getState(),[low,high]=pointBounds(state,point);
+  input.value=formatSeconds(frameTime(state,state[point]));
+  input.min=String(frameTime(state,low));input.max=String(frameTime(state,high));
+ }
  input.onkeydown=event=>{
   if(!['ArrowUp','ArrowDown'].includes(event.key))return;
   event.preventDefault();const state=getState(),[low,high]=pointBounds(state,point);
   const value=Math.max(low,Math.min(high,state[point]+(event.key==='ArrowUp'?1:-1)));
   if(value!==state[point])onChange(point,value);
+  update();
  };
+ return {update};
 }
 export function pointBounds(state,point){
  const max=Math.max(0,state.count-1);

@@ -129,8 +129,8 @@ export function installSamples({onChoose}){
  const buttons=samples.map(sample=>{
   const button=document.createElement('div');button.className='sample-card';
   const thumbnail=document.createElement('button');thumbnail.type='button';thumbnail.className='sample-thumbnail';thumbnail.setAttribute('aria-label','プレビューを再生／停止: '+sample.title);
-  const image=document.createElement('img');image.src=sample.poster+'?v=1.17.15';image.alt='';image.loading='lazy';thumbnail.append(image);
-  previews.attach(thumbnail,`sample-preview-${sample.id}.mp4?v=1.17.15`);
+  const image=document.createElement('img');image.src=sample.poster+'?v=1.17.16';image.alt='';image.loading='lazy';thumbnail.append(image);
+  previews.attach(thumbnail,`sample-preview-${sample.id}.mp4?v=1.17.16`);
   const title=document.createElement('button');title.type='button';title.className='sample-title';title.textContent=sample.title;
   button.append(thumbnail,title);title.onclick=()=>{previews.stop();dialog.close();onChoose(sample);};
   return button;

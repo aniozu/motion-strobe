@@ -1,5 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {bindFrameNudges,bindFrameInput,samplingLimits,applyTimePoint} from '../src/time-controls.js';import {Timeline,fitTimelineView} from '../src/timeline.js';
+import {formatSeconds,setTimeDecimals} from '../src/format.js';
+import {frameTime,indexAtTime} from '../src/frame-clock.js';
 test('sampling limit follows the selected range instead of a fixed two seconds',()=>{
  assert.deepEqual(samplingLimits({start:10,end:310,period:1/60}),{seconds:5,frames:300});
  const s={start:1,end:3,period:.04,times:[0,.03,.075,.11]};
@@ -14,6 +16,39 @@ test('reference input arrow keys move one actual frame even with irregular times
  key('ArrowUp');assert.equal(state.reference,3);assert.equal(video.currentTime,.013);
  key('ArrowDown');assert.equal(state.reference,2);key('ArrowDown');key('ArrowDown');assert.equal(state.reference,1);
  key('ArrowUp');assert.equal(state.reference,2);assert.equal(prevented,5);
+});
+test('reference plus and minus retain exact frames after rounded seconds lose focus',()=>{
+ try{
+  for(const decimals of [0,2,6])for(const times of [
+   Array.from({length:8},(_,i)=>i/60),
+   Array.from({length:8},(_,i)=>i/120),
+   Array.from({length:8},(_,i)=>i/240),
+   [0,.003,.009,.013,.019,.024,.028,.037]
+  ]){
+   setTimeDecimals(decimals);
+   const state={count:8,start:0,end:7,reference:3,times,playbackTimes:times.map(t=>t*4),period:times[1]};
+   const video={pause(){}},input={};let bound;
+   const change=(point,value)=>{applyTimePoint(state,point,value,false,video);bound.update();};
+   // The app used to parse a rounded display on change, including after blur.
+   input.onchange=()=>change('reference',indexAtTime(state,Number(input.value)));
+   bound=bindFrameInput(input,{point:'reference',getState:()=>state,onChange:change});bound.update();
+   const buttons=[-1,1].map(nudge=>({dataset:{timePoint:'reference',nudge:String(nudge)}}));
+   bindFrameNudges({buttons,getState:()=>state,onChange:change});
+   for(const [button,index] of [[buttons[1],4],[buttons[1],5],[buttons[0],4],[buttons[0],3]]){
+    button.onclick();input.onchange();assert.equal(state.reference,index);
+    assert.equal(input.value,formatSeconds(times[index]));assert.equal(video.currentTime,times[index]*4);
+   }
+  }
+ }finally{setTimeDecimals(2);}
+});
+test('only manual seconds edits choose a reference by time; keyboard nudges survive blur and blank edits',()=>{
+ const state={count:6,start:1,end:5,reference:2,times:[0,.004,.009,.013,.02,.03],playbackTimes:[0,.016,.036,.052,.08,.12],period:.005};
+ const video={pause(){}},input={};let bound;
+ bound=bindFrameInput(input,{point:'reference',getState:()=>state,onChange:(p,v)=>{applyTimePoint(state,p,v,false,video);bound.update();}});bound.update();
+ input.onkeydown({key:'ArrowUp',preventDefault(){}});input.onchange();assert.equal(state.reference,3);assert.equal(video.currentTime,.052);
+ input.value='0.020';input.oninput();input.onchange();assert.equal(state.reference,4);assert.equal(input.value,formatSeconds(frameTime(state,4)));
+ input.value='';input.oninput();input.onchange();assert.equal(state.reference,4);assert.equal(input.value,'0.02');
+ input.value='999';input.oninput();input.onchange();assert.equal(state.reference,5);
 });
 function controls(period=1/60){const state={count:301,start:60,end:240,background:54,reference:90,period};let auto=true;const video={currentTime:0,paused:0,pause(){this.paused++;}},buttons=['start','end','background','reference'].flatMap(point=>[-1,1].map(nudge=>({dataset:{timePoint:point,nudge:String(nudge)}})));const bound=bindFrameNudges({buttons,getState:()=>state,onChange:(point,value)=>{auto=applyTimePoint(state,point,value,auto,video);bound.update();}});bound.update();return {state,video,buttons,bound,button:(point,nudge)=>buttons.find(b=>b.dataset.timePoint===point&&Number(b.dataset.nudge)===nudge),auto:()=>auto};}
 test('all four time controls move by exactly one source frame and seek the paused video to that frame',()=>{
