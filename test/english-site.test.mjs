@@ -13,8 +13,8 @@ test('English and Japanese routes keep the same controls and link to each other'
  assert.match(en,/src="app\.en\.js\?v=/);assert.match(en,/src="opening\.en\.js\?v=/);
  assert.match(en,/<base href="\.\.\/">/);
  assert.match(en,/Analyze motion from video/);
- assert.match(jp,/モーションストロボは、動画から一定間隔で動きを切り取り、<br>ストロボ写真・動画を作成します。/);
- assert.match(en,/Motion Strobe samples motion from video at regular intervals<br>to create strobe photos and videos\./);
+ assert.match(jp,/動画から一定間隔で動きを切り取り、ストロボ写真・動画を作成します。/);
+ assert.match(en,/Sample motion from video at regular intervals to create strobe photos and videos\./);
  assert.match(en,/Center grid/);
  assert.doesNotMatch(en.replace('日本語',''),/[\u3040-\u30ff\u3400-\u9fff]/);
 });

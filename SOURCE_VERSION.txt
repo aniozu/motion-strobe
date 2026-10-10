@@ -1,4 +1,4 @@
-Motion Strobe 1.17.16 — GitHub Pages export
-Published source: aa61f7189163e923d8e366c3fba5e714f35447ac
-Target: https://aniozu.github.io/motion-strobe/
-Export changes: relative language routes and GitHub Pages search metadata.
+Motion Strobe 1.17.18
+Published Site source: 76825155c6752981039e4b80c909c5f8d09977de
+GitHub Pages export: relative language routes, .nojekyll and GitHub canonical URLs.
+Google Analytics 4: G-3BCPMT58JK

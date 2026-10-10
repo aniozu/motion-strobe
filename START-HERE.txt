@@ -1,4 +1,4 @@
-Motion Strobe 1.17.16 — ソース一式
+Motion Strobe 1.17.18 — ソース一式
 
 【すぐに使う・Windows】
 1. ZIPを全部展開します（ZIPの中から直接起動しないでください）。

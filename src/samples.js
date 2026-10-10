@@ -4,7 +4,7 @@ export const samples=[
  {
   "id": "constant-speed",
   "title": "等速直線運動（横から）",
-  "bytes": 7969234,
+  "bytes": 6598695,
   "video": "sample-constant-speed.mp4",
   "poster": "sample-constant-speed.png",
   "range": {
@@ -28,7 +28,7 @@ export const samples=[
  {
   "id": "inclined-plane",
   "title": "斜面を下る物体",
-  "bytes": 2198520,
+  "bytes": 2031590,
   "video": "sample-inclined-plane.mp4",
   "poster": "sample-inclined-plane.png",
   "range": {
@@ -40,7 +40,7 @@ export const samples=[
  {
   "id": "soccer-free-fall",
   "title": "サッカーボールの自由落下",
-  "bytes": 1306714,
+  "bytes": 1132213,
   "video": "sample-soccer-free-fall.mp4",
   "poster": "sample-soccer-free-fall.png",
   "range": {
@@ -52,7 +52,7 @@ export const samples=[
  {
   "id": "parabolic-motion",
   "title": "球の放物運動",
-  "bytes": 934793,
+  "bytes": 902223,
   "video": "sample-parabolic-motion.mp4",
   "poster": "sample-parabolic-motion.png",
   "range": {
@@ -64,7 +64,7 @@ export const samples=[
  {
   "id": "soccer-projectile",
   "title": "サッカーボールの放物運動",
-  "bytes": 15381364,
+  "bytes": 15027283,
   "video": "sample-soccer-projectile.mp4",
   "poster": "sample-soccer-projectile.png",
   "range": {
@@ -76,7 +76,7 @@ export const samples=[
  {
   "id": "hammer",
   "title": "ハンマーの放物運動",
-  "bytes": 3122594,
+  "bytes": 3013617,
   "video": "sample-hammer.mp4",
   "poster": "sample-hammer.png",
   "range": {
@@ -88,7 +88,7 @@ export const samples=[
  {
   "id": "bouncing-ball",
   "title": "スーパーボールのバウンド",
-  "bytes": 2534186,
+  "bytes": 2342722,
   "video": "sample-bouncing-ball.mp4",
   "poster": "sample-bouncing-ball.png",
   "range": {
@@ -129,8 +129,8 @@ export function installSamples({onChoose}){
  const buttons=samples.map(sample=>{
   const button=document.createElement('div');button.className='sample-card';
   const thumbnail=document.createElement('button');thumbnail.type='button';thumbnail.className='sample-thumbnail';thumbnail.setAttribute('aria-label','プレビューを再生／停止: '+sample.title);
-  const image=document.createElement('img');image.src=sample.poster+'?v=1.17.16';image.alt='';image.loading='lazy';thumbnail.append(image);
-  previews.attach(thumbnail,`sample-preview-${sample.id}.mp4?v=1.17.16`);
+  const image=document.createElement('img');image.src=sample.poster+'?v=1.17.18';image.alt='';image.loading='lazy';thumbnail.append(image);
+  previews.attach(thumbnail,`sample-preview-${sample.id}.mp4?v=1.17.18`);
   const title=document.createElement('button');title.type='button';title.className='sample-title';title.textContent=sample.title;
   button.append(thumbnail,title);title.onclick=()=>{previews.stop();dialog.close();onChoose(sample);};
   return button;
