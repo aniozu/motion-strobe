@@ -1,3 +1,4 @@
-Motion Strobe 1.17.11
-Based on published source bdd8a9871d53f9fd2394e1ada536d63615e005df
-Aligned logo parabola and positions; clearer logo grid with unchanged colors.
+Motion Strobe 1.17.15 — GitHub Pages export
+Published source: fd3d5f20c4a00dfa428db14bb3944c526972ac34
+Target: https://aniozu.github.io/motion-strobe/
+Export changes: relative language routes and GitHub Pages search metadata.

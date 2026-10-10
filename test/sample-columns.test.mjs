@@ -11,6 +11,7 @@ function fixture(t){
   append(...children){for(const child of children){if(child.parent){child.parent.children=child.parent.children.filter(c=>c!==child);}child.parent=this;this.children.push(child);}}
   replaceChildren(...children){for(const child of this.children)child.parent=null;this.children=[];this.append(...children);}
   addEventListener(name,callback){this.listeners.set(name,callback);}
+  setAttribute(name,value){this[name]=value;}
   showModal(){this.open=true;}
   close(){this.open=false;this.listeners.get('close')?.();}
   focus(options){doc.activeElement=this;this.focusOptions=options;}
@@ -36,9 +37,17 @@ test('resizing samples between 2, 3 and 4 columns retains all ten cards and thei
 
 test('changing columns preserves focused card and scroll position, and selections still choose the correct sample',t=>{
  const f=fixture(t);f.tryDemo.onclick();assert(f.dialog.open);
- const pendulum=f.cards().at(-1);f.doc.activeElement=pendulum;f.dialog.scrollTop=320;
+ const pendulum=f.cards().at(-1).children[1];f.doc.activeElement=pendulum;f.dialog.scrollTop=320;
  f.change(4);assert.equal(f.doc.activeElement,pendulum);assert.deepEqual(pendulum.focusOptions,{preventScroll:true});assert.equal(f.dialog.scrollTop,320);
  pendulum.onclick();assert(!f.dialog.open);assert.equal(f.getChosen(),samples.at(-1));
+});
+
+test('photo and title are separate actions, with only the title opening the selected sample',t=>{
+ const f=fixture(t);f.tryDemo.onclick();const card=f.cards()[0],photo=card.children[0],title=card.children[1];
+ assert.equal(photo.type,'button');assert.equal(title.type,'button');assert.equal(card.onclick,undefined);
+ assert.equal(photo.onclick,undefined);assert.equal(typeof photo.listeners.get('click'),'function');
+ assert(f.dialog.open);assert.equal(f.getChosen(),null);
+ title.onclick();assert(!f.dialog.open);assert.equal(f.getChosen(),samples[0]);
 });
 
 test('a resize within the same column count does not rebuild rows or disturb focus',t=>{

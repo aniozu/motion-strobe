@@ -1,3 +1,4 @@
+import {installSamplePreviews} from './sample-preview.js';
 // Ordered from kinematics through projectile motion, collisions, and oscillations.
 export const samples=[
  {
@@ -124,30 +125,33 @@ export const samples=[
 export function installSamples({onChoose}){
  const dialog=document.getElementById('samplesDialog'),list=document.getElementById('sampleList');
  installSampleBackdropDismiss(dialog);
+ const previews=installSamplePreviews(dialog);
  const buttons=samples.map(sample=>{
-  const button=document.createElement('button');button.type='button';button.className='sample-card';
-  const thumbnail=document.createElement('span');thumbnail.className='sample-thumbnail';
-  const image=document.createElement('img');image.src=sample.poster;image.alt='';image.loading='lazy';thumbnail.append(image);
-  const title=document.createElement('span');title.className='sample-title';title.textContent=sample.title;
-  button.append(thumbnail,title);button.onclick=()=>{dialog.close();onChoose(sample);};
+  const button=document.createElement('div');button.className='sample-card';
+  const thumbnail=document.createElement('button');thumbnail.type='button';thumbnail.className='sample-thumbnail';thumbnail.setAttribute('aria-label','プレビューを再生／停止: '+sample.title);
+  const image=document.createElement('img');image.src=sample.poster+'?v=1.17.15';image.alt='';image.loading='lazy';thumbnail.append(image);
+  previews.attach(thumbnail,`sample-preview-${sample.id}.mp4?v=1.17.15`);
+  const title=document.createElement('button');title.type='button';title.className='sample-title';title.textContent=sample.title;
+  button.append(thumbnail,title);title.onclick=()=>{previews.stop();dialog.close();onChoose(sample);};
   return button;
  });
  let currentColumns=0;
  const layout=()=>{
   const columns=Math.max(2,Math.min(4,parseInt(getComputedStyle(dialog).getPropertyValue('--sample-columns'),10)||2));
   if(columns===currentColumns)return;
+  previews.stop();
   currentColumns=columns;
-  const focused=buttons.includes(document.activeElement)?document.activeElement:null,scrollTop=dialog.scrollTop;
+  const focused=buttons.some(card=>Array.from(card.children).includes(document.activeElement))?document.activeElement:null,scrollTop=dialog.scrollTop;
   const rows=[];
   for(let first=0;first<buttons.length;first+=columns){
    const row=document.createElement('div');row.className='sample-row';row.append(...buttons.slice(first,first+columns));rows.push(row);
   }
   list.replaceChildren(...rows);
   if(focused)focused.focus({preventScroll:true});
-  dialog.scrollTop=scrollTop;
+  dialog.scrollTop=scrollTop;previews.refresh();
  };
  layout();window.addEventListener('resize',layout);
- document.getElementById('tryDemo').onclick=()=>{layout();dialog.showModal();};
+ document.getElementById('tryDemo').onclick=()=>{layout();dialog.showModal();previews.refresh();};
 }
 
 // Native dialog backdrops retarget events to the dialog itself. Its padding is inside.

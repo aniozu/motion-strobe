@@ -363,5 +363,6 @@
   "ハンマーの放物運動": "Projectile motion of a hammer",
   "2物体の衝突": "Collision of two objects",
   "単振り子の運動": "Simple pendulum motion",
-  "モーションストロボ": "Motion Strobe"
+  "モーションストロボ": "Motion Strobe",
+  "プレビューを再生／停止: ": "Play/stop preview: "
 }
