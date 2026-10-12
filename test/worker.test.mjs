@@ -339,3 +339,13 @@ test('automatic background flows through photo and video; a new manual extractio
  await send({type:'compose',...settings,id:1605});assert.equal(messages.at(-1).type,'composed');
  assert.equal(hash(new Uint8Array(await messages.at(-1).blob.arrayBuffer())),photoHash);
 });
+
+test('selected-point tracking runs inside the worker on the existing cache, with exact manual marks and cancellation',async()=>{
+ const settings={first:2,last:20,reference:8,step:3,sensitivity:30,trackingMode:'point',seedIndex:8,anchors:[{index:8,x:70.125,y:34.25,mode:'center',source:'manual'},{index:11,mode:'skip'}]};
+ await send({type:'extract',...settings,background:0,maxDimension:640,id:400});assert.equal(messages.at(-1).type,'extracted');
+ const packets=decoded.length;
+ await send({type:'auto-detect',...settings,id:401});const result=messages.at(-1);assert.equal(result.type,'auto-detected',JSON.stringify(result));
+ assert.deepEqual(result.marks.map(m=>m.index),[2,5,8,11,14,17,20]);assert.deepEqual(result.marks.find(m=>m.index===8),settings.anchors[0]);assert.deepEqual(result.marks.find(m=>m.index===11),settings.anchors[1]);assert.equal(decoded.length,packets);
+ const prior=messages.filter(m=>m.type==='auto-detected').length,pending=send({type:'auto-detect',...settings,id:402});await send({type:'cancel',id:403});await pending;assert.equal(messages.filter(m=>m.type==='auto-detected').length,prior);assert.equal(messages.at(-1).type,'cancelled');
+ await send({type:'compose',...settings,factor:1,id:404});assert.equal(messages.at(-1).type,'composed');assert.equal(decoded.length,packets);
+});

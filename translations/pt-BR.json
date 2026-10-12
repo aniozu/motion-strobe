@@ -493,5 +493,12 @@
   "Analysis example: Soccer ball projectile motion": "Exemplo de análise: movimento de uma bola de futebol lançada",
   "Analysis of a soccer ball’s projectile motion": "Análise do movimento de uma bola de futebol lançada",
   "Analysis example: Bouncing superball": "Exemplo de análise: quique de uma bola de borracha",
-  "Analysis example: Projectile motion of a hammer": "Exemplo de análise: movimento parabólico de um martelo"
+  "Analysis example: Projectile motion of a hammer": "Exemplo de análise: movimento parabólico de um martelo",
+  "Tracking method": "Método de rastreamento",
+  "Selected point": "Ponto selecionado",
+  "Tap the marker or point to follow. Detect all frames tracks the same point using colors, patterns and rotation.": "Toque na marca ou no ponto que deseja acompanhar. Detectar todos os quadros acompanha o mesmo ponto pelas cores, pelos detalhes e pela rotação.",
+  "Use Selected point under Tracking method to follow a marker or the same part of an object. Tap the point, then select Detect all frames. Tracking matches rotation and the surrounding colors and patterns.": "Escolha Ponto selecionado em Método de rastreamento para acompanhar uma marca ou a mesma parte do objeto. Toque no ponto e selecione Detectar todos os quadros. O rastreamento compara a rotação e as cores e detalhes ao redor do ponto.",
+  "First, manually mark the point to track.": "Primeiro, marque manualmente o ponto a acompanhar.",
+  "No object was detected around the selected point. Mark it again in a clear frame.": "Nenhum objeto foi detectado ao redor do ponto selecionado. Marque-o novamente em um quadro nítido.",
+  "Matching point colors and rotation": "Comparando as cores e a rotação do ponto"
 }

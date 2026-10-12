@@ -48,7 +48,7 @@ export function addAudioPackets(writer,packets,description,config){
 }
 export async function addShutterAudio({writer,events,config,cancelled,onProgress,setActive}){
  if(config.software){
-  const {encodeSoftwareShutter}=await import(new URL('software-aac.js?v=1.21.11',import.meta.url).href);
+  const {encodeSoftwareShutter}=await import(new URL('software-aac.js?v=1.22.0',import.meta.url).href);
   const audio=await encodeSoftwareShutter({durationUs:writer.durationUs,events,config,cancelled,onProgress,setActive});
   if(!cancelled())addAudioPackets(writer,audio.packets,audio.description,config);return;
  }

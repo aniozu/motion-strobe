@@ -48,6 +48,16 @@ test('wheel zoom anchors the source point and skips zoom while processing; frame
  const scale=h.editor.viewport.scale;h.editor.select(0);assert.equal(h.editor.viewport.scale,scale);h.el('centerCanvas').onwheel({...point,deltaY:-100,preventDefault(){}});assert.equal(h.editor.viewport.scale,scale);
 });
 
+test('selected-point mode preserves the tapped coordinate, disables center snapping and survives object switches',()=>{
+ const h=editorHarness(),data={...h.data,trackingMode:'point',objectId:0};h.editor.setData(data);h.editor.select(1);h.editor.setBusy(false);
+ assert.equal(h.el('centerTrackingMode').value,'point');assert.equal(h.modes[0].hidden,true);assert.match(h.el('centerInstruction').textContent,/同じ点/);
+ h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointerup({clientX:60,clientY:45,pointerId:1});
+ assert.equal(h.anchors[0].mode,'center');assert.equal(h.anchors[0].x,100);assert.equal(h.anchors[0].y,50);
+ h.editor.setData({...h.data,objectId:1,trackingMode:'center'});assert.equal(h.modes[0].hidden,false);
+ h.editor.setData(data);assert.equal(h.el('centerTrackingMode').value,'point');assert.equal(h.modes[0].hidden,true);
+ h.editor.setBusy(true);assert(h.el('centerTrackingMode').disabled);
+});
+
 test('switching objects shows independent seeds and skipped frames without replacing the first object',()=>{
  const h=editorHarness(),first={...h.data,objectId:0,anchors:[{index:6,x:100,y:50,mode:'center',source:'manual'}],seedIndex:6};
  h.editor.setData(first);h.editor.select(1);h.editor.setBusy(false);h.modes[1].onclick();assert.equal(h.editor.seed().x,100);

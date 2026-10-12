@@ -5,19 +5,22 @@ export function findCandidates(pixels,frame,width,height,background,options={}){
  for(let p=0;p<count;p++)mask[p]=pixels[p*4+3]?1:0;
  // Opening breaks thin stems and isolated speckles only for center detection.
  // The foreground pixels used by the composite are left intact.
- for(let y=1;y<height-1;y++)for(let x=1;x<width-1;x++){const p=y*width+x;core[p]=mask[p-width-1]&mask[p-width]&mask[p-width+1]&mask[p-1]&mask[p]&mask[p+1]&mask[p+width-1]&mask[p+width]&mask[p+width+1];}
+ if(!options.preserveShape)for(let y=1;y<height-1;y++)for(let x=1;x<width-1;x++){const p=y*width+x;core[p]=mask[p-width-1]&mask[p-width]&mask[p-width+1]&mask[p-1]&mask[p]&mask[p+1]&mask[p+width-1]&mask[p+width]&mask[p+width+1];}
  let coreCount=0;
- for(let y=1;y<height-1;y++)for(let x=1;x<width-1;x++){const p=y*width+x;if(core[p])coreCount++;opened[p]=core[p-width-1]|core[p-width]|core[p-width+1]|core[p-1]|core[p]|core[p+1]|core[p+width-1]|core[p+width]|core[p+width+1];}
- const bits=coreCount?opened:mask,queue=new Uint32Array(count),minArea=Math.max(9,Math.round(count*.000025)),candidates=[];
+ if(!options.preserveShape)for(let y=1;y<height-1;y++)for(let x=1;x<width-1;x++){const p=y*width+x;if(core[p])coreCount++;opened[p]=core[p-width-1]|core[p-width]|core[p-width+1]|core[p-1]|core[p]|core[p+1]|core[p+width-1]|core[p+width]|core[p+width+1];}
+ const bits=options.preserveShape?mask:coreCount?opened:mask,queue=new Uint32Array(count),minArea=Math.max(options.preserveShape?4:9,Math.round(count*.000025)),candidates=[];
  for(let p=0;p<count;p++){
   if(!bits[p])continue;let head=0,tail=1;queue[0]=p;bits[p]=0;
-  let sx=0,sy=0,r=0,g=0,b=0,contrast=0,near=Infinity,minX=width,minY=height,maxX=0,maxY=0;
+  let sx=0,sy=0,sxx=0,syy=0,sxy=0,r=0,g=0,b=0,contrast=0,near=Infinity,minX=width,minY=height,maxX=0,maxY=0;const histogram=new Float32Array(64);
   while(head<tail){const q=queue[head++],x=q%width,y=Math.floor(q/width);sx+=x;sy+=y;if(options.tap)near=Math.min(near,(x-options.tap.x)**2+(y-options.tap.y)**2);minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);r+=frame[q*4];g+=frame[q*4+1];b+=frame[q*4+2];if(background)contrast+=Math.max(Math.abs(frame[q*4]-background[q*4]),Math.abs(frame[q*4+1]-background[q*4+1]),Math.abs(frame[q*4+2]-background[q*4+2]));
+   sxx+=x*x;syy+=y*y;sxy+=x*y;histogram[((frame[q*4]>>6)<<4)|((frame[q*4+1]>>6)<<2)|(frame[q*4+2]>>6)]++;
    for(let dy=-1;dy<=1;dy++){const yy=y+dy;if(yy<0||yy>=height)continue;for(let dx=-1;dx<=1;dx++){const xx=x+dx;if(xx<0||xx>=width)continue;const n=yy*width+xx;if(bits[n]){bits[n]=0;queue[tail++]=n;}}}
   }
   if(tail<minArea||tail>count*.45)continue;
   const w=maxX-minX+1,h=maxY-minY+1,fill=tail/(w*h);
-  candidates.push({distanceToTap:Math.sqrt(near),x:sx/tail,y:sy/tail,area:tail,r:r/tail,g:g/tail,b:b/tail,bounds:{x:minX,y:minY,w,h},quality:Math.min(2,Math.log2(tail/minArea+1)*.35)+Math.min(.5,fill*.5)+Math.min(.8,contrast/tail/120*.8)-Math.min(2,Math.max(0,Math.abs(Math.log(w/h))-1)*.85)-(minX<=2||minY<=2||maxX>=width-3||maxY>=height-3?.8:0)});
+  for(let k=0;k<64;k++)histogram[k]/=tail;
+  const angle=.5*Math.atan2(2*(sxy/tail-sx*sy/(tail*tail)),sxx/tail-sx*sx/(tail*tail)-syy/tail+sy*sy/(tail*tail));
+  candidates.push({angle,histogram,pixels:options.keepPixels?queue.slice(0,tail):undefined,distanceToTap:Math.sqrt(near),x:sx/tail,y:sy/tail,area:tail,r:r/tail,g:g/tail,b:b/tail,bounds:{x:minX,y:minY,w,h},quality:Math.min(2,Math.log2(tail/minArea+1)*.35)+Math.min(.5,fill*.5)+Math.min(.8,contrast/tail/120*.8)-Math.min(2,Math.max(0,Math.abs(Math.log(w/h))-1)*.85)-(minX<=2||minY<=2||maxX>=width-3||maxY>=height-3?.8:0)});
  }
  return candidates.sort(options.tap?(a,b)=>a.distanceToTap-b.distanceToTap:(a,b)=>b.quality-a.quality).slice(0,options.tap||options.all?Infinity:16);
 }
@@ -49,7 +52,12 @@ export function centersFromMarks(indices,marks,width,height){
 }
 
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-const appearance=(a,b)=>Math.hypot(a.r-b.r,a.g-b.g,a.b-b.b)/100;
+const appearance=(a,b)=>{
+ const mean=Math.hypot(a.r-b.r,a.g-b.g,a.b-b.b)/100;
+ if(!a.histogram||!b.histogram)return mean;
+ let overlap=0;for(let k=0;k<64;k++)overlap+=Math.min(a.histogram[k],b.histogram[k]);
+ return mean*.7+(1-overlap)*.8;
+};
 function atMark(frame,mark,width,height){
  const x=mark.x*(width/(mark.spaceWidth||width)),y=mark.y*(height/(mark.spaceHeight||height));
  const near=frame.candidates.map(c=>({c,d:Math.hypot(Math.max(c.bounds.x-x,0,x-(c.bounds.x+c.bounds.w-1)),Math.max(c.bounds.y-y,0,y-(c.bounds.y+c.bounds.h-1)))})).sort((a,b)=>a.d-b.d)[0];

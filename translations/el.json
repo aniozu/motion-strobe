@@ -493,5 +493,12 @@
   "Analysis example: Soccer ball projectile motion": "Παράδειγμα ανάλυσης: παραβολική κίνηση μπάλας ποδοσφαίρου",
   "Analysis of a soccer ball’s projectile motion": "Ανάλυση της παραβολικής κίνησης μπάλας ποδοσφαίρου",
   "Analysis example: Bouncing superball": "Παράδειγμα ανάλυσης: αναπηδήσεις λαστιχένιας μπάλας",
-  "Analysis example: Projectile motion of a hammer": "Παράδειγμα ανάλυσης: παραβολική κίνηση σφυριού"
+  "Analysis example: Projectile motion of a hammer": "Παράδειγμα ανάλυσης: παραβολική κίνηση σφυριού",
+  "Tracking method": "Μέθοδος παρακολούθησης",
+  "Selected point": "Επιλεγμένο σημείο",
+  "Tap the marker or point to follow. Detect all frames tracks the same point using colors, patterns and rotation.": "Πάτησε τη σήμανση ή το σημείο που θέλεις να παρακολουθήσεις. Η Εντοπισμός σε όλα τα καρέ ακολουθεί το ίδιο σημείο με βάση τα χρώματα, τα μοτίβα και την περιστροφή.",
+  "Use Selected point under Tracking method to follow a marker or the same part of an object. Tap the point, then select Detect all frames. Tracking matches rotation and the surrounding colors and patterns.": "Επίλεξε Επιλεγμένο σημείο στη Μέθοδο παρακολούθησης για να ακολουθήσεις μια σήμανση ή το ίδιο τμήμα του αντικειμένου. Πάτησε το σημείο και επίλεξε Εντοπισμός σε όλα τα καρέ. Συγκρίνονται η περιστροφή και τα γύρω χρώματα και μοτίβα.",
+  "First, manually mark the point to track.": "Πρώτα σημείωσε χειροκίνητα το σημείο που θέλεις να παρακολουθήσεις.",
+  "No object was detected around the selected point. Mark it again in a clear frame.": "Δεν εντοπίστηκε αντικείμενο γύρω από το επιλεγμένο σημείο. Σημείωσέ το ξανά σε ένα καθαρό καρέ.",
+  "Matching point colors and rotation": "Σύγκριση χρωμάτων και περιστροφής του σημείου"
 }

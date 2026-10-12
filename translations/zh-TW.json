@@ -493,5 +493,12 @@
   "Analysis example: Soccer ball projectile motion": "分析範例：足球的拋體運動",
   "Analysis of a soccer ball’s projectile motion": "足球拋體運動的分析範例",
   "Analysis example: Bouncing superball": "分析範例：彈力球的彈跳",
-  "Analysis example: Projectile motion of a hammer": "分析範例：錘子的拋體運動"
+  "Analysis example: Projectile motion of a hammer": "分析範例：錘子的拋體運動",
+  "Tracking method": "追蹤方式",
+  "Selected point": "指定點",
+  "Tap the marker or point to follow. Detect all frames tracks the same point using colors, patterns and rotation.": "點選要追蹤的標記或點。偵測所有影格會根據顏色、紋理和旋轉，追蹤物體上的同一點。",
+  "Use Selected point under Tracking method to follow a marker or the same part of an object. Tap the point, then select Detect all frames. Tracking matches rotation and the surrounding colors and patterns.": "在追蹤方式中選擇指定點，可追蹤標記或物體上的同一部位。點選該點後，按偵測所有影格。程式會比對旋轉以及周圍的顏色和紋理。",
+  "First, manually mark the point to track.": "請先手動指定要追蹤的點。",
+  "No object was detected around the selected point. Mark it again in a clear frame.": "無法在指定點周圍偵測到物體。請在清晰的影格中重新指定。",
+  "Matching point colors and rotation": "正在比對指定點的顏色和旋轉"
 }

@@ -493,5 +493,12 @@
   "Analysis example: Soccer ball projectile motion": "Contoh analisis: gerak parabola bola sepak",
   "Analysis of a soccer ball’s projectile motion": "Analisis gerak parabola bola sepak",
   "Analysis example: Bouncing superball": "Contoh analisis: pantulan bola karet",
-  "Analysis example: Projectile motion of a hammer": "Contoh analisis: gerak parabola palu"
+  "Analysis example: Projectile motion of a hammer": "Contoh analisis: gerak parabola palu",
+  "Tracking method": "Metode pelacakan",
+  "Selected point": "Titik yang dipilih",
+  "Tap the marker or point to follow. Detect all frames tracks the same point using colors, patterns and rotation.": "Ketuk tanda atau titik yang ingin dilacak. Deteksi semua frame melacak titik yang sama berdasarkan warna, pola, dan rotasi.",
+  "Use Selected point under Tracking method to follow a marker or the same part of an object. Tap the point, then select Detect all frames. Tracking matches rotation and the surrounding colors and patterns.": "Pilih Titik yang dipilih pada Metode pelacakan untuk mengikuti tanda atau bagian yang sama pada objek. Ketuk titiknya, lalu pilih Deteksi semua frame. Pelacakan mencocokkan rotasi serta warna dan pola di sekitar titik.",
+  "First, manually mark the point to track.": "Tandai dahulu titik yang ingin dilacak secara manual.",
+  "No object was detected around the selected point. Mark it again in a clear frame.": "Objek tidak terdeteksi di sekitar titik yang dipilih. Tandai kembali pada frame yang jelas.",
+  "Matching point colors and rotation": "Mencocokkan warna dan rotasi titik"
 }

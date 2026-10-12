@@ -493,5 +493,12 @@
   "Analysis example: Soccer ball projectile motion": "Пример анализа: полёт футбольного мяча по параболе",
   "Analysis of a soccer ball’s projectile motion": "Анализ полёта футбольного мяча по параболе",
   "Analysis example: Bouncing superball": "Пример анализа: отскоки резинового мяча",
-  "Analysis example: Projectile motion of a hammer": "Пример анализа: полёт молотка по параболе"
+  "Analysis example: Projectile motion of a hammer": "Пример анализа: полёт молотка по параболе",
+  "Tracking method": "Способ отслеживания",
+  "Selected point": "Выбранная точка",
+  "Tap the marker or point to follow. Detect all frames tracks the same point using colors, patterns and rotation.": "Коснитесь метки или точки для отслеживания. Найти во всех кадрах отслеживает ту же точку по цветам, рисунку и повороту объекта.",
+  "Use Selected point under Tracking method to follow a marker or the same part of an object. Tap the point, then select Detect all frames. Tracking matches rotation and the surrounding colors and patterns.": "Выберите Выбранная точка в разделе Способ отслеживания, чтобы следить за меткой или одним и тем же участком объекта. Коснитесь точки и нажмите Найти во всех кадрах. Сопоставляются поворот, цвета и рисунок вокруг точки.",
+  "First, manually mark the point to track.": "Сначала вручную отметьте точку для отслеживания.",
+  "No object was detected around the selected point. Mark it again in a clear frame.": "Объект вокруг выбранной точки не обнаружен. Отметьте её заново на чётком кадре.",
+  "Matching point colors and rotation": "Сопоставление цветов и поворота точки"
 }

@@ -9,6 +9,7 @@ import {framePlan,outputSize} from './sampling.js';
 import {backgroundIndices,estimateBackground} from './background.js';
 import {foregroundMask,mergeLayer,drawAnnotations,drawCornerBadge} from './annotations.js';
 import {pickObjectCenter,centersFromMarks,findCandidates,trackCandidates} from './tracking.js';
+import {trackSelectedPoint} from './point-tracking.js';
 let media,cache=new Map(),background,size,job=0,activeDecoder,activeEncoder,photoBase=null;
 const yieldTurn=()=>new Promise(r=>setTimeout(r,0));
 function centersFor(m,marks=m.anchors||[]){
@@ -73,6 +74,11 @@ self.onmessage=async({data:m})=>{
   if(job===current)send('center-selected',{mark:{index:m.index,...picked,mode:'center',spaceWidth:size.width,spaceHeight:size.height}});
  }else if(m.type==='auto-detect'){
   if(!background)throw Error('写真を作成してから物体を選んでください。');
+  if(m.trackingMode==='point'){
+   const marks=await trackSelectedPoint({indices:framePlan(m.first,m.last,m.reference,m.step,1,analysisClock(media.clock,m.captureFps)),getFrame:index=>cache.get(index),background,width:size.width,height:size.height,marks:m.anchors||[],seedIndex:m.seedIndex,sensitivity:m.sensitivity,cancelled:()=>job!==current,yieldTurn,onProgress:value=>send('progress',{stage:'指定した点の色・回転を照合中',value})});
+   if(marks&&job===current)send('auto-detected',{marks,objectId:m.objectId??0});
+   return;
+  }
   const indices=framePlan(m.first,m.last,m.reference,m.step,1,analysisClock(media.clock,m.captureFps)),frames=[];
   for(let n=0;n<indices.length;n++){
    if(job!==current)return;const index=indices[n],frame=cache.get(index);

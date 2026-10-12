@@ -337,3 +337,5 @@ html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
 
 /* Each movie and its matching caption enter together. */
 .home .home-example.is-example-entering .home-visual,.home .home-example.is-example-entering figcaption{animation:intro-fade .7s cubic-bezier(.4,0,.2,1) both}
+
+.tracking-mode-field{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0;font-size:14px}.tracking-mode-field select{width:auto;max-width:100%;padding:7px 10px}

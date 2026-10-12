@@ -1,10 +1,11 @@
 import {formatSeconds} from './format.js';
 import {ImageViewport} from './image-viewport.js';
 export class CenterEditor{
- constructor({preview,onAnchor,onReset,onSkip,onAuto,onCancel}){
+ constructor({preview,onAnchor,onReset,onSkip,onAuto,onCancel,onTrackingMode=()=>{}}){
   this.dialog=document.getElementById('centerDialog');this.canvas=document.getElementById('centerCanvas');this.preview=preview;this.onAnchor=onAnchor;this.mode='target';this.centers=[];this.indices=[];this.index=null;this.image=null;this.url=null;this.pending=false;
   const $=id=>document.getElementById(id);
-  this.$=$;this.onCancel=onCancel;this.automatic=false;this.viewport=new ImageViewport();this.pointers=new Map();this.panMode=false;
+  this.$=$;this.trackingMode='center';
+  $('centerTrackingMode').onchange=()=>{if(this.pending)return;this.trackingMode=$('centerTrackingMode').value==='point'?'point':'center';this.mode=this.trackingMode==='point'?'center':'target';onTrackingMode(this.trackingMode);this.update();};this.onCancel=onCancel;this.automatic=false;this.viewport=new ImageViewport();this.pointers=new Map();this.panMode=false;
   $('autoDetect').onclick=()=>{const seed=this.seed();if(!this.pending&&seed){this.automatic=true;this.progress({stage:'自動検出を準備中',value:0});this.setBusy(true);onAuto(seed.index);}};
   $('cancelDetection').onclick=()=>onCancel?.();
   this.dialog.addEventListener('cancel',e=>{if(this.automatic){e.preventDefault();onCancel?.();}});
@@ -29,7 +30,7 @@ export class CenterEditor{
   this.canvas.onpointerup=e=>{
    if(!this.pointers.has(e.pointerId))return;this.pointers.delete(e.pointerId);this.pinch=null;
    if(this.gestureBlocked||this.panMode||!this.drag){this.drag=null;if(!this.pointers.size)this.gestureBlocked=false;this.draw();return;}
-   const p=this.point(e);this.drag=null;this.setBusy(true);this.onAnchor({index:this.index,...p,mode:this.mode,source:'manual',spaceWidth:this.canvas.width,spaceHeight:this.canvas.height});
+   const p=this.point(e);this.drag=null;this.setBusy(true);this.onAnchor({index:this.index,...p,mode:this.trackingMode==='point'&&this.mode==='target'?'center':this.mode,source:'manual',spaceWidth:this.canvas.width,spaceHeight:this.canvas.height});
   };
   this.canvas.onpointercancel=e=>{this.pointers.delete(e.pointerId);this.gestureBlocked=this.pointers.size>0;this.pinch=null;this.drag=null;this.draw();};
   this.canvas.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)||this.pending||this.mode!=='center')return;e.preventDefault();const center=this.centers.find(p=>p.index===this.index);if(!center||!Number.isFinite(center.x))return;const d=e.shiftKey?5:1;this.setBusy(true);this.onAnchor({index:this.index,x:Math.max(0,Math.min(this.canvas.width-1,center.x+(e.key==='ArrowLeft'?-d:e.key==='ArrowRight'?d:0))),y:Math.max(0,Math.min(this.canvas.height-1,center.y+(e.key==='ArrowUp'?-d:e.key==='ArrowDown'?d:0))),mode:'center',source:'manual',spaceWidth:this.canvas.width,spaceHeight:this.canvas.height});};
@@ -42,15 +43,17 @@ export class CenterEditor{
  updateZoom(){const $=this.$;$('centerZoomLevel').textContent=`${Math.round(this.viewport.scale*100)}%`;$('centerZoomOut').disabled=this.pending||this.viewport.scale<=1;$('centerZoomIn').disabled=this.pending||this.viewport.scale>=8;$('centerZoomReset').disabled=this.pending;$('centerPan').disabled=this.pending;$('centerPan').classList.toggle('active',this.panMode);$('centerPan').setAttribute('aria-pressed',String(this.panMode));this.canvas.setAttribute('data-pan',String(this.panMode));}
  seed(){return (this.anchors||[]).find(a=>a.index===this.seedIndex&&this.indices.includes(a.index)&&a.mode==='center'&&a.source!=='auto')||(this.anchors||[]).find(a=>this.indices.includes(a.index)&&a.mode==='center'&&a.source!=='auto');}
  progress({stage,value}){this.$('detectionProgress').hidden=false;this.$('detectionTitle').textContent=`${stage} · ${Math.round(value*100)}%`;this.$('detectionBar').value=value;}
- setData({centers,indices,size,period,first,anchors,seedIndex,objectId=0,otherCenters=[]}){if(this.objectId!==undefined&&this.objectId!==objectId)this.mode='target';this.objectId=objectId;this.otherCenters=otherCenters;this.seedIndex=seedIndex;this.centers=centers;this.indices=indices;if(this.viewport.width!==size.width||this.viewport.height!==size.height)this.viewport.reset(size.width,size.height);this.size=size;this.period=period;this.first=first;this.anchors=anchors;this.setBusy(false);this.update();this.draw();}
+ setData({centers,indices,size,period,first,anchors,seedIndex,objectId=0,otherCenters=[],trackingMode='center'}){this.trackingMode=trackingMode;this.$('centerTrackingMode').value=trackingMode;if(this.objectId!==undefined&&this.objectId!==objectId)this.mode='target';this.objectId=objectId;this.otherCenters=otherCenters;this.seedIndex=seedIndex;this.centers=centers;this.indices=indices;if(this.viewport.width!==size.width||this.viewport.height!==size.height)this.viewport.reset(size.width,size.height);this.size=size;this.period=period;this.first=first;this.anchors=anchors;this.setBusy(false);this.update();this.draw();}
  open(){if(!this.indices.length)return;this.dialog.showModal();this.viewport.reset(this.size.width,this.size.height);this.panMode=false;const wanted=this.indices.findIndex(n=>n===this.index);this.select(wanted<0?0:wanted);}
  select(position){if(this.pending||!this.indices.length)return;this.position=Math.max(0,Math.min(this.indices.length-1,position));this.index=this.indices[this.position];const current=this.centers.find(p=>p.index===this.index);if(current?.confidence==='skipped')this.mode='none';else if(this.mode==='none')this.mode='target';this.setBusy(true);this.preview(this.index);this.update();}
  accept({blob,index,size}){if(index!==this.index)return;const image=new Image(),url=URL.createObjectURL(blob);image.onload=()=>{if(index!==this.index){URL.revokeObjectURL(url);return;}if(this.url)URL.revokeObjectURL(this.url);this.url=url;this.image=image;this.canvas.width=size.width;this.canvas.height=size.height;this.setBusy(false);this.draw();};image.onerror=()=>{URL.revokeObjectURL(url);this.setBusy(false);this.$('centerStatus').textContent='画像を表示できませんでした。';};image.src=url;}
  setBusy(pending){this.pending=pending;if(pending){this.drag=null;this.pointers.clear();this.pinch=null;}if(!pending){this.automatic=false;this.$('detectionProgress').hidden=true;}for(const id of ['centerFrame','centerPrevious','centerNext','resetCenters','skipCenter'])this.$(id).disabled=pending;this.canvas.setAttribute('aria-busy',String(pending));this.update();this.updateZoom();}
  update(){
-  const $=this.$;for(const b of this.dialog.querySelectorAll('[data-center-mode]')){b.disabled=this.pending;b.classList.toggle('active',b.dataset.centerMode===this.mode);b.setAttribute('aria-pressed',String(b.dataset.centerMode===this.mode));}
+  if(this.trackingMode==='point'&&this.mode==='target')this.mode='center';
+  const $=this.$;for(const b of this.dialog.querySelectorAll('[data-center-mode]')){b.hidden=this.trackingMode==='point'&&b.dataset.centerMode==='target';b.disabled=this.pending;b.classList.toggle('active',b.dataset.centerMode===this.mode);b.setAttribute('aria-pressed',String(b.dataset.centerMode===this.mode));}
   $('autoDetect').disabled=this.pending||!this.seed();$('autoDetect').textContent=this.automatic?'自動検出中…':'全コマを自動検出';
-  $('centerInstruction').textContent=this.mode==='target'?'検出する物体をタップすると、位置を自動で決定します。':this.mode==='center'?'タップ・ドラッグで物体の中心を決めます。':'このコマでは物体の位置を検出しません。';
+  $('centerTrackingMode').disabled=this.pending;
+  $('centerInstruction').textContent=this.mode==='none'?'このコマでは物体の位置を検出しません。':this.trackingMode==='point'?'追いかける印や点をタップします。全コマを自動検出すると、色・模様と回転から同じ点を追跡します。':this.mode==='target'?'検出する物体をタップすると、位置を自動で決定します。':this.mode==='center'?'タップ・ドラッグで物体の中心を決めます。':'このコマでは物体の位置を検出しません。';
   $('centerFrame').max=Math.max(0,this.indices.length-1);$('centerFrame').value=this.position||0;
   const center=this.centers.find(p=>p.index===this.index);
   $('centerTime').textContent=`${Number.isInteger(this.index)?formatSeconds(center?.time??(this.index-this.first)*this.period):'—'} s`;

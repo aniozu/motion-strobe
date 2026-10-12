@@ -493,5 +493,12 @@
   "Analysis example: Soccer ball projectile motion": "분석 예시: 축구공의 포물선 운동",
   "Analysis of a soccer ball’s projectile motion": "축구공의 포물선 운동 분석 예시",
   "Analysis example: Bouncing superball": "분석 예시: 고무공의 튀는 운동",
-  "Analysis example: Projectile motion of a hammer": "분석 예시: 망치의 포물선 운동"
+  "Analysis example: Projectile motion of a hammer": "분석 예시: 망치의 포물선 운동",
+  "Tracking method": "추적 방식",
+  "Selected point": "지정한 점",
+  "Tap the marker or point to follow. Detect all frames tracks the same point using colors, patterns and rotation.": "추적할 표시나 점을 누르세요. 모든 프레임 검출은 색상, 무늬와 회전을 비교해 물체의 같은 점을 추적합니다.",
+  "Use Selected point under Tracking method to follow a marker or the same part of an object. Tap the point, then select Detect all frames. Tracking matches rotation and the surrounding colors and patterns.": "추적 방식에서 지정한 점을 선택하면 표시나 물체의 같은 부위를 추적할 수 있습니다. 점을 누른 뒤 모든 프레임 검출을 선택하세요. 회전과 주변의 색상 및 무늬를 비교합니다.",
+  "First, manually mark the point to track.": "먼저 추적할 점을 수동으로 지정하세요.",
+  "No object was detected around the selected point. Mark it again in a clear frame.": "지정한 점 주변에서 물체를 검출하지 못했습니다. 선명한 프레임에서 다시 지정하세요.",
+  "Matching point colors and rotation": "지정한 점의 색상과 회전 비교 중"
 }

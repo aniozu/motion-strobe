@@ -1,3 +1,4 @@
+import {switchTrackingMethod} from './tracking-method.js';
 import {previewFrameRole} from './preview-frame.js';
 import {guideSectionUrl} from './guide-navigation.js';
 import {installLanguagePicker} from './language-picker.js';
@@ -11,14 +12,14 @@ import {frameTime,indexAtTime,analysisClock} from './frame-clock.js';
 import {GraphPanel} from './graph-panel.js';
 import {CalibrationEditor} from './calibration-editor.js';import {calibrationBasis,coordinateOrigin} from './calibration.js';import {installSamples} from './samples.js';import {framePlan} from './sampling.js';import {formatSeconds as fmt,setTimeDecimals} from './format.js';import {Timeline} from './timeline.js';import {bindFrameNudges,bindFrameInput,samplingLimits,applyTimePoint} from './time-controls.js';import {installContextHelp} from './context-help.js';import {CenterEditor} from './center-editor.js';import {gridOptions} from './annotations.js';import {GuideEditor} from './guide-editor.js';import {replaceFrameMark} from './tracking.js';import {coordinateTable,coordinateText} from './coordinates.js';
 installLanguagePicker();
-const $=id=>document.getElementById(id);const workerUrl=new URL('worker.js?v=1.21.11',import.meta.url);let worker=new Worker(workerUrl,{type:'module'});
+const $=id=>document.getElementById(id);const workerUrl=new URL('worker.js?v=1.22.0',import.meta.url);let worker=new Worker(workerUrl,{type:'module'});
 let preferences={interval:.1,resolution:960,timeDecimals:2,openingAnimation:true};try{preferences={...preferences,...JSON.parse(localStorage.getItem('motion-strobe-preferences')||'{}')};}catch{}
 if(!Number.isFinite(preferences.interval)||preferences.interval<=0)preferences.interval=.1;if(![720,960,1280].includes(preferences.resolution))preferences.resolution=960;
 preferences.timeDecimals=setTimeDecimals(preferences.timeDecimals);preferences.openingAnimation=preferences.openingAnimation!==false;
 let state={stage:'range',count:2,period:1/60,fps:60,start:0,end:1,background:0,backgroundMode:'auto',reference:0,step:6,factor:1},videoUrl,resultUrl,resultBlob,sourceFile,extracted=false,task=null,debounce,toastTimer,lastFocus,requestId=0,demoAbort,exportBlob,exportUrl,exportSettings,activeView='photo',sampleSelection=false,backgroundAuto=true,loadStallTimer;
 let inputSource='file';
 let sourceClock=null,previewDetached=false,lastDiagnostics=null,lastFailedOperation=null,sampleProgress=false;
-const appVersion='1.21.11';
+const appVersion='1.22.0';
 let guide=gridOptions(preferences.grid),anchors=[],centerData=null,seedIndex=null,calibration=null;
 let activeObject=0,objectTracks=[{id:0,anchors:[],seedIndex:null,summary:null},{id:1,anchors:[],seedIndex:null,summary:null}],resultData=null;
 function stashObject(){objectTracks[activeObject].anchors=anchors;objectTracks[activeObject].seedIndex=seedIndex;}
@@ -28,7 +29,7 @@ function syncObjects(){
  const summary=objectTracks[activeObject].summary;$('autoDetectionResult').textContent=summary?`${summary.successful}/${summary.total}`:'';$('autoDetectionResult').hidden=!summary;
 }
 function refreshObject(){
- if(!resultData)return;stashObject();centerData={...objectView(analysisData(),activeObject),anchors,seedIndex,objectId:activeObject,otherCenters:allObjectCenters(resultData).filter(p=>p.objectId!==activeObject)};centerEditor.setData(centerData);syncObjects();
+ if(!resultData)return;stashObject();centerData={...objectView(analysisData(),activeObject),anchors,seedIndex,objectId:activeObject,trackingMode:objectTracks[activeObject].trackingMode||'center',otherCenters:allObjectCenters(resultData).filter(p=>p.objectId!==activeObject)};centerEditor.setData(centerData);syncObjects();
 }
 function selectObject(id){
  if(task||!resultData||![0,1].includes(id)||id===activeObject)return;
@@ -46,10 +47,10 @@ function storeFrameMark(mark){
  if(firstPoint&&!guide.enabled){guide={...guide,enabled:true};$('showGuides').checked=true;saveGuide();}
  compose();
 }
-const centerEditor=new CenterEditor({preview:index=>{task='preview';post({type:'tracking-preview',index});},onAnchor:mark=>{
+const centerEditor=new CenterEditor({onTrackingMode:mode=>{stashObject();const object=objectTracks[activeObject];switchTrackingMethod(object,mode);anchors=object.anchors;seedIndex=object.seedIndex;compose();},preview:index=>{task='preview';post({type:'tracking-preview',index});},onAnchor:mark=>{
  if(mark.mode==='target'){task='select-center';setActions(false);post({type:'select-center',index:mark.index,x:mark.x,y:mark.y,sensitivity:Number($('sensitivity').value)});}
  else storeFrameMark(mark);
-},onReset:index=>{objectTracks[activeObject].summary=null;anchors=anchors.filter(a=>a.index!==index);compose();},onSkip:index=>storeFrameMark({index,mode:'skip'}),onAuto:seedIndex=>{hideError();task='auto-detect';setActions(false);syncObjects();post({type:'auto-detect',objectId:activeObject,first:state.start,last:state.end,reference:state.reference,step:state.step,seedIndex,anchors,sensitivity:Number($('sensitivity').value)});},onCancel:()=>post({type:'cancel'})});
+},onReset:index=>{objectTracks[activeObject].summary=null;anchors=anchors.filter(a=>a.index!==index);compose();},onSkip:index=>storeFrameMark({index,mode:'skip'}),onAuto:seedIndex=>{hideError();task='auto-detect';setActions(false);syncObjects();post({type:'auto-detect',objectId:activeObject,first:state.start,last:state.end,reference:state.reference,step:state.step,seedIndex,anchors,trackingMode:objectTracks[activeObject].trackingMode||'center',sensitivity:Number($('sensitivity').value)});},onCancel:()=>post({type:'cancel'})});
 const calibrationEditor=new CalibrationEditor({onApply:value=>{calibration=value;guide={...guide,enabled:true};$('showGuides').checked=true;saveGuide();compose();},onClear:()=>{calibration=null;compose();}});
 const guideEditor=new GuideEditor({onApply:settings=>{guide=settings;$('showGuides').checked=guide.enabled;saveGuide();compose();}});
 const graphPanel=new GraphPanel({onDetect:id=>{if(centerData&&!task){if(Number.isInteger(id))selectObject(id);centerEditor.open();}}});
@@ -151,7 +152,7 @@ function resetWorker(){try{worker.terminate();}catch{}worker=new Worker(workerUr
 function armLoadStall(){clearTimeout(loadStallTimer);loadStallTimer=setTimeout(()=>{if(task!=='load')return;resetWorker();finishBusy();$('home').hidden=false;$('editor').hidden=true;document.body.classList.remove('is-editing');showError('動画の読み込みが停止しました。もう一度選び直してください。iPadでは写真・ファイル選択後の一時ファイルを安全なBlobに変換して再試行できます。');},20000);}
 bindWorker();
 $('chooseVideo').onclick=()=>$('fileInput').click();$('captureVideo').onclick=()=>$('cameraInput').click();for(const id of ['fileInput','cameraInput'])$(id).onchange=e=>{if(e.target.files[0]){inputSource=id==='cameraInput'?'camera':'file';load(e.target.files[0]);}e.target.value='';};
-installSamples({initialSampleId:new URLSearchParams(location.search).get('sample'),onChoose:async sample=>{trackUsage('sample_select',{sample_id:sample.id});inputSource='sample';try{busy('サンプルを読み込み中','demo');demoAbort=new AbortController();const blob=await downloadSample(sample.video+'?v=1.21.11',{signal:demoAbort.signal,expectedSize:sample.bytes,onProgress:p=>{if(task==='demo')setProgress('サンプルを読み込み中',p.value===null?null:p.value*.7);}});if(task!=='demo'||demoAbort.signal.aborted)return;await load(new File([blob],`${sample.title}.mp4`,{type:'video/mp4'}),sample.range,true);}catch(e){finishBusy();if(e.name!=='AbortError')showError('サンプルを読み込めませんでした。');}}});
+installSamples({initialSampleId:new URLSearchParams(location.search).get('sample'),onChoose:async sample=>{trackUsage('sample_select',{sample_id:sample.id});inputSource='sample';try{busy('サンプルを読み込み中','demo');demoAbort=new AbortController();const blob=await downloadSample(sample.video+'?v=1.22.0',{signal:demoAbort.signal,expectedSize:sample.bytes,onProgress:p=>{if(task==='demo')setProgress('サンプルを読み込み中',p.value===null?null:p.value*.7);}});if(task!=='demo'||demoAbort.signal.aborted)return;await load(new File([blob],`${sample.title}.mp4`,{type:'video/mp4'}),sample.range,true);}catch(e){finishBusy();if(e.name!=='AbortError')showError('サンプルを読み込めませんでした。');}}});
 
 $('cancelProcessing').onclick=()=>{if(task==='demo'){demoAbort?.abort();finishBusy();toast('処理をキャンセルしました。');}else post({type:'cancel'});};
 $('goSampling').onclick=()=>{state.reference=Math.max(state.start,Math.min(state.end,state.reference));stage('sampling');seekTo(state.reference);};$('backRange').onclick=()=>stage('range');document.querySelector('.steps [data-stage="range"]').onclick=()=>stage('range');document.querySelector('.steps [data-stage="sampling"]').onclick=()=>stage('sampling');document.querySelector('.steps [data-stage="result"]').onclick=()=>{if(resultBlob)stage('result');};

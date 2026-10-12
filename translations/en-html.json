@@ -224,5 +224,8 @@
   "x・y軸は同じ長さ。原点は物体1で最初に検出した位置（未検出なら物体2）で、2物体共通です。": "The x and y axes have equal lengths. The origin is the first detected position of object 1, or of object 2 if object 1 has no detected positions. Both objects share this origin.",
   "動画から、ストロボ写真・動画を作成します。": "Create strobe photos and videos from a video.",
   "解析例：サッカーボールの放物運動": "Analysis example: Soccer ball projectile motion",
-  "サッカーボールの放物運動の解析例": "Analysis of a soccer ball’s projectile motion"
+  "サッカーボールの放物運動の解析例": "Analysis of a soccer ball’s projectile motion",
+  "追跡方法": "Tracking method",
+  "指定した点": "Selected point",
+  "物体の中心": "Object center"
 }
