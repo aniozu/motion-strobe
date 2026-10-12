@@ -504,5 +504,6 @@
   "Use Selected point under Tracking method to follow a marker or the same part of an object. Tap the point, then select Detect all frames. Tracking matches rotation and the surrounding colors and patterns.": "Wähle Ausgewählter Punkt unter Tracking-Methode, um eine Markierung oder dieselbe Stelle am Objekt zu verfolgen. Tippe auf den Punkt und wähle Alle Bilder erkennen. Dabei werden Drehung sowie Farben und Muster der Umgebung verglichen.",
   "First, manually mark the point to track.": "Markiere zuerst den zu verfolgenden Punkt manuell.",
   "No object was detected around the selected point. Mark it again in a clear frame.": "Um den ausgewählten Punkt wurde kein Objekt erkannt. Markiere ihn erneut in einem scharfen Frame.",
-  "Matching point colors and rotation": "Farben und Drehung des Punkts werden verglichen"
+  "Matching point colors and rotation": "Farben und Drehung des Punkts werden verglichen",
+  "Recreate video": "Video neu erstellen"
 }

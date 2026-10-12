@@ -44,7 +44,7 @@ const content={ja:[
    "5. 保存",
    [
     "写真は右側の「保存」にある「写真を保存」でPNGとして保存します。「共有」から対応アプリへ渡すこともできます。",
-    "「動画」を押すと設定画面が開きます。速さ（×0.25・×0.5・×1・×2・×4・×8）とシャッター音の有無を選び、「動画を作成」を押します。作成後は右側の保存ボタンでMP4を保存します。元動画の音声は入りません。"
+    "右側の「保存」にある「動画を作成」を押すと設定画面が開きます。画像左上の「動画」からも開けます。速さ（×0.25・×0.5・×1・×2・×4・×8）とシャッター音の有無を選び、「動画を作成」を押します。作成後は右側の保存ボタンでMP4を保存します。元動画の音声は入りません。"
    ],
    "video-options"
   ],
@@ -142,7 +142,7 @@ const content={ja:[
    "5. Save the result",
    [
     "Use Save photo under Save on the right to download a PNG. Share sends the result to a supported app.",
-    "Selecting Video opens its settings. Choose a speed (×0.25, ×0.5, ×1, ×2, ×4 or ×8) and whether to include shutter sound, then select Create video. Once it is ready, use the save button on the right to download an MP4. Original video audio is omitted."
+    "Select Create video under Save on the right to open the video settings. You can also select Video at the top left of the image. Choose a speed (×0.25, ×0.5, ×1, ×2, ×4 or ×8) and whether to include shutter sound, then select Create video. Once it is ready, use the save button on the right to download an MP4. Original video audio is omitted."
    ],
    "video-options"
   ],

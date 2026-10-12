@@ -500,5 +500,6 @@
   "Use Selected point under Tracking method to follow a marker or the same part of an object. Tap the point, then select Detect all frames. Tracking matches rotation and the surrounding colors and patterns.": "在跟踪方式中选择指定点，可跟踪标记或物体上的同一部位。点选该点后，点击检测所有帧。程序会比对旋转以及周围的颜色和纹理。",
   "First, manually mark the point to track.": "请先手动指定要跟踪的点。",
   "No object was detected around the selected point. Mark it again in a clear frame.": "未能在指定点周围检测到物体。请在清晰的帧中重新指定。",
-  "Matching point colors and rotation": "正在比对指定点的颜色和旋转"
+  "Matching point colors and rotation": "正在比对指定点的颜色和旋转",
+  "Recreate video": "重新制作视频"
 }
