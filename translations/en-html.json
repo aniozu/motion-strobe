@@ -227,6 +227,6 @@
   "追跡方法": "Tracking method",
   "指定した点": "Selected point",
   "物体の中心": "Object center",
-  "動画を作り直す": "Recreate video",
-  "動画はこの端末内で処理され、サーバーにアップロードされることはありません。": "Videos are processed on your device and are never uploaded to a server."
+  "動画はこの端末内で処理され、サーバーにアップロードされることはありません。": "Videos are processed on your device and are never uploaded to a server.",
+  "動画を再作成": "Recreate video"
 }
