@@ -388,5 +388,8 @@
   "開始コマ": "Start frame",
   "終了コマ": "End frame",
   "「動画」を選び、速さを×0.25・×0.5・×1・×2・×4・×8から選びます。×1以外では速さを映像に表示します。": "Select Video, then choose ×0.25, ×0.5, ×1, ×2, ×4 or ×8 speed. Speeds other than ×1 are shown in the video.",
-  "基準コマ": "Reference frame"
+  "基準コマ": "Reference frame",
+  "解析例：サッカーボールの放物運動": "Analysis example: Soccer ball projectile motion",
+  "解析例：スーパーボールのバウンド": "Analysis example: Bouncing superball",
+  "解析例：ハンマーの放物運動": "Analysis example: Projectile motion of a hammer"
 }

@@ -35,10 +35,10 @@
 /* Text enters in two groups: the full title, then the full description. */
 .intro-title-line{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}.intro-title-line>span,.intro-copy-line{display:block}
 @keyframes intro-fade{from{opacity:0}to{opacity:1}}
-html[data-home-animation=on].intro-pending .home-visual,html[data-home-animation=on].intro-pending .home-copy,.home.intro-waiting .home-visual,.home.intro-waiting .home-copy{opacity:0}
-.home.is-entering .home-visual{animation:intro-fade .7s cubic-bezier(.4,0,.2,1) both}
+html[data-home-animation=on].intro-pending .home-example figcaption,html[data-home-animation=on].intro-pending .home-visual,html[data-home-animation=on].intro-pending .home-copy,.home.intro-waiting .home-example figcaption,.home.intro-waiting .home-visual,.home.intro-waiting .home-copy{opacity:0}
+.home.is-entering .home-example figcaption,.home.is-entering .home-visual{animation:intro-fade .7s cubic-bezier(.4,0,.2,1) both}
 .home.is-entering .home-copy{animation:intro-fade .7s .25s cubic-bezier(.4,0,.2,1) both}
-html[data-home-animation=off] .home-visual,html[data-home-animation=off] .home-copy{animation:none;opacity:1}
+html[data-home-animation=off] .home-example figcaption,html[data-home-animation=off] .home-visual,html[data-home-animation=off] .home-copy{animation:none;opacity:1}
 
 
 /* Photo and axes stay visible together while setting their direction. */
@@ -334,3 +334,6 @@ html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
 .time-fields .background-point{align-items:start}.background-point .point-label{min-height:36px;display:flex;align-items:center}.background-point .background-options{align-self:start}
 
 .home-example{min-width:0;margin:0}.home-example figcaption{margin-top:12px;text-align:center;font-size:13px;line-height:1.6;color:var(--muted)}.home-visual video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;background:#e3e4df}
+
+/* Each movie and its matching caption enter together. */
+.home .home-example.is-example-entering .home-visual,.home .home-example.is-example-entering figcaption{animation:intro-fade .7s cubic-bezier(.4,0,.2,1) both}

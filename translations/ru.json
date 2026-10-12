@@ -491,5 +491,7 @@
   "End frame": "Конечный кадр",
   "Select Video, then choose ×0.25, ×0.5, ×1, ×2, ×4 or ×8 speed. Speeds other than ×1 are shown in the video.": "Выберите «Видео», затем скорость: ×0.25, ×0.5, ×1, ×2, ×4 или ×8. Скорость, отличная от ×1, отображается на видео.",
   "Analysis example: Soccer ball projectile motion": "Пример анализа: полёт футбольного мяча по параболе",
-  "Analysis of a soccer ball’s projectile motion": "Анализ полёта футбольного мяча по параболе"
+  "Analysis of a soccer ball’s projectile motion": "Анализ полёта футбольного мяча по параболе",
+  "Analysis example: Bouncing superball": "Пример анализа: отскоки резинового мяча",
+  "Analysis example: Projectile motion of a hammer": "Пример анализа: полёт молотка по параболе"
 }

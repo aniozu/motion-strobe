@@ -17,6 +17,6 @@ test('picked files use the probe and processing diagnostics are available in the
 
 test('opening video is muted and inline, and settings exposes explicit animation control',async()=>{
  const [html,css]=await Promise.all([read('../dist/index.html'),read('../dist/style.css')]);
- assert(html.includes('muted playsinline loop preload="none"'));assert(!html.includes('homeExampleStill'));assert(!html.includes('prefers-reduced-motion'));assert(html.includes('id="openingAnimation"'));
+ assert(html.includes('muted playsinline preload="none"'));assert(!html.includes('homeExampleStill'));assert(!html.includes('prefers-reduced-motion'));assert(html.includes('id="openingAnimation"'));
  assert(!css.includes('@media(prefers-reduced-motion:no-preference)'));assert(css.includes('html[data-home-animation=off] .home-visual'));
 });

@@ -1,5 +1,5 @@
 export const languages=[
- {code:'ja',name:'日本語',label:'言語',locale:'ja_JP',title:'ストロボ写真・残像動画を無料で作成・運動解析 | モーションストロボ',description:'動画からストロボ写真や残像動画を簡単に作成。無料・インストール不要のWebアプリ。物体の位置検出やグラフによる運動解析も可能。物理教育やスポーツのフォーム確認、動画加工にも使えます。'},
+ {code:'ja',name:'日本語',label:'言語',locale:'ja_JP',title:'モーションストロボ｜ストロボ写真・残像動画を無料で作成',description:'動画からストロボ写真や残像動画を簡単に作成。無料・インストール不要のWebアプリ。物体の位置検出やグラフによる運動解析も可能。物理教育やスポーツのフォーム確認、動画加工にも使えます。'},
  {code:'en',name:'English',label:'Language',locale:'en_US',title:'Motion Strobe | Free Video Motion Analysis & Strobe Photos',description:'Create strobe photos and videos for free. Track object positions, calibrate distances, and analyze motion with graphs and curve fitting in your browser.'},
  {code:'es',name:'Español',label:'Idioma',locale:'es_ES',title:'Motion Strobe | Fotos estroboscópicas y análisis de movimiento gratis',description:'Crea fotos y vídeos estroboscópicos gratis. Detecta posiciones, calibra distancias y analiza el movimiento con gráficas y ajustes de curvas en tu navegador.'},
  {code:'de',name:'Deutsch',label:'Sprache',locale:'de_DE',title:'Motion Strobe | Kostenlose Bewegungsanalyse und Stroboskopfotos',description:'Erstelle kostenlos Stroboskopfotos und -videos. Erkenne Objektpositionen, kalibriere Abstände und analysiere Bewegungen mit Diagrammen und Kurvenanpassung im Browser.'},

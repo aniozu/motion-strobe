@@ -491,5 +491,7 @@
   "End frame": "종료 프레임",
   "Select Video, then choose ×0.25, ×0.5, ×1, ×2, ×4 or ×8 speed. Speeds other than ×1 are shown in the video.": "동영상을 선택한 다음 속도를 ×0.25, ×0.5, ×1, ×2, ×4 또는 ×8로 설정합니다. ×1 이외의 속도는 영상에 표시됩니다.",
   "Analysis example: Soccer ball projectile motion": "분석 예시: 축구공의 포물선 운동",
-  "Analysis of a soccer ball’s projectile motion": "축구공의 포물선 운동 분석 예시"
+  "Analysis of a soccer ball’s projectile motion": "축구공의 포물선 운동 분석 예시",
+  "Analysis example: Bouncing superball": "분석 예시: 고무공의 튀는 운동",
+  "Analysis example: Projectile motion of a hammer": "분석 예시: 망치의 포물선 운동"
 }

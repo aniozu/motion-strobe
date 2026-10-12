@@ -495,5 +495,7 @@
   "End frame": "Image de fin",
   "Select Video, then choose ×0.25, ×0.5, ×1, ×2, ×4 or ×8 speed. Speeds other than ×1 are shown in the video.": "Sélectionnez Vidéo, puis la vitesse : ×0.25, ×0.5, ×1, ×2, ×4 ou ×8. Toute vitesse autre que ×1 est indiquée dans la vidéo.",
   "Analysis example: Soccer ball projectile motion": "Exemple d’analyse : trajectoire parabolique d’un ballon de football",
-  "Analysis of a soccer ball’s projectile motion": "Analyse de la trajectoire parabolique d’un ballon de football"
+  "Analysis of a soccer ball’s projectile motion": "Analyse de la trajectoire parabolique d’un ballon de football",
+  "Analysis example: Bouncing superball": "Exemple d’analyse : rebonds d’une balle en caoutchouc",
+  "Analysis example: Projectile motion of a hammer": "Exemple d’analyse : trajectoire parabolique d’un marteau"
 }

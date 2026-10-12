@@ -11,10 +11,10 @@ function harness(t,{animation=true}={}){
  const raf=[],events=[];
  const document=new EventTarget();document.visibilityState='visible';document.documentElement={classList:classes(),dataset:{homeAnimation:animation?'on':'off'}};document.documentElement.classList.add('intro-pending');
  const home=new EventTarget();home.hidden=false;home.ownerDocument=document;home.classList=classes();
- const video=new EventTarget();Object.assign(video,{src:'',currentTime:4,play(){events.push('play');return Promise.resolve();},pause(){events.push('pause');},load(){events.push('load');},getAttribute(){return this.src;},removeAttribute(){this.src='';}});home.video=video;home.querySelector=()=>video;
+ const video=new EventTarget();Object.assign(video,{src:'',currentTime:4,play(){events.push('play');return Promise.resolve();},pause(){events.push('pause');},load(){events.push('load');},setAttribute(name,value){this[name]=value;},getAttribute(){return this.src;},removeAttribute(){this.src='';}});home.video=video;const caption={textContent:''},figure={classList:classes()};home.querySelector=selector=>selector==='#homeExampleVideo'?video:selector==='#homeExampleCaption'?caption:selector==='.home-example'?figure:null;
  for(const [key,value] of Object.entries({window:new EventTarget(),requestAnimationFrame:cb=>raf.push(cb)})){const before=Object.getOwnPropertyDescriptor(globalThis,key);Object.defineProperty(globalThis,key,{value,writable:true,configurable:true});t.after(()=>before?Object.defineProperty(globalThis,key,before):delete globalThis[key]);}
  const paints=async(n=4)=>{for(let i=0;i<n;i++){for(const f of raf.splice(0))f();await tick();}};
- return {home,document,video,events,paints};
+ return {home,document,video,caption,figure,events,paints};
 }
 test('home becomes visible before movie playback starts',async t=>{
  const h=harness(t);await installHomeExample(h.home);assert(!h.video.src);assert(h.video.muted&&h.video.defaultMuted&&h.video.playsInline);assert.equal(h.video.playbackRate,2);assert.equal(h.video.defaultPlaybackRate,2);
@@ -54,4 +54,24 @@ test('a late cancelled play promise cannot pause a newer home playback',async t=
  const old=new AbortController();const pending=restartHomeExample(h.home,{signal:old.signal});old.abort();
  h.video.play=()=>{h.events.push('play');return Promise.resolve();};await restartHomeExample(h.home);
  slow.resolve();await pending;assert.equal(h.events.at(-1),'play');
+});
+
+
+test('three examples rotate in order with matching posters, captions and labels, then restart from soccer',async t=>{
+ const h=harness(t);await installHomeExample(h.home);assert.equal(h.video.loop,false);assert.equal(homeExamples.length,3);
+ await restartHomeExample(h.home);
+ for(const i of [0,1,2,0]){
+  assert.equal(h.video.src,homeExamples[i].video);assert.equal(h.video.poster,homeExamples[i].poster);
+  assert.equal(h.caption.textContent,homeExamples[i].caption);assert.equal(h.video['aria-label'],homeExamples[i].caption);
+  assert.equal(h.video.playbackRate,2);assert(h.video.muted);
+  h.video.dispatchEvent(new Event('playing'));assert(h.figure.classList.contains('is-example-entering'));
+  h.video.dispatchEvent(new Event('ended'));assert(!h.figure.classList.contains('is-example-entering'));
+ }
+ await restartHomeExample(h.home);assert.equal(h.video.src,homeExamples[0].video);
+});
+test('hidden, aborted or disabled opening does not fetch the next example',async t=>{
+ const h=harness(t);await installHomeExample(h.home);const controller=new AbortController();await restartHomeExample(h.home,{signal:controller.signal});
+ h.home.hidden=true;h.video.dispatchEvent(new Event('ended'));assert.equal(h.video.src,homeExamples[0].video);
+ h.home.hidden=false;controller.abort();h.video.dispatchEvent(new Event('ended'));assert.equal(h.video.src,homeExamples[0].video);
+ await restartHomeExample(h.home);h.document.documentElement.dataset.homeAnimation='off';h.video.dispatchEvent(new Event('ended'));assert.equal(h.video.src,homeExamples[0].video);
 });

@@ -491,5 +491,7 @@
   "End frame": "结束帧",
   "Select Video, then choose ×0.25, ×0.5, ×1, ×2, ×4 or ×8 speed. Speeds other than ×1 are shown in the video.": "选择“视频”，再选择速度：×0.25、×0.5、×1、×2、×4 或 ×8。速度不是 ×1 时，会在视频中显示。",
   "Analysis example: Soccer ball projectile motion": "分析示例：足球的抛体运动",
-  "Analysis of a soccer ball’s projectile motion": "足球抛体运动的分析示例"
+  "Analysis of a soccer ball’s projectile motion": "足球抛体运动的分析示例",
+  "Analysis example: Bouncing superball": "分析示例：弹力球的弹跳",
+  "Analysis example: Projectile motion of a hammer": "分析示例：锤子的抛体运动"
 }
