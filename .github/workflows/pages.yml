@@ -24,6 +24,7 @@ jobs:
         uses: actions/configure-pages@v5
       - run: npm ci
       - name: Install media test tools
+        timeout-minutes: 15
         run: bash scripts/ensure-ffmpeg.sh
       - name: Build published pages with correct canonical URL
         run: npm run build
