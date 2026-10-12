@@ -1,0 +1,7 @@
+Motion Strobe 1.17.6 GitHub BAT update package
+All seven samples parsed and fully decoded; exact original MP4 and PNG bytes retained.
+Japanese and English builds and all 170 tests passed for the hosted source.
+Windows BAT/PowerShell execution and iPad hardware were not available for verification.
+Published source commit: 9ae44ffacb495c74f17ff4cfbfefa0b69b7e1f8b
+GitHub Pages localized routes verified; the platform-specific route test passes.
+Exact application source parity verified.

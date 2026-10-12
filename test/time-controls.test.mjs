@@ -1,0 +1,90 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {bindFrameNudges,bindFrameInput,samplingLimits,applyTimePoint} from '../src/time-controls.js';import {Timeline,fitTimelineView} from '../src/timeline.js';
+import {formatSeconds,setTimeDecimals} from '../src/format.js';
+import {frameTime,indexAtTime} from '../src/frame-clock.js';
+test('sampling limit follows the selected range instead of a fixed two seconds',()=>{
+ assert.deepEqual(samplingLimits({start:10,end:310,period:1/60}),{seconds:5,frames:300});
+ const s={start:1,end:3,period:.04,times:[0,.03,.075,.11]};
+ assert.deepEqual(samplingLimits(s),{seconds:.08,frames:2});
+ s.end=2;assert.deepEqual(samplingLimits(s),{seconds:.045,frames:1});
+});
+test('reference input arrow keys move one actual frame even with irregular timestamps',()=>{
+ const state={count:5,start:1,end:4,reference:2,times:[0,.004,.009,.013,.02],playbackTimes:[0,.004,.009,.013,.02],period:.005};
+ const input={},video={pause(){}};let prevented=0;
+ bindFrameInput(input,{point:'reference',getState:()=>state,onChange:(p,v)=>applyTimePoint(state,p,v,false,video)});
+ const key=k=>input.onkeydown({key:k,preventDefault(){prevented++;}});
+ key('ArrowUp');assert.equal(state.reference,3);assert.equal(video.currentTime,.013);
+ key('ArrowDown');assert.equal(state.reference,2);key('ArrowDown');key('ArrowDown');assert.equal(state.reference,1);
+ key('ArrowUp');assert.equal(state.reference,2);assert.equal(prevented,5);
+});
+test('reference plus and minus retain exact frames after rounded seconds lose focus',()=>{
+ try{
+  for(const decimals of [0,2,6])for(const times of [
+   Array.from({length:8},(_,i)=>i/60),
+   Array.from({length:8},(_,i)=>i/120),
+   Array.from({length:8},(_,i)=>i/240),
+   [0,.003,.009,.013,.019,.024,.028,.037]
+  ]){
+   setTimeDecimals(decimals);
+   const state={count:8,start:0,end:7,reference:3,times,playbackTimes:times.map(t=>t*4),period:times[1]};
+   const video={pause(){}},input={};let bound;
+   const change=(point,value)=>{applyTimePoint(state,point,value,false,video);bound.update();};
+   // The app used to parse a rounded display on change, including after blur.
+   input.onchange=()=>change('reference',indexAtTime(state,Number(input.value)));
+   bound=bindFrameInput(input,{point:'reference',getState:()=>state,onChange:change});bound.update();
+   const buttons=[-1,1].map(nudge=>({dataset:{timePoint:'reference',nudge:String(nudge)}}));
+   bindFrameNudges({buttons,getState:()=>state,onChange:change});
+   for(const [button,index] of [[buttons[1],4],[buttons[1],5],[buttons[0],4],[buttons[0],3]]){
+    button.onclick();input.onchange();assert.equal(state.reference,index);
+    assert.equal(input.value,formatSeconds(times[index]));assert.equal(video.currentTime,times[index]*4);
+   }
+  }
+ }finally{setTimeDecimals(2);}
+});
+test('only manual seconds edits choose a reference by time; keyboard nudges survive blur and blank edits',()=>{
+ const state={count:6,start:1,end:5,reference:2,times:[0,.004,.009,.013,.02,.03],playbackTimes:[0,.016,.036,.052,.08,.12],period:.005};
+ const video={pause(){}},input={};let bound;
+ bound=bindFrameInput(input,{point:'reference',getState:()=>state,onChange:(p,v)=>{applyTimePoint(state,p,v,false,video);bound.update();}});bound.update();
+ input.onkeydown({key:'ArrowUp',preventDefault(){}});input.onchange();assert.equal(state.reference,3);assert.equal(video.currentTime,.052);
+ input.value='0.020';input.oninput();input.onchange();assert.equal(state.reference,4);assert.equal(input.value,formatSeconds(frameTime(state,4)));
+ input.value='';input.oninput();input.onchange();assert.equal(state.reference,4);assert.equal(input.value,'0.02');
+ input.value='999';input.oninput();input.onchange();assert.equal(state.reference,5);
+});
+function controls(period=1/60){const state={count:301,start:60,end:240,background:54,reference:90,period};let auto=true;const video={currentTime:0,paused:0,pause(){this.paused++;}},buttons=['start','end','background','reference'].flatMap(point=>[-1,1].map(nudge=>({dataset:{timePoint:point,nudge:String(nudge)}})));const bound=bindFrameNudges({buttons,getState:()=>state,onChange:(point,value)=>{auto=applyTimePoint(state,point,value,auto,video);bound.update();}});bound.update();return {state,video,buttons,bound,button:(point,nudge)=>buttons.find(b=>b.dataset.timePoint===point&&Number(b.dataset.nudge)===nudge),auto:()=>auto};}
+test('all four time controls move by exactly one source frame and seek the paused video to that frame',()=>{
+ for(const period of [1/60,1/30,1001/60000])for(const point of ['start','end','background','reference']){
+  const h=controls(period),index=h.state[point];h.button(point,1).onclick();assert.equal(h.state[point],index+1);assert.equal(h.video.currentTime,(index+1)*period);h.button(point,-1).onclick();assert.equal(h.state[point],index);assert.equal(h.video.currentTime,index*period);assert.equal(h.video.paused,2);
+ }
+});
+test('time bounds retain a valid range and automatic background follows start until edited explicitly',()=>{
+ const h=controls();h.button('start',1).onclick();assert.equal(h.state.background,55);assert.equal(h.auto(),true);h.button('background',1).onclick();assert.equal(h.auto(),false);h.button('start',1).onclick();assert.equal(h.state.background,56);
+ h.state.reference=h.state.start;h.bound.update();assert.equal(h.button('reference',-1).disabled,true);const before=h.video.paused;h.button('reference',-1).onclick();assert.equal(h.video.paused,before);
+ h.state.end=h.state.start+1;h.bound.update();assert.equal(h.button('start',1).disabled,true);assert.equal(h.button('end',-1).disabled,true);
+ applyTimePoint(h.state,'end',0,false,h.video);assert.equal(h.state.end,h.state.start+1);assert.equal(h.video.currentTime,h.state.end*h.state.period);
+ h.state.background=300;h.bound.update();assert.equal(h.button('background',1).disabled,true);assert.equal(h.state.background,300);
+});
+test('typed out-of-range times seek the actual clamped frame and retain an in-range reference',()=>{
+ const h=controls();applyTimePoint(h.state,'reference',999,true,h.video);assert.equal(h.state.reference,240);assert.equal(h.video.currentTime,240/60);
+ applyTimePoint(h.state,'start',239,true,h.video);assert.equal(h.state.start,239);assert.equal(h.state.reference,240);assert.equal(h.state.background,233);
+ applyTimePoint(h.state,'background',-10,true,h.video);assert.equal(h.state.background,0);assert.equal(h.video.currentTime,0);
+});
+test('button zoom always keeps start, end and background visible even across repeated zooms and clip boundaries',()=>{
+ for(const points of [[0,60,300],[80,100,120],[285,290,300],[0,1,1]]){
+  let view={low:0,high:300};for(let i=0;i<12;i++){const center=points[0],span=(view.high-view.low)*.5;view=fitTimelineView(center-span/2,center+span/2,301,points);assert(view.low>=0);assert(view.high<=300);for(const p of points)assert(p>=view.low-1e-8&&p<=view.high+1e-8);}
+ }
+ const tiny=fitTimelineView(0,1,2,[0,1]);assert.deepEqual(tiny,{low:0,high:1});
+});
+test('timeline zoom uses all configured sampling points and keeps pinch/pan available',()=>{
+ globalThis.ResizeObserver=class{observe(){}};globalThis.devicePixelRatio=1;
+ const ctx={fillRect(){},scale(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){},fillText(){}};
+ const canvas={clientWidth:300,clientHeight:56,addEventListener(){},getContext:()=>ctx,setAttribute(){}};
+ const state={count:301,stage:'sampling',start:90,end:150,background:60,reference:120,period:1/60},timeline=new Timeline(canvas,{getState:()=>state,onChange(){},onActive(){}});
+ timeline.reset();timeline.setActive('reference');for(let i=0;i<10;i++)timeline.zoom(.5);
+ for(const point of ['start','end','background','reference'])assert(timeline.x(state[point])>=16-1e-8&&timeline.x(state[point])<=284+1e-8);
+ assert(timeline.high-timeline.low<300);timeline.low=115;timeline.high=125;timeline.bound();assert.equal(timeline.low,115);assert.equal(timeline.high,125); // Free gesture zoom can still inspect a smaller part.
+ timeline.ensurePointsVisible();assert(timeline.low<=60&&timeline.high>=150);
+});
+
+test('sampling initially fits the selected start and end with a small margin, excluding a distant background',()=>{
+ globalThis.ResizeObserver=class{observe(){}};globalThis.devicePixelRatio=1;const ctx={fillRect(){},scale(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){},fillText(){}};const canvas={clientWidth:320,clientHeight:56,addEventListener(){},getContext:()=>ctx,setAttribute(){}};const state={count:1001,stage:'sampling',start:600,end:720,reference:650,background:20,period:1/60};const timeline=new Timeline(canvas,{getState:()=>state,onChange(){},onActive(){}});timeline.reset();timeline.fitSelection();assert(timeline.low<600);assert(timeline.high>720);assert(timeline.high-timeline.low<150);assert(timeline.low>500);
+});

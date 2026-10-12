@@ -1,0 +1,22 @@
+/* The app's style.css owns the header, branding, typography and colors on every page. */
+.home-guide-link{font-size:14px;margin:14px 0 0}.home-guide-link a,.learning-page a:not(.brand){color:var(--blue);text-underline-offset:.2em}
+.learning-page .guide-main{max-width:1000px;margin:auto;padding:32px 40px 56px}
+.learning-page .guide-breadcrumb{font-size:13px;color:var(--muted);margin-bottom:26px;line-height:1.7}
+.learning-page .guide-main h1{font-size:clamp(28px,3.4vw,40px);line-height:1.4;letter-spacing:-.7px;overflow-wrap:anywhere}
+.learning-page .guide-intro{color:var(--muted);font-size:17px;line-height:1.8}
+.learning-page article section{margin:32px 0;scroll-margin-top:20px}.learning-page article section h2{font-size:20px;line-height:1.5}
+.learning-page article section p,.learning-page .guide-related p{font-size:15px;line-height:1.85;margin:12px 0;color:var(--muted)}
+.learning-page figure{margin:20px 0}.learning-page figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:14px;background:#fff}.learning-page .example-image img{max-height:460px;object-fit:contain;background:#dae1ea}.learning-page figcaption{font-size:12px;line-height:1.6;color:var(--muted);margin-top:8px}
+.learning-page .guide-cta{display:inline-block;padding:11px 18px;border-radius:10px;background:var(--blue);color:#fff!important;font-size:15px;font-weight:600;text-decoration:none}
+.learning-page .guide-related{border-top:1px solid var(--line);padding-top:28px;margin-top:36px}.learning-page .guide-examples{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.learning-page .guide-examples>a{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none}.learning-page .guide-examples img{display:block;width:100%;height:160px;object-fit:contain;background:#dae1ea}.learning-page .guide-examples span{display:block;padding:14px;font-size:15px;line-height:1.6}
+.learning-page .guide-footer{max-width:1000px;margin:auto;padding:0 40px 32px}.learning-page .language-links{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:13px;line-height:1.7}
+@media(max-width:600px){.learning-page .guide-main{padding:24px 20px 36px}.learning-page .guide-footer{padding:0 20px 24px}.learning-page .guide-examples{grid-template-columns:1fr}.learning-page article section h2{font-size:18px}}
+/* Match the existing secondary action buttons, without changing the app header. */
+.home-guide-link .guide-entry,.learning-page .guide-entry{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 18px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;color:var(--ink)}
+.home-guide-link .beginner-mark,.learning-page .beginner-mark{font-size:21px;line-height:1}
+.learning-page .guide-toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 22px;margin:24px 0}.learning-page .guide-toc ol{columns:2;column-gap:28px;padding-left:1.4em;margin:0;font-size:14px;line-height:1.8}.learning-page .guide-toc li{break-inside:avoid;padding:4px 0}.learning-page .operation-capture a{display:block}.learning-page .operation-capture a:focus-visible{border-radius:14px}
+@media(max-width:600px){.learning-page .guide-toc ol{columns:1}}
+
+/* Separate the guide entry and match the start-screen action height. */
+.home-copy .home-guide-link{margin:16px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.home-guide-link .guide-entry{min-height:56px;padding:8px 18px;font-size:14px;line-height:1.4}

@@ -1,0 +1,52 @@
+{
+  "constant-speed": {
+    "file": "等速直線運動_解析済.mp4",
+    "duration": 3.465022,
+    "sha256": "aa5991a7dd86d4820c4be7f22477a450dac0502903b23c68d6c2f9c2b007e5b4"
+  },
+  "inclined-plane": {
+    "file": "斜面を下る物体_解析済.mp4",
+    "duration": 3.541333,
+    "sha256": "84aa848d0f63d654243432fa19659347ce153f8460fc14fd8fa5316dfe388503"
+  },
+  "soccer-free-fall": {
+    "file": "サッカーボールの自由落下_解析済.mp4",
+    "duration": 10.5,
+    "sha256": "a55b69663184e2a27d8fdfae4a5580224817f0b8c183ddd7176e1752380f485a"
+  },
+  "soccer-projectile": {
+    "file": "サッカーボールの放物運動_解析済.mp4",
+    "duration": 15.616,
+    "sha256": "052f27f5fe660d506350a100de58adfda03d35a89b592151b318674bea455518"
+  },
+  "bouncing-ball": {
+    "file": "スーパーボールのバウンド_解析済.mp4",
+    "duration": 7.8,
+    "sha256": "64ba54f87893f5b117a93046d18cc3c3c99aed19368bf2d393609eb68fb33c7b"
+  },
+  "hammer": {
+    "file": "sample-preview-hammer.mp4",
+    "duration": 3.233333,
+    "sha256": "13335bddc91c95887ad2fef020c66ae271caab060c34f0f095224ba63bb78696"
+  },
+  "pendulum": {
+    "file": "sample-pendulum_analyzed.mp4",
+    "duration": 6.666667,
+    "sha256": "e6e695815fb8cbb04868922292245ce89b824acaac222f49f36235639fd8a7cc"
+  },
+  "two-body-collision": {
+    "file": "sample-preview-constant-2body-collision.mp4",
+    "duration": 5.133333,
+    "sha256": "7ec2430d1065f724471642f06b4183933d12e528388217ed2d9ebedb9bbfc786"
+  },
+  "parabolic-motion": {
+    "file": "sample-preview-parabolic-motion.mp4",
+    "duration": 3.433333,
+    "sha256": "b6475ca3eaa4ea0969c897c80de07130d1a4744a3d49640207402868cdbd12b7"
+  },
+  "constant-speed-top": {
+    "file": "sample-preview-constant-speed_2.mp4",
+    "duration": 3.936267,
+    "sha256": "bb22790f032a35c79867b56781e37c5c032d7189294583fd287f6fd71e59bdcd"
+  }
+}
