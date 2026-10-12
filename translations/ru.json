@@ -501,5 +501,6 @@
   "First, manually mark the point to track.": "Сначала вручную отметьте точку для отслеживания.",
   "No object was detected around the selected point. Mark it again in a clear frame.": "Объект вокруг выбранной точки не обнаружен. Отметьте её заново на чётком кадре.",
   "Matching point colors and rotation": "Сопоставление цветов и поворота точки",
-  "Recreate video": "Создать видео заново"
+  "Recreate video": "Создать видео заново",
+  "Videos are processed on your device and are never uploaded to a server.": "Видео обрабатываются на вашем устройстве и не загружаются на сервер."
 }

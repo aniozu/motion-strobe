@@ -501,5 +501,6 @@
   "First, manually mark the point to track.": "먼저 추적할 점을 수동으로 지정하세요.",
   "No object was detected around the selected point. Mark it again in a clear frame.": "지정한 점 주변에서 물체를 검출하지 못했습니다. 선명한 프레임에서 다시 지정하세요.",
   "Matching point colors and rotation": "지정한 점의 색상과 회전 비교 중",
-  "Recreate video": "동영상 다시 만들기"
+  "Recreate video": "동영상 다시 만들기",
+  "Videos are processed on your device and are never uploaded to a server.": "동영상은 이 기기에서 처리되며 서버에 업로드되지 않습니다."
 }

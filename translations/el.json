@@ -501,5 +501,6 @@
   "First, manually mark the point to track.": "Πρώτα σημείωσε χειροκίνητα το σημείο που θέλεις να παρακολουθήσεις.",
   "No object was detected around the selected point. Mark it again in a clear frame.": "Δεν εντοπίστηκε αντικείμενο γύρω από το επιλεγμένο σημείο. Σημείωσέ το ξανά σε ένα καθαρό καρέ.",
   "Matching point colors and rotation": "Σύγκριση χρωμάτων και περιστροφής του σημείου",
-  "Recreate video": "Δημιουργία βίντεο ξανά"
+  "Recreate video": "Δημιουργία βίντεο ξανά",
+  "Videos are processed on your device and are never uploaded to a server.": "Τα βίντεο υποβάλλονται σε επεξεργασία στη συσκευή σου και δεν μεταφορτώνονται σε διακομιστή."
 }

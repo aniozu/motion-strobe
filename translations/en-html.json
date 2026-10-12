@@ -15,7 +15,6 @@
   "明るい場所で、背景と色がはっきり違う物体を撮る。": "Film in good light with an object that stands out from the background.",
   "同じ構図で物体が写っていない背景も撮る。": "Record a frame with the same view but without the object.",
   "速い動きを撮るときは、スローモーション撮影を使う。": "Use slow-motion recording for fast-moving objects.",
-  "動画はこの端末内で処理されます。": "Video processing stays on your device.",
   "編集手順": "Editing steps",
   "動画": "Video",
   "0 動画を選択": "0 Choose video",
@@ -228,5 +227,6 @@
   "追跡方法": "Tracking method",
   "指定した点": "Selected point",
   "物体の中心": "Object center",
-  "動画を作り直す": "Recreate video"
+  "動画を作り直す": "Recreate video",
+  "動画はこの端末内で処理され、サーバーにアップロードされることはありません。": "Videos are processed on your device and are never uploaded to a server."
 }

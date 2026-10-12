@@ -501,5 +501,6 @@
   "First, manually mark the point to track.": "Primeiro, marque manualmente o ponto a acompanhar.",
   "No object was detected around the selected point. Mark it again in a clear frame.": "Nenhum objeto foi detectado ao redor do ponto selecionado. Marque-o novamente em um quadro nítido.",
   "Matching point colors and rotation": "Comparando as cores e a rotação do ponto",
-  "Recreate video": "Recriar vídeo"
+  "Recreate video": "Recriar vídeo",
+  "Videos are processed on your device and are never uploaded to a server.": "Os vídeos são processados no seu dispositivo e nunca são enviados a um servidor."
 }

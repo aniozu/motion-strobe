@@ -501,5 +501,6 @@
   "First, manually mark the point to track.": "請先手動指定要追蹤的點。",
   "No object was detected around the selected point. Mark it again in a clear frame.": "無法在指定點周圍偵測到物體。請在清晰的影格中重新指定。",
   "Matching point colors and rotation": "正在比對指定點的顏色和旋轉",
-  "Recreate video": "重新製作影片"
+  "Recreate video": "重新製作影片",
+  "Videos are processed on your device and are never uploaded to a server.": "影片在本裝置上處理，不會上傳至伺服器。"
 }
