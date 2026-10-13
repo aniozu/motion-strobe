@@ -1,4 +1,5 @@
 import {applyMovieEdits} from './frame-clock.js';
+import {normalizeAvcReordering} from './avc-reordering.js';
 import {createFile,DataStream} from 'mp4box';
 import {timing} from './sampling.js';
 export async function parseVideo(file,onProgress=()=>{}){
@@ -11,7 +12,7 @@ export async function parseVideo(file,onProgress=()=>{}){
  const trak=mp4.getTrackById(track.id);const samples=mp4.getTrackSamplesInfo(track.id);const clock=applyMovieEdits(timing(samples,track.timescale),trak.edts?.elst?.entries,info.timescale,track.timescale);
  const entry=trak.mdia.minf.stbl.stsd.entries[0];let description;
  for(const key of ['avcC','hvcC','vpcC','av1C'])if(entry[key]){const stream=new DataStream(undefined,0,DataStream.BIG_ENDIAN);entry[key].write(stream);description=new Uint8Array(stream.buffer,8);break;}
- const config={codec:track.codec,codedWidth:track.video.width,codedHeight:track.video.height,...(description?{description}: {})};
+ const config=normalizeAvcReordering({codec:track.codec,codedWidth:track.video.width,codedHeight:track.video.height,...(description?{description}: {})},samples);
  const matrix=trak.tkhd.matrix;const rotation=matrix?((Math.round(Math.atan2(matrix[1],matrix[0])*180/Math.PI)%360+360)%360):0;
  const ptsToIndex=new Map(clock.ordered.map((s,i)=>[Math.round(s.cts*1e6/s.timescale),i]));
  return {mp4,track,trak,samples,clock,config,rotation,ptsToIndex};
