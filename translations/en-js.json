@@ -396,5 +396,14 @@
   "「追跡方法」の「指定した点」は、印や同じ部分を追う機能です。点をタップしてから「全コマを自動検出」を押します。回転と周囲の色・模様を照合します。": "Use Selected point under Tracking method to follow a marker or the same part of an object. Tap the point, then select Detect all frames. Tracking matches rotation and the surrounding colors and patterns.",
   "最初に、追いかける点を手動で指定してください。": "First, manually mark the point to track.",
   "指定した点の周りで物体を検出できません。はっきり写ったコマで指定し直してください。": "No object was detected around the selected point. Mark it again in a clear frame.",
-  "指定した点の色・回転を照合中": "Matching point colors and rotation"
+  "指定した点の色・回転を照合中": "Matching point colors and rotation",
+  "補正の基準コマが見つかりません。写真を作り直してください。": "The reference frame for correction is missing. Create the photo again.",
+  "背景の模様が少ないため、カメラの動きを補正できません。「カメラの動きを補正」をオフにしてお試しください。": "The background has too little detail for shake correction. Turn off “Correct camera movement” and try again.",
+  "背景を十分に照合できないコマがあり、補正を停止しました。範囲を短くするか、「カメラの動きを補正」をオフにしてお試しください。": "Correction stopped because a frame’s background could not be matched reliably. Shorten the range or turn off “Correct camera movement”.",
+  "動画の背景を十分に照合できないコマがあり、補正を停止しました。範囲を短くするか、補正をオフにして写真を作り直してください。": "Correction stopped because a video frame’s background could not be matched reliably. Shorten the range, or turn off correction and create the photo again.",
+  "揺れを補正して動画を作成中 ": "Creating video with shake correction ",
+  "背景を照合してカメラの動きを補正中": "Matching the background and correcting camera movement",
+  "カメラの動きを補正済み": "Camera movement corrected",
+  "カメラの動きを補正（照合できないコマは補正量を推定）": "Camera movement corrected (unmatched frames use estimated motion)",
+  "背景コマ": "Background frame"
 }

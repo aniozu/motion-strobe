@@ -10,7 +10,8 @@ import {backgroundIndices,estimateBackground} from './background.js';
 import {foregroundMask,mergeLayer,drawAnnotations,drawCornerBadge} from './annotations.js';
 import {pickObjectCenter,centersFromMarks,findCandidates,trackCandidates} from './tracking.js';
 import {trackSelectedPoint} from './point-tracking.js';
-let media,cache=new Map(),background,size,job=0,activeDecoder,activeEncoder,photoBase=null;
+import {registerFrames} from './stabilization.js';
+let media,cache=new Map(),background,size,job=0,activeDecoder,activeEncoder,photoBase=null,stabilization=null;
 const yieldTurn=()=>new Promise(r=>setTimeout(r,0));
 function centersFor(m,marks=m.anchors||[]){
  const clock=analysisClock(media.clock,m.captureFps);
@@ -27,7 +28,7 @@ self.onmessage=async({data:m})=>{
  const current=++job;
  try{
  if(m.type==='load'){
-  media=null;cache.clear();background=null;photoBase=null;
+  media=null;cache.clear();background=null;photoBase=null;stabilization=null;
   if(typeof VideoDecoder==='undefined'||typeof OffscreenCanvas==='undefined')throw Error('このブラウザーは正確なコマ抽出に対応していません。Chrome、Edge、Safariを最新にしてお試しください。');
   const parsed=await parseVideo(m.file,p=>{if(job!==current)throw Error('キャンセル');send('progress',{stage:'動画を読み込み中',value:p*.9});});if(job!==current)return;
   if(!(await VideoDecoder.isConfigSupported(parsed.config)).supported)throw Error('この動画形式はブラウザーで処理できません。H.264形式のMP4でお試しください。');
@@ -35,11 +36,12 @@ self.onmessage=async({data:m})=>{
   send('loaded',{metadata:{fps:clock.fps,period:clock.period,times:clock.times,playbackTimes:clock.playbackTimes,variableTiming:clock.variable,hasRateEdits:clock.hasRateEdits,count:clock.ordered.length,width:rotation%180?track.video.height:track.video.width,height:rotation%180?track.video.width:track.video.height,rotation,codec:track.codec,approximateTiming:clock.approximate,canShutterSound:!!(await shutterAudioConfig()),canExportVideo:typeof VideoEncoder!=='undefined'}});
  }else if(m.type==='extract'){
   if(!media)throw Error('動画を選び直してください。');
-  cache=new Map();const extractionCache=cache;background=null;photoBase=null;
+  cache=new Map();const extractionCache=cache;background=null;photoBase=null;stabilization=null;
   const targets=framePlan(m.first,m.last,m.reference,m.step,1,analysisClock(media.clock,m.captureFps));if(targets.length>240)throw Error('画像が多すぎます。時間間隔を広げるか、範囲を短くしてください（最大240枚）。');
   const autoBackground=m.backgroundMode==='auto';
   const backgroundTargets=autoBackground?backgroundIndices(m.first,m.last,analysisClock(media.clock,m.captureFps)):[m.background];
-  const required=new Set([...targets,...backgroundTargets]);const rotated=media.rotation%180!==0;
+  const fallbackReferenceIndex=Math.floor(m.first+(m.last-m.first)*.25);
+  const required=new Set([...targets,...backgroundTargets,...(m.stabilize?[m.first,fallbackReferenceIndex]:[])]);const rotated=media.rotation%180!==0;
   size=outputSize(rotated?media.track.video.height:media.track.video.width,rotated?media.track.video.width:media.track.video.height,required.size,m.maxDimension);
   const canvas=new OffscreenCanvas(size.width,size.height),ctx=canvas.getContext('2d',{willReadFrequently:true});
   const extracted=await runDecodeRecovery({media,operation:'コマ抽出',requested:{first:m.first+1,last:m.last+1,background:m.background+1,frames:targets.length},cancelled:()=>job!==current,
@@ -48,7 +50,7 @@ self.onmessage=async({data:m})=>{
     cache.clear();ctx.clearRect(0,0,size.width,size.height);
     await decodeRange({media,first:Math.min(...required),last:Math.max(...required),strategy,diagnostic,cancelled:()=>job!==current,
      setActive:decoder=>{if(decoder||job===current)activeDecoder=decoder;},
-     onProgress:p=>send('progress',{stage:`画像を抽出中 ${cache.size}/${required.size}${diagnostic.attempt>1?` · 再試行${diagnostic.attempt}`:''}`,value:p*.9}),
+     onProgress:p=>send('progress',{stage:`画像を抽出中 ${cache.size}/${required.size}${diagnostic.attempt>1?` · 再試行${diagnostic.attempt}`:''}`,value:p*(m.stabilize?.8:.9)}),
      onFrame:(frame,index)=>{
       if(job!==current||!required.has(index)||cache.has(index))return;
       ctx.save();try{ctx.clearRect(0,0,size.width,size.height);ctx.translate(size.width/2,size.height/2);ctx.rotate(media.rotation*Math.PI/180);
@@ -62,11 +64,25 @@ self.onmessage=async({data:m})=>{
     return true;
    }});
   if(extracted&&job===current){
+   let referencePixels;
+   if(m.stabilize){
+    referencePixels=cache.get(m.first);
+    const registration=await registerFrames({indices:[...required].sort((a,b)=>a-b),getFrame:index=>cache.get(index),width:size.width,height:size.height,referenceIndex:m.first,fallbackReferenceIndex,timeForIndex:index=>frameTime(media.clock,index,true),cancelled:()=>job!==current,yieldTurn,onProgress:p=>send('progress',{stage:'背景を照合してカメラの動きを補正中',value:.8+p*.15})});
+    if(!registration||job!==current)return;
+    const aligned=new OffscreenCanvas(size.width,size.height),alignedCtx=aligned.getContext('2d',{willReadFrequently:true});
+    for(const index of required){
+     if(job!==current)return;ctx.putImageData(new ImageData(cache.get(index),size.width,size.height),0,0);alignedCtx.clearRect(0,0,size.width,size.height);alignedCtx.save();try{alignedCtx.transform(...registration.transforms.get(index));alignedCtx.drawImage(canvas,0,0);}finally{alignedCtx.restore();}
+     cache.set(index,alignedCtx.getImageData(0,0,size.width,size.height).data);await yieldTurn();
+    }
+    stabilization={...registration,videoTransforms:new Map(registration.transforms)};
+   }
    let estimated;
-   try{estimated=autoBackground?await estimateBackground(backgroundTargets.map(index=>cache.get(index)),{cancelled:()=>job!==current,yieldTurn,onProgress:p=>send('progress',{stage:'背景を自動作成中',value:.9+p*.1})}):cache.get(m.background);}
+   try{estimated=autoBackground?await estimateBackground(backgroundTargets.map(index=>cache.get(index)),{cancelled:()=>job!==current,yieldTurn,onProgress:p=>send('progress',{stage:'背景を自動作成中',value:(m.stabilize?.95:.9)+p*(m.stabilize?.05:.1)})}):cache.get(m.background);}
    finally{const retained=new Set(targets);for(const index of extractionCache.keys())if(!retained.has(index))extractionCache.delete(index);}
-   if(job!==current)return; background=estimated;
-   send('extracted',{size,indices:targets,backgroundMode:autoBackground?'auto':'manual'});
+   if(job!==current)return;
+   if(referencePixels){estimated=new Uint8ClampedArray(estimated);for(let p=0;p<estimated.length;p+=4)if(estimated[p+3]<255)estimated.set(referencePixels.subarray(p,p+4),p);}
+   background=estimated;
+   send('extracted',{size,indices:targets,backgroundMode:autoBackground?'auto':'manual',stabilization:stabilization?.summary||null});
   }
  }else if(m.type==='select-center'){
   const frame=cache.get(m.index);if(!frame||!Number.isFinite(m.x)||!Number.isFinite(m.y))throw Error('このコマを表示し直してから指定してください。');
@@ -107,8 +123,8 @@ self.onmessage=async({data:m})=>{
  }else if(m.type==='export-video'){
   if(!media||!background)throw Error('写真を作成してから動画を作成してください。');
   const tracks=tracksFor(m),centers=tracks.flatMap(o=>o.centers.map(p=>({...p,objectId:o.id})));
-  const result=await exportVideo({media,cache,background,size,settings:{...m,centers,calibration:withCalibrationOrigin(m.calibration,[coordinateOrigin({objects:tracks})],size)},cancelled:()=>job!==current,onProgress:p=>send('progress',p),onDiagnostic:diagnostics=>send('diagnostic',{diagnostics}),setActive:(decoder,encoder)=>{if(decoder||job===current){activeDecoder=decoder;activeEncoder=encoder;}}});
-  if(result&&job===current)send('video-exported',result);
+  const result=await exportVideo({media,cache,background,size,stabilization,settings:{...m,centers,calibration:withCalibrationOrigin(m.calibration,[coordinateOrigin({objects:tracks})],size)},cancelled:()=>job!==current,onProgress:p=>send('progress',p),onDiagnostic:diagnostics=>send('diagnostic',{diagnostics}),setActive:(decoder,encoder)=>{if(decoder||job===current){activeDecoder=decoder;activeEncoder=encoder;}}});
+  if(result&&job===current)send('video-exported',{...result,stabilization:stabilization?{...stabilization.summary,videoEstimatedFrames:stabilization.videoEstimatedIndices?.size||0}:null});
  }else if(m.type==='compose'){
   if(!background)throw Error('画像を抽出してください。');const indices=framePlan(m.first,m.last,m.reference,m.step,m.factor,analysisClock(media.clock,m.captureFps));
   const tracks=tracksFor(m),originCenter=coordinateOrigin({objects:tracks}),centers=tracks.flatMap(o=>o.centers.filter(p=>indices.includes(p.index)).map(p=>({...p,objectId:o.id})));

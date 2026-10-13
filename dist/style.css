@@ -328,8 +328,8 @@ html:not([lang=ja]) .workspace .steps{flex-wrap:wrap}
 html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
 @media(max-width:480px){.language-picker{max-width:7em;font-size:13px}.header-actions{gap:5px}header{padding-left:12px;padding-right:12px}.brand{gap:5px;font-size:14px}}
 /* Selected boundary frame: preserve the existing preview dimensions and controls. */
-.view-area[data-preview-frame=start]{--preview-frame-color:#2359db}.view-area[data-preview-frame=end]{--preview-frame-color:#df902c}.view-area[data-preview-frame=reference]{--preview-frame-color:#a05bc6}
-.view-area[data-preview-frame=start]::after,.view-area[data-preview-frame=end]::after,.view-area[data-preview-frame=reference]::after{content:"";position:absolute;inset:0;border:3px solid var(--preview-frame-color);border-radius:inherit;pointer-events:none;z-index:2}
+.view-area[data-preview-frame=start]{--preview-frame-color:#2359db}.view-area[data-preview-frame=end]{--preview-frame-color:#df902c}.view-area[data-preview-frame=reference]{--preview-frame-color:#a05bc6}.view-area[data-preview-frame=background]{--preview-frame-color:#169f86}
+.view-area[data-preview-frame=start]::after,.view-area[data-preview-frame=end]::after,.view-area[data-preview-frame=reference]::after,.view-area[data-preview-frame=background]::after{content:"";position:absolute;inset:0;border:3px solid var(--preview-frame-color);border-radius:inherit;pointer-events:none;z-index:2}
 .preview-frame-label{position:absolute;top:12px;left:12px;z-index:3;color:var(--preview-frame-color);background:#fff;padding:5px 10px;border:1px solid currentColor;border-radius:7px;font-size:14px;font-weight:700;pointer-events:none}
 .time-fields .background-point{align-items:start}.background-point .point-label{min-height:36px;display:flex;align-items:center}.background-point .background-options{align-self:start}
 
@@ -343,3 +343,6 @@ html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
 /* Equal primary action widths with a compact share action. */
 .workspace #resultPanel .result-actions{grid-template-columns:repeat(2,minmax(0,1fr)) minmax(44px,.55fr);align-items:stretch}
 .workspace #resultPanel .result-actions button{width:100%;min-width:0;min-height:44px;padding:8px 5px;line-height:1.35;white-space:normal;overflow-wrap:anywhere;text-wrap:balance;text-align:center}
+
+.camera-correction-option{margin:12px 0}
+.stabilization-result{font-size:12px;line-height:1.5;color:var(--muted,#51636f);margin:0 0 12px}

@@ -25,3 +25,11 @@ test('sampling reference indicator uses the selected source frame and clears for
  for(const stage of ['range','result'])assert.equal(previewFrameRole({...state,stage},'reference',video),null);
  assert.equal(previewFrameRole(state,'start',video),null);
 });
+
+test('manual background selection shows its frame indicator only at the selected paused playback time',()=>{
+ const state={stage:'range',start:1,end:3,background:2,backgroundMode:'manual',period:1/120,times:[0,.01,.02,.03],playbackTimes:[0,.04,.08,.12]},video={paused:true,seeking:false,hidden:false,currentTime:.08};
+ assert.equal(previewFrameRole(state,'background',video),'background');
+ for(const patch of [{paused:false},{seeking:true},{hidden:true},{currentTime:.02}])assert.equal(previewFrameRole(state,'background',{...video,...patch}),null);
+ assert.equal(previewFrameRole({...state,backgroundMode:'auto'},'background',video),null);
+ for(const stage of ['sampling','result'])assert.equal(previewFrameRole({...state,stage},'background',video),null);
+});

@@ -502,5 +502,16 @@
   "No object was detected around the selected point. Mark it again in a clear frame.": "Объект вокруг выбранной точки не обнаружен. Отметьте её заново на чётком кадре.",
   "Matching point colors and rotation": "Сопоставление цветов и поворота точки",
   "Recreate video": "Создать видео заново",
-  "Videos are processed on your device and are never uploaded to a server.": "Видео обрабатываются на вашем устройстве и не загружаются на сервер."
+  "Videos are processed on your device and are never uploaded to a server.": "Видео обрабатываются на вашем устройстве и не загружаются на сервер.",
+  "This projectile-motion sample has artificial camera movement added.": "В этот пример движения по параболе искусственно добавлена тряска камеры.",
+  "Correct camera movement": "Корректировать движение камеры",
+  "Camera movement corrected": "Движение камеры скорректировано",
+  "The reference frame for correction is missing. Create the photo again.": "Не найден опорный кадр для коррекции. Создайте фото заново.",
+  "The background has too little detail for shake correction. Turn off “Correct camera movement” and try again.": "На фоне слишком мало деталей для коррекции тряски. Выключите «Корректировать движение камеры» и повторите попытку.",
+  "Correction stopped because a frame’s background could not be matched reliably. Shorten the range or turn off “Correct camera movement”.": "Коррекция остановлена: фон одного из кадров не удалось надёжно сопоставить. Сократите интервал или выключите «Корректировать движение камеры».",
+  "Correction stopped because a video frame’s background could not be matched reliably. Shorten the range, or turn off correction and create the photo again.": "Коррекция остановлена: фон одного из кадров видео не удалось надёжно сопоставить. Сократите интервал или выключите коррекцию и создайте фото заново.",
+  "Creating video with shake correction ": "Создание видео с коррекцией тряски ",
+  "Matching the background and correcting camera movement": "Сопоставление фона и коррекция тряски камеры",
+  "Camera movement corrected (unmatched frames use estimated motion)": "Движение камеры скорректировано (для кадров без совпадений оно оценивается)",
+  "Background frame": "Кадр фона"
 }

@@ -19,7 +19,7 @@ const content={ja:[
   [
    "2. 時間範囲と背景を決める",
    [
-    "画面右側の「時間範囲」で、使う部分の開始・終了を指定します。時刻の入力、±ボタン、画像の下の時間バーで変更できます。±は1コマずつ動きます。",
+    "時刻バーの「開始」「終了」の点をドラッグして、使う時間範囲を指定します。「時間範囲」の±ボタンで1コマずつ調整したり、時刻を直接入力したりすることもできます。",
     "背景は「自動」のままで進めます。物体の跡が残る場合は「手動」に切り替え、物体が写っていないコマを選びます。右下の「次へ」で進みます。"
    ],
    ["range-013-073","range-end-013-073"]
@@ -117,7 +117,7 @@ const content={ja:[
   [
    "2. Set the time range and background",
    [
-    "In Time range on the right, choose the start and end of the clip to use. You can use the time fields, ± buttons or the timeline below the image. The ± buttons move one frame at a time.",
+    "Drag the Start and End markers on the timeline to select the part of the video to use. You can also adjust the times one frame at a time with the ± buttons in Time range, or enter a time directly.",
     "Keep the background set to Auto. If traces of the object remain, switch to Manual and choose a frame without the object. Select Next at the bottom right."
    ],
    ["range-013-073","range-end-013-073"]

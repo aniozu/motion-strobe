@@ -502,5 +502,16 @@
   "No object was detected around the selected point. Mark it again in a clear frame.": "無法在指定點周圍偵測到物體。請在清晰的影格中重新指定。",
   "Matching point colors and rotation": "正在比對指定點的顏色和旋轉",
   "Recreate video": "重新製作影片",
-  "Videos are processed on your device and are never uploaded to a server.": "影片在本裝置上處理，不會上傳至伺服器。"
+  "Videos are processed on your device and are never uploaded to a server.": "影片在本裝置上處理，不會上傳至伺服器。",
+  "This projectile-motion sample has artificial camera movement added.": "此拋體運動範例人工加入了相機晃動。",
+  "Correct camera movement": "校正相機移動",
+  "Camera movement corrected": "已校正相機移動",
+  "The reference frame for correction is missing. Create the photo again.": "找不到校正所需的參考影格。請重新製作照片。",
+  "The background has too little detail for shake correction. Turn off “Correct camera movement” and try again.": "背景細節太少，無法校正相機移動。請關閉「校正相機移動」後重試。",
+  "Correction stopped because a frame’s background could not be matched reliably. Shorten the range or turn off “Correct camera movement”.": "有一個影格的背景無法可靠比對，校正已停止。請縮短時間範圍，或關閉「校正相機移動」。",
+  "Correction stopped because a video frame’s background could not be matched reliably. Shorten the range, or turn off correction and create the photo again.": "影片中有一個影格的背景無法可靠比對，校正已停止。請縮短時間範圍，或關閉校正後重新製作照片。",
+  "Creating video with shake correction ": "正在製作晃動校正影片 ",
+  "Matching the background and correcting camera movement": "正在比對背景並校正相機移動",
+  "Camera movement corrected (unmatched frames use estimated motion)": "已校正相機移動（無法匹配的影格使用估算的校正量）",
+  "Background frame": "背景影格"
 }

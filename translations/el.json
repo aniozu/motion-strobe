@@ -502,5 +502,16 @@
   "No object was detected around the selected point. Mark it again in a clear frame.": "Δεν εντοπίστηκε αντικείμενο γύρω από το επιλεγμένο σημείο. Σημείωσέ το ξανά σε ένα καθαρό καρέ.",
   "Matching point colors and rotation": "Σύγκριση χρωμάτων και περιστροφής του σημείου",
   "Recreate video": "Δημιουργία βίντεο ξανά",
-  "Videos are processed on your device and are never uploaded to a server.": "Τα βίντεο υποβάλλονται σε επεξεργασία στη συσκευή σου και δεν μεταφορτώνονται σε διακομιστή."
+  "Videos are processed on your device and are never uploaded to a server.": "Τα βίντεο υποβάλλονται σε επεξεργασία στη συσκευή σου και δεν μεταφορτώνονται σε διακομιστή.",
+  "This projectile-motion sample has artificial camera movement added.": "Σε αυτό το παράδειγμα παραβολικής κίνησης έχει προστεθεί τεχνητό κούνημα της κάμερας.",
+  "Correct camera movement": "Διόρθωση κίνησης κάμερας",
+  "Camera movement corrected": "Η κίνηση της κάμερας διορθώθηκε",
+  "The reference frame for correction is missing. Create the photo again.": "Δεν βρέθηκε το καρέ αναφοράς για τη διόρθωση. Δημιούργησε ξανά τη φωτογραφία.",
+  "The background has too little detail for shake correction. Turn off “Correct camera movement” and try again.": "Το φόντο έχει πολύ λίγες λεπτομέρειες για διόρθωση. Απενεργοποίησε τη «Διόρθωση κίνησης κάμερας» και δοκίμασε ξανά.",
+  "Correction stopped because a frame’s background could not be matched reliably. Shorten the range or turn off “Correct camera movement”.": "Η διόρθωση σταμάτησε επειδή το φόντο ενός καρέ δεν αντιστοιχίστηκε αξιόπιστα. Μίκρυνε το χρονικό εύρος ή απενεργοποίησε τη «Διόρθωση κίνησης κάμερας».",
+  "Correction stopped because a video frame’s background could not be matched reliably. Shorten the range, or turn off correction and create the photo again.": "Η διόρθωση σταμάτησε επειδή το φόντο ενός καρέ βίντεο δεν αντιστοιχίστηκε αξιόπιστα. Μίκρυνε το χρονικό εύρος ή απενεργοποίησε τη διόρθωση και δημιούργησε ξανά τη φωτογραφία.",
+  "Creating video with shake correction ": "Δημιουργία βίντεο με διόρθωση κουνήματος ",
+  "Matching the background and correcting camera movement": "Αντιστοίχιση φόντου και διόρθωση κουνήματος κάμερας",
+  "Camera movement corrected (unmatched frames use estimated motion)": "Η κίνηση της κάμερας διορθώθηκε (εκτίμηση για τα καρέ χωρίς αντιστοίχιση)",
+  "Background frame": "Καρέ φόντου"
 }

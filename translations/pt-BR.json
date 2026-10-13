@@ -502,5 +502,16 @@
   "No object was detected around the selected point. Mark it again in a clear frame.": "Nenhum objeto foi detectado ao redor do ponto selecionado. Marque-o novamente em um quadro nítido.",
   "Matching point colors and rotation": "Comparando as cores e a rotação do ponto",
   "Recreate video": "Recriar vídeo",
-  "Videos are processed on your device and are never uploaded to a server.": "Os vídeos são processados no seu dispositivo e nunca são enviados a um servidor."
+  "Videos are processed on your device and are never uploaded to a server.": "Os vídeos são processados no seu dispositivo e nunca são enviados a um servidor.",
+  "This projectile-motion sample has artificial camera movement added.": "Este exemplo de movimento parabólico tem tremores de câmera adicionados artificialmente.",
+  "Correct camera movement": "Corrigir movimento da câmera",
+  "Camera movement corrected": "Movimento da câmera corrigido",
+  "The reference frame for correction is missing. Create the photo again.": "O quadro de referência da correção não foi encontrado. Crie a foto novamente.",
+  "The background has too little detail for shake correction. Turn off “Correct camera movement” and try again.": "O fundo tem poucos detalhes para corrigir os tremores. Desative “Corrigir movimento da câmera” e tente novamente.",
+  "Correction stopped because a frame’s background could not be matched reliably. Shorten the range or turn off “Correct camera movement”.": "A correção parou porque não foi possível identificar o fundo de um quadro com segurança. Reduza o intervalo ou desative “Corrigir movimento da câmera”.",
+  "Correction stopped because a video frame’s background could not be matched reliably. Shorten the range, or turn off correction and create the photo again.": "A correção parou porque não foi possível identificar o fundo de um quadro do vídeo com segurança. Reduza o intervalo ou desative a correção e crie a foto novamente.",
+  "Creating video with shake correction ": "Criando vídeo com correção de tremores ",
+  "Matching the background and correcting camera movement": "Identificando o fundo e corrigindo os tremores da câmera",
+  "Camera movement corrected (unmatched frames use estimated motion)": "Movimento da câmera corrigido (estimado nos quadros sem correspondência)",
+  "Background frame": "Quadro de fundo"
 }

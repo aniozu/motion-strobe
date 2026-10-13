@@ -5,6 +5,26 @@ import {createFile} from 'mp4box';
 import {foregroundMask,mergeLayer,drawAnnotations,drawCornerBadge} from './annotations.js';
 export {foregroundMask,drawTimeLabel} from './annotations.js';
 import {framePlan} from './sampling.js';
+import {registrationImage,estimateCameraTransform,invertTransform,scaledTransform,combineTransforms,cameraTransformFromNeighbors} from './stabilization.js';
+export function cameraTransformForVideo(stabilization,pixels,width,height,index){
+ const known=stabilization.videoTransforms.get(index);
+ if(known){const inTemplate=stabilization.templateToOutput?combineTransforms(invertTransform(stabilization.templateToOutput),known):known,inverse=invertTransform(inTemplate);stabilization.lastForward=scaledTransform(inverse,stabilization.reference.width/stabilization.reference.sourceWidth,stabilization.reference.height/stabilization.reference.sourceHeight);if(stabilization.estimatedFrames?.has(index))(stabilization.videoEstimatedIndices??=new Set()).add(index);return known;}
+ const image=registrationImage(pixels,width,height);let result=estimateCameraTransform(stabilization.reference,image,{initial:stabilization.lastForward});
+ const measured=stabilization.measuredTransforms??=new Map([...(stabilization.transforms||stabilization.videoTransforms)].filter(([i])=>!stabilization.estimatedFrames?.has(i)));
+ if(!result){
+  const outputToTemplate=stabilization.templateToOutput?invertTransform(stabilization.templateToOutput):null,matchingPoses=outputToTemplate?new Map([...measured].map(([i,m])=>[i,combineTransforms(outputToTemplate,m)])):measured;
+  const predicted=cameraTransformFromNeighbors(matchingPoses,index,{width,height,timeForIndex:stabilization.timeForIndex});
+  if(predicted){
+   const initial=scaledTransform(invertTransform(predicted.matrix),stabilization.reference.width/width,stabilization.reference.height/height);
+   result=estimateCameraTransform(stabilization.reference,image,{initial});
+   if(!result){const matrix=stabilization.templateToOutput?combineTransforms(stabilization.templateToOutput,predicted.matrix):predicted.matrix;stabilization.videoTransforms.set(index,matrix);(stabilization.estimatedFrames??=new Map()).set(index,predicted.mode);(stabilization.videoEstimatedIndices??=new Set()).add(index);stabilization.lastForward=initial;return matrix;}
+  }
+ }
+ if(!result){const error=new Error('動画の背景を十分に照合できないコマがあり、補正を停止しました。範囲を短くするか、補正をオフにして写真を作り直してください。');error.name='StabilizationError';throw error;}
+ const matrix=stabilization.templateToOutput?combineTransforms(stabilization.templateToOutput,result.matrix):result.matrix;
+ stabilization.videoTransforms.set(index,matrix);measured.set(index,matrix);stabilization.lastForward=result.forward;return matrix;
+}
+function drawOrientedFrame(ctx,frame,width,height,rotation){ctx.save();try{ctx.translate(width/2,height/2);ctx.rotate(rotation*Math.PI/180);const rotated=rotation%180!==0;ctx.drawImage(frame,-(rotated?height:width)/2,-(rotated?width:height)/2,rotated?height:width,rotated?width:height);}finally{ctx.restore();}}
 export function videoPlan(first,last,sourceFps,maxFps=60){const stride=Math.max(1,Math.ceil(sourceFps/maxFps));return {stride,fps:sourceFps/stride,count:Math.floor((last-first)/stride)+1};}
 export function timedVideoPlan(first,last,clock,maxFps=60){
  const indices=[first],spacing=1/maxFps;
@@ -43,7 +63,7 @@ export async function exportVideo(options){
   onRetry:(attempt,label)=>onProgress({stage:`動画を自動再試行 ${attempt}/3 · ${label}`,value:0}),
   run:(strategy,diagnostic)=>exportVideoAttempt({...options,strategy,diagnostic})});
 }
-async function exportVideoAttempt({media,cache,background,size,settings,cancelled,onProgress,setActive,strategy,diagnostic}){
+async function exportVideoAttempt({media,cache,background,size,stabilization,settings,cancelled,onProgress,setActive,strategy,diagnostic}){
  if(typeof VideoEncoder==='undefined'||typeof VideoFrame==='undefined')throw Error('このブラウザーはMP4の書き出しに未対応です。写真の保存は引き続き使えます。');
  const {first,last,reference,step,factor,sensitivity}=settings,speed=videoPlaybackSpeed(settings.playbackSpeed);
  const indices=framePlan(first,last,reference,step,factor,analysisClock(media.clock,settings.captureFps));if(indices.some(n=>!cache.has(n)))throw Error('写真を作り直してから動画を作成してください。');
@@ -69,8 +89,13 @@ async function exportVideoAttempt({media,cache,background,size,settings,cancelle
  const pendingFrames=new Map();let nextFrame=0;
  const durations=new Map();let failure,encoded=0,rendered=0,nextOverlay=0,visibleCenters=[],lastActivity=Date.now(),lastRenderedTimestamp=-1,decoder,encoder;
  const sourceCanvas=new OffscreenCanvas(width,height),ctx=sourceCanvas.getContext('2d',{willReadFrequently:true});const overlay=new OffscreenCanvas(size.width,size.height),overlayCtx=overlay.getContext('2d');const maskCanvas=new OffscreenCanvas(size.width,size.height),maskCtx=maskCanvas.getContext('2d');
+ let analysisCanvas,analysisCtx,backgroundCanvas;
+ if(stabilization){
+  analysisCanvas=new OffscreenCanvas(size.width,size.height);analysisCtx=analysisCanvas.getContext('2d',{willReadFrequently:true});
+  backgroundCanvas=new OffscreenCanvas(size.width,size.height);backgroundCanvas.getContext('2d').putImageData(new ImageData(background,size.width,size.height),0,0);stabilization.lastForward=null;stabilization.videoEstimatedIndices=new Set();
+ }
  const yieldTurn=()=>new Promise(r=>setTimeout(r,0));
- const progress=()=>onProgress({stage:`動画を作成中 ${encoded}/${totalCount}コマ`,value:Math.min(.97,.1+encoded/totalCount*.87)});
+ const progress=()=>onProgress({stage:stabilization?`揺れを補正して動画を作成中 ${encoded}/${totalCount}コマ`:`動画を作成中 ${encoded}/${totalCount}コマ`,value:Math.min(.97,.1+encoded/totalCount*.87)});
  try{
   encoder=new VideoEncoder({error:e=>failure=e,output:(chunk,metadata)=>{try{if(cancelled())return;if(!durations.has(chunk.timestamp))throw Error('書き出したコマの時刻が一致しません。');writer.add(chunk,metadata,durations.get(chunk.timestamp));durations.delete(chunk.timestamp);encoded++;lastActivity=Date.now();}catch(e){failure=e;}}});encoder.configure(config);
   await decodeRange({media,first,last:lastSample,strategy,diagnostic,cancelled,
@@ -79,7 +104,14 @@ async function exportVideoAttempt({media,cache,background,size,settings,cancelle
    onProgress:progress,onFrame:(frame,index)=>{
     if(cancelled()||failure)return;lastActivity=Date.now();if(index===undefined||!outputIndices.has(index))return;
     if(positionForIndex.get(index)<nextFrame||pendingFrames.has(index))return;
-    ctx.save();ctx.fillStyle='#000';ctx.fillRect(0,0,width,height);ctx.translate(width/2,height/2);ctx.rotate(media.rotation*Math.PI/180);const rotated=media.rotation%180!==0;ctx.drawImage(frame,-(rotated?height:width)/2,-(rotated?width:height)/2,rotated?height:width,rotated?width:height);ctx.restore();
+    if(stabilization){
+     let matrix=stabilization.videoTransforms.get(index);
+     if(!matrix){analysisCtx.clearRect(0,0,analysisCanvas.width,analysisCanvas.height);drawOrientedFrame(analysisCtx,frame,analysisCanvas.width,analysisCanvas.height,media.rotation);}
+     matrix=cameraTransformForVideo(stabilization,matrix?null:analysisCtx.getImageData(0,0,analysisCanvas.width,analysisCanvas.height).data,analysisCanvas.width,analysisCanvas.height,index);
+     // Areas outside the source frame retain the already reconstructed background.
+     // Do not resize/crop independently per frame: tracked coordinates stay fixed.
+     ctx.drawImage(backgroundCanvas,0,0,width,height);ctx.save();try{ctx.scale(width/size.width,height/size.height);ctx.transform(...matrix);drawOrientedFrame(ctx,frame,size.width,size.height,media.rotation);}finally{ctx.restore();}
+    }else{ctx.save();ctx.fillStyle='#000';ctx.fillRect(0,0,width,height);drawOrientedFrame(ctx,frame,width,height,media.rotation);ctx.restore();}
     pendingFrames.set(index,ctx.getImageData(0,0,width,height));
     if(pendingFrames.size*width*height*4>64*1024*1024)throw Error('動画のコマ順の復元に必要なメモリが不足しました。');
     while(pendingFrames.has(plan.indices[nextFrame])){

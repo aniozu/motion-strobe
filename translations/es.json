@@ -506,5 +506,16 @@
   "No object was detected around the selected point. Mark it again in a clear frame.": "No se ha detectado ningún objeto alrededor del punto seleccionado. Vuelve a marcarlo en un fotograma nítido.",
   "Matching point colors and rotation": "Comparando colores y rotación del punto",
   "Recreate video": "Crear vídeo de nuevo",
-  "Videos are processed on your device and are never uploaded to a server.": "Los vídeos se procesan en tu dispositivo y nunca se suben a un servidor."
+  "Videos are processed on your device and are never uploaded to a server.": "Los vídeos se procesan en tu dispositivo y nunca se suben a un servidor.",
+  "This projectile-motion sample has artificial camera movement added.": "Este ejemplo de movimiento parabólico incluye vibraciones de cámara añadidas artificialmente.",
+  "Correct camera movement": "Corregir movimiento de cámara",
+  "Camera movement corrected": "Movimiento de cámara corregido",
+  "The reference frame for correction is missing. Create the photo again.": "Falta el fotograma de referencia para la corrección. Vuelve a crear la foto.",
+  "The background has too little detail for shake correction. Turn off “Correct camera movement” and try again.": "El fondo tiene pocos detalles para corregir las vibraciones. Desactiva «Corregir movimiento de cámara» y vuelve a intentarlo.",
+  "Correction stopped because a frame’s background could not be matched reliably. Shorten the range or turn off “Correct camera movement”.": "La corrección se detuvo porque no se pudo identificar el fondo de un fotograma con suficiente fiabilidad. Acorta el intervalo o desactiva «Corregir movimiento de cámara».",
+  "Correction stopped because a video frame’s background could not be matched reliably. Shorten the range, or turn off correction and create the photo again.": "La corrección se detuvo porque no se pudo identificar el fondo de un fotograma del vídeo con suficiente fiabilidad. Acorta el intervalo o desactiva la corrección y vuelve a crear la foto.",
+  "Creating video with shake correction ": "Creando vídeo con corrección de vibraciones ",
+  "Matching the background and correcting camera movement": "Identificando el fondo y corrigiendo las vibraciones de la cámara",
+  "Camera movement corrected (unmatched frames use estimated motion)": "Movimiento de cámara corregido (se estima el movimiento de los fotogramas sin coincidencia)",
+  "Background frame": "Fotograma de fondo"
 }

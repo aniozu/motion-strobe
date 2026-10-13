@@ -4,10 +4,11 @@ import {calibrationBasis} from './calibration.js';
 // This mask is shared by photo and video. Frame marks never change the composite.
 export function foregroundMask(background,frame,sensitivity,width){
  let drift=0,count=0;
- for(let i=0;i<frame.length;i+=64){drift+=(frame[i]-background[i]+frame[i+1]-background[i+1]+frame[i+2]-background[i+2])/3;count++;}
+ for(let i=0;i<frame.length;i+=64){if(frame[i+3]<255||background[i+3]<255)continue;drift+=(frame[i]-background[i]+frame[i+1]-background[i+1]+frame[i+2]-background[i+2])/3;count++;}
  drift/=Math.max(1,count);
  const pixels=new Uint8ClampedArray(frame.length);
  for(let i=0;i<frame.length;i+=4){
+  if(frame[i+3]<255||background[i+3]<255)continue;
   const delta=Math.max(Math.abs(frame[i]-background[i]-drift),Math.abs(frame[i+1]-background[i+1]-drift),Math.abs(frame[i+2]-background[i+2]-drift));
   if(delta>sensitivity)pixels.set(frame.subarray(i,i+4),i);
  }

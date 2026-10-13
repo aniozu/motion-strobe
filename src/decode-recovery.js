@@ -89,6 +89,7 @@ export async function runDecodeRecovery({media,operation,requested,onDiagnostic=
    }
    history.push({...error.diagnostic,status:'失敗',errorName:error.originalName,error:error.message});
    onDiagnostic({operation,attempts:[...history],recovered:false});
+   if(error.originalName==='StabilizationError'){const stopped=new Error(error.message);stopped.diagnostics={operation,attempts:history,recovered:false};throw stopped;}
    // Drawing/security errors are not repaired by a different video decoder.
    if(error.diagnostic.phase==='コマの描画'&&['SecurityError','TypeError'].includes(error.originalName))break;
   }

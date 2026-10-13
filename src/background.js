@@ -13,14 +13,16 @@ export function backgroundIndices(first,last,clock,limit=8){
 export async function estimateBackground(frames,{cancelled=()=>false,onProgress=()=>{},yieldTurn=()=>new Promise(r=>setTimeout(r,0)),tolerance=18}={}){
  if(!frames.length||frames.some(frame=>frame.length!==frames[0].length)||frames[0].length%4)throw Error('背景用の画像が不足しています。もう一度作成してください。');
  const result=new Uint8ClampedArray(frames[0].length),count=frames.length;
- const red=new Uint8Array(count),green=new Uint8Array(count),blue=new Uint8Array(count),middle=count>>1;
- const median=values=>count%2?values[middle]:(values[middle-1]+values[middle])/2;
+ const red=new Uint8Array(count),green=new Uint8Array(count),blue=new Uint8Array(count);
+ const median=(values,n)=>n%2?values[n>>1]:(values[(n>>1)-1]+values[n>>1])/2;
  for(let offset=0;offset<result.length;offset+=4){
   if(offset%16384===0){if(cancelled())throw Error('キャンセル');onProgress(offset/result.length);await yieldTurn();if(cancelled())throw Error('キャンセル');}
-  for(let n=0;n<count;n++){red[n]=frames[n][offset];green[n]=frames[n][offset+1];blue[n]=frames[n][offset+2];}
-  red.sort();green.sort();blue.sort();const r=median(red),g=median(green),b=median(blue);
+  let valid=0;for(let n=0;n<count;n++){if(frames[n][offset+3]<255)continue;red[valid]=frames[n][offset];green[valid]=frames[n][offset+1];blue[valid]=frames[n][offset+2];valid++;}
+  if(!valid)continue;
+  const rr=valid===count?red:red.subarray(0,valid),gg=valid===count?green:green.subarray(0,valid),bb=valid===count?blue:blue.subarray(0,valid);rr.sort();gg.sort();bb.sort();const r=median(rr,valid),g=median(gg,valid),b=median(bb,valid);
   let sumR=0,sumG=0,sumB=0,hits=0,nearest=frames[0],distance=Infinity;
   for(const frame of frames){
+   if(frame[offset+3]<255)continue;
    const delta=Math.max(Math.abs(frame[offset]-r),Math.abs(frame[offset+1]-g),Math.abs(frame[offset+2]-b));
    if(delta<distance){distance=delta;nearest=frame;}
    if(delta<=tolerance){sumR+=frame[offset];sumG+=frame[offset+1];sumB+=frame[offset+2];hits++;}

@@ -506,5 +506,16 @@
   "No object was detected around the selected point. Mark it again in a clear frame.": "Aucun objet détecté autour du point sélectionné. Marque-le à nouveau dans une image nette.",
   "Matching point colors and rotation": "Comparaison des couleurs et de la rotation du point",
   "Recreate video": "Recréer la vidéo",
-  "Videos are processed on your device and are never uploaded to a server.": "Les vidéos sont traitées sur ton appareil et ne sont jamais envoyées à un serveur."
+  "Videos are processed on your device and are never uploaded to a server.": "Les vidéos sont traitées sur ton appareil et ne sont jamais envoyées à un serveur.",
+  "This projectile-motion sample has artificial camera movement added.": "Des secousses de caméra artificielles ont été ajoutées à cet exemple de mouvement parabolique.",
+  "Correct camera movement": "Corriger le mouvement de la caméra",
+  "Camera movement corrected": "Mouvement de caméra corrigé",
+  "The reference frame for correction is missing. Create the photo again.": "L’image de référence pour la correction est introuvable. Recrée la photo.",
+  "The background has too little detail for shake correction. Turn off “Correct camera movement” and try again.": "Le fond manque de détails pour corriger les secousses. Désactive « Corriger le mouvement de la caméra » et réessaie.",
+  "Correction stopped because a frame’s background could not be matched reliably. Shorten the range or turn off “Correct camera movement”.": "La correction s’est arrêtée car le fond d’une image n’a pas pu être reconnu de façon fiable. Raccourcis la plage ou désactive « Corriger le mouvement de la caméra ».",
+  "Correction stopped because a video frame’s background could not be matched reliably. Shorten the range, or turn off correction and create the photo again.": "La correction s’est arrêtée car le fond d’une image de la vidéo n’a pas pu être reconnu de façon fiable. Raccourcis la plage ou désactive la correction et recrée la photo.",
+  "Creating video with shake correction ": "Création de la vidéo avec correction des secousses ",
+  "Matching the background and correcting camera movement": "Reconnaissance du fond et correction des secousses de caméra",
+  "Camera movement corrected (unmatched frames use estimated motion)": "Mouvement de caméra corrigé (estimé pour les images sans correspondance)",
+  "Background frame": "Image de fond"
 }

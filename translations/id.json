@@ -502,5 +502,16 @@
   "No object was detected around the selected point. Mark it again in a clear frame.": "Objek tidak terdeteksi di sekitar titik yang dipilih. Tandai kembali pada frame yang jelas.",
   "Matching point colors and rotation": "Mencocokkan warna dan rotasi titik",
   "Recreate video": "Buat ulang video",
-  "Videos are processed on your device and are never uploaded to a server.": "Video diproses di perangkat ini dan tidak diunggah ke server."
+  "Videos are processed on your device and are never uploaded to a server.": "Video diproses di perangkat ini dan tidak diunggah ke server.",
+  "This projectile-motion sample has artificial camera movement added.": "Contoh gerak parabola ini diberi guncangan kamera buatan.",
+  "Correct camera movement": "Koreksi gerakan kamera",
+  "Camera movement corrected": "Gerakan kamera dikoreksi",
+  "The reference frame for correction is missing. Create the photo again.": "Frame acuan untuk koreksi tidak ditemukan. Buat ulang foto.",
+  "The background has too little detail for shake correction. Turn off “Correct camera movement” and try again.": "Detail latar terlalu sedikit untuk mengoreksi guncangan. Nonaktifkan “Koreksi gerakan kamera” lalu coba lagi.",
+  "Correction stopped because a frame’s background could not be matched reliably. Shorten the range or turn off “Correct camera movement”.": "Koreksi dihentikan karena latar pada suatu frame tidak dapat dicocokkan dengan andal. Persingkat rentang atau nonaktifkan “Koreksi gerakan kamera”.",
+  "Correction stopped because a video frame’s background could not be matched reliably. Shorten the range, or turn off correction and create the photo again.": "Koreksi dihentikan karena latar pada suatu frame video tidak dapat dicocokkan dengan andal. Persingkat rentang atau nonaktifkan koreksi dan buat ulang foto.",
+  "Creating video with shake correction ": "Membuat video dengan koreksi guncangan ",
+  "Matching the background and correcting camera movement": "Mencocokkan latar dan mengoreksi guncangan kamera",
+  "Camera movement corrected (unmatched frames use estimated motion)": "Gerakan kamera dikoreksi (gerakan pada frame yang tidak cocok diperkirakan)",
+  "Background frame": "Frame latar belakang"
 }
