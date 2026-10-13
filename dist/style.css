@@ -146,9 +146,9 @@ body.is-editing{--editor-header-height:44px;min-height:100dvh}.is-editing header
 .graph-card{min-width:0;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
 .graph-card h3{font-size:16px;line-height:1.4;margin:0 0 8px;font-weight:600}
 .graph-canvas{display:block;width:100%;height:230px}
-.graph-legend{display:flex;align-items:center;justify-content:center;gap:14px;font-size:12px!important;line-height:1.5;margin:4px 0 12px}
+.graph-legend{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;font-size:12px!important;line-height:1.5;margin:4px 0 12px}
 .graph-legend span{display:flex;gap:5px;align-items:center}.graph-legend span::before{content:'';display:block;width:7px;height:7px;border-radius:50%;background:var(--blue)}
-.graph-legend .fit-legend::before{width:16px;height:2px;border-radius:0;background:#dc8623}
+.graph-legend .fit-legend::before{width:16px;height:2px;border-radius:0;background:var(--fit-color)}
 .graph-fit-setting{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;font-weight:600}
 .graph-fit-setting select{min-width:0;padding:6px;border:1px solid var(--line);border-radius:7px;background:#f8fafc;color:var(--ink);font-size:14px}
 .graph-equation{font-size:14px;line-height:1.7;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;color:var(--ink);margin:12px 0 5px}
@@ -337,6 +337,7 @@ html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
 
 /* Each movie and its matching caption enter together. */
 .home .home-example.is-example-entering .home-visual,.home .home-example.is-example-entering figcaption{animation:intro-fade .7s cubic-bezier(.4,0,.2,1) both}
+.home-example.is-example-loading video,.home-example.is-example-loading figcaption{visibility:hidden}
 
 .tracking-mode-field{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0;font-size:14px}.tracking-mode-field select{width:auto;max-width:100%;padding:7px 10px}
 
