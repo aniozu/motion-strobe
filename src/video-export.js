@@ -33,6 +33,13 @@ export function timedVideoPlan(first,last,clock,maxFps=60){
  const span=frameTime(clock,last,true)-frameTime(clock,first,true);
  return {indices,fps:Math.min(maxFps,span>0?(indices.length-1)/span:maxFps),count:indices.length};
 }
+// Recovery keeps only a small window of output pixels. Decoder dependencies
+// outside that window can still be read, but are never held as RGBA images.
+export function videoDecodeWindows(indices,width,height,maxBytes=32*1024*1024){
+ const count=Math.max(1,Math.min(32,Math.floor(maxBytes/(width*height*4)))),windows=[];
+ for(let n=0;n<indices.length;n+=count)windows.push(indices.slice(n,n+count));
+ return windows;
+}
 export function videoPlaybackSpeed(value){const speed=Number(value??1);if(![8,4,2,1,.5,.25].includes(speed))throw Error('動画の再生速度を選び直してください。');return speed;}
 export function slowedTimestampUs(seconds,speed){return Math.round(seconds/videoPlaybackSpeed(speed)*1e6);}
 // Read back the completed pixels before the canvas is reused for another pose.
@@ -59,11 +66,15 @@ export class Mp4Writer{
 }
 export async function exportVideo(options){
  const {media,settings,cancelled,onProgress,onDiagnostic=()=>{}}=options;
+ let windowed=false;
  return runDecodeRecovery({media,operation:'合成動画の作成',requested:{first:settings.first+1,last:settings.last+1},cancelled,onDiagnostic,
   onRetry:(attempt,label)=>onProgress({stage:`動画を自動再試行 ${attempt}/3 · ${label}`,value:0}),
-  run:(strategy,diagnostic)=>exportVideoAttempt({...options,strategy,diagnostic})});
+  run:async(strategy,diagnostic)=>{
+   try{return await exportVideoAttempt({...options,strategy,diagnostic,windowed});}
+   catch(error){if(error instanceof DecodeFailure&&error.originalName==='VideoReorderBufferError')windowed=true;throw error;}
+  }});
 }
-async function exportVideoAttempt({media,cache,background,size,stabilization,settings,cancelled,onProgress,setActive,strategy,diagnostic}){
+async function exportVideoAttempt({media,cache,background,size,stabilization,settings,cancelled,onProgress,setActive,strategy,diagnostic,windowed}){
  if(typeof VideoEncoder==='undefined'||typeof VideoFrame==='undefined')throw Error('このブラウザーはMP4の書き出しに未対応です。写真の保存は引き続き使えます。');
  const {first,last,reference,step,factor,sensitivity}=settings,speed=videoPlaybackSpeed(settings.playbackSpeed);
  const indices=framePlan(first,last,reference,step,factor,analysisClock(media.clock,settings.captureFps));if(indices.some(n=>!cache.has(n)))throw Error('写真を作り直してから動画を作成してください。');
@@ -98,32 +109,40 @@ async function exportVideoAttempt({media,cache,background,size,stabilization,set
  const progress=()=>onProgress({stage:stabilization?`揺れを補正して動画を作成中 ${encoded}/${totalCount}コマ`:`動画を作成中 ${encoded}/${totalCount}コマ`,value:Math.min(.97,.1+encoded/totalCount*.87)});
  try{
   encoder=new VideoEncoder({error:e=>failure=e,output:(chunk,metadata)=>{try{if(cancelled())return;if(!durations.has(chunk.timestamp))throw Error('書き出したコマの時刻が一致しません。');writer.add(chunk,metadata,durations.get(chunk.timestamp));durations.delete(chunk.timestamp);encoded++;lastActivity=Date.now();}catch(e){failure=e;}}});encoder.configure(config);
-  await decodeRange({media,first,last:lastSample,strategy,diagnostic,cancelled,
-   setActive:value=>{decoder=value;setActive(decoder,encoder);},
-   beforeDecode:async()=>{while(encoder.encodeQueueSize>6){if(cancelled())return;if(failure)throw failure;if(Date.now()-lastActivity>30000)throw Error('動画の書き出しが停止しました。');progress();await yieldTurn();}if(failure)throw failure;},
-   onProgress:progress,onFrame:(frame,index)=>{
-    if(cancelled()||failure)return;lastActivity=Date.now();if(index===undefined||!outputIndices.has(index))return;
-    if(positionForIndex.get(index)<nextFrame||pendingFrames.has(index))return;
-    if(stabilization){
-     let matrix=stabilization.videoTransforms.get(index);
-     if(!matrix){analysisCtx.clearRect(0,0,analysisCanvas.width,analysisCanvas.height);drawOrientedFrame(analysisCtx,frame,analysisCanvas.width,analysisCanvas.height,media.rotation);}
-     matrix=cameraTransformForVideo(stabilization,matrix?null:analysisCtx.getImageData(0,0,analysisCanvas.width,analysisCanvas.height).data,analysisCanvas.width,analysisCanvas.height,index);
-     // Areas outside the source frame retain the already reconstructed background.
-     // Do not resize/crop independently per frame: tracked coordinates stay fixed.
-     ctx.drawImage(backgroundCanvas,0,0,width,height);ctx.save();try{ctx.scale(width/size.width,height/size.height);ctx.transform(...matrix);drawOrientedFrame(ctx,frame,size.width,size.height,media.rotation);}finally{ctx.restore();}
-    }else{ctx.save();ctx.fillStyle='#000';ctx.fillRect(0,0,width,height);drawOrientedFrame(ctx,frame,width,height,media.rotation);ctx.restore();}
-    pendingFrames.set(index,ctx.getImageData(0,0,width,height));
-    if(pendingFrames.size*width*height*4>64*1024*1024)throw Error('動画のコマ順の復元に必要なメモリが不足しました。');
-    while(pendingFrames.has(plan.indices[nextFrame])){
-     const index=plan.indices[nextFrame++],pixels=pendingFrames.get(index);pendingFrames.delete(index);ctx.putImageData(pixels,0,0);
-    while(nextOverlay<indices.length&&indices[nextOverlay]<=index){const n=indices[nextOverlay++],mask=foregroundMask(background,cache.get(n),sensitivity,size.width);maskCtx.putImageData(new ImageData(mask.pixels,size.width,size.height),0,0);overlayCtx.drawImage(maskCanvas,0,0);if(centerMap.has(n))visibleCenters.push(...centerMap.get(n));}
-    ctx.drawImage(overlay,0,0,width,height);ctx.save();ctx.scale(width/size.width,height/size.height);drawAnnotations(ctx,visibleCenters,size.width,size.height,settings);ctx.restore();drawSpeedBadge(ctx,width,height,speed);
-    const timestamp=slowedTimestampUs(frameTime(media.clock,index,true)-firstPlayback,speed),position=plan.indices.indexOf(index),next=plan.indices[position+1],duration=slowedTimestampUs(next===undefined?liveDuration:frameTime(media.clock,next,true)-firstPlayback,speed)-timestamp;
-    if(duration<=0||timestamp<0||(rendered&&timestamp<=lastRenderedTimestamp))throw Error('動画のコマ順または再生時間が不正です。');lastRenderedTimestamp=timestamp;
-    durations.set(timestamp,duration);const outputFrame=snapshotVideoFrame(ctx,width,height,timestamp,duration);try{encoder.encode(outputFrame,{keyFrame:rendered%Math.max(1,Math.round(plan.fps*2))===0});}finally{outputFrame.close();}rendered++;
-    }
-   }});
-  if(!cancelled()&&nextFrame!==plan.count)throw new DecodeFailure(Error('動画の必要なコマをすべて復元できませんでした。'),{...diagnostic,phase:'復元コマの確認',missingFrames:plan.indices.slice(nextFrame).filter(index=>!pendingFrames.has(index)).slice(0,16).map(index=>index+1)});
+  const windows=windowed?videoDecodeWindows(plan.indices,width,height):[plan.indices];
+  for(const window of windows){
+   if(cancelled())return;
+   const windowEnd=nextFrame+window.length;
+   diagnostic.windowed=windowed;
+   await decodeRange({media,first:window[0],last:window.at(-1),strategy,diagnostic,cancelled,
+    setActive:value=>{decoder=value;setActive(decoder,encoder);},
+    beforeDecode:async()=>{while(encoder.encodeQueueSize>6){if(cancelled())return;if(failure)throw failure;if(Date.now()-lastActivity>30000)throw Error('動画の書き出しが停止しました。');progress();await yieldTurn();}if(failure)throw failure;},
+    onProgress:progress,onFrame:(frame,index)=>{
+     if(cancelled()||failure)return;lastActivity=Date.now();if(index===undefined||!outputIndices.has(index))return;
+     if(positionForIndex.get(index)<nextFrame||positionForIndex.get(index)>=windowEnd||pendingFrames.has(index))return;
+     if(stabilization){
+      let matrix=stabilization.videoTransforms.get(index);
+      if(!matrix){analysisCtx.clearRect(0,0,analysisCanvas.width,analysisCanvas.height);drawOrientedFrame(analysisCtx,frame,analysisCanvas.width,analysisCanvas.height,media.rotation);}
+      matrix=cameraTransformForVideo(stabilization,matrix?null:analysisCtx.getImageData(0,0,analysisCanvas.width,analysisCanvas.height).data,analysisCanvas.width,analysisCanvas.height,index);
+      // Areas outside the source frame retain the already reconstructed background.
+      // Do not resize/crop independently per frame: tracked coordinates stay fixed.
+      ctx.drawImage(backgroundCanvas,0,0,width,height);ctx.save();try{ctx.scale(width/size.width,height/size.height);ctx.transform(...matrix);drawOrientedFrame(ctx,frame,size.width,size.height,media.rotation);}finally{ctx.restore();}
+     }else{ctx.save();ctx.fillStyle='#000';ctx.fillRect(0,0,width,height);drawOrientedFrame(ctx,frame,width,height,media.rotation);ctx.restore();}
+     pendingFrames.set(index,ctx.getImageData(0,0,width,height));
+     while(pendingFrames.has(plan.indices[nextFrame])){
+      const index=plan.indices[nextFrame++],pixels=pendingFrames.get(index);pendingFrames.delete(index);ctx.putImageData(pixels,0,0);
+     while(nextOverlay<indices.length&&indices[nextOverlay]<=index){const n=indices[nextOverlay++],mask=foregroundMask(background,cache.get(n),sensitivity,size.width);maskCtx.putImageData(new ImageData(mask.pixels,size.width,size.height),0,0);overlayCtx.drawImage(maskCanvas,0,0);if(centerMap.has(n))visibleCenters.push(...centerMap.get(n));}
+     ctx.drawImage(overlay,0,0,width,height);ctx.save();ctx.scale(width/size.width,height/size.height);drawAnnotations(ctx,visibleCenters,size.width,size.height,settings);ctx.restore();drawSpeedBadge(ctx,width,height,speed);
+     const timestamp=slowedTimestampUs(frameTime(media.clock,index,true)-firstPlayback,speed),position=plan.indices.indexOf(index),next=plan.indices[position+1],duration=slowedTimestampUs(next===undefined?liveDuration:frameTime(media.clock,next,true)-firstPlayback,speed)-timestamp;
+     if(duration<=0||timestamp<0||(rendered&&timestamp<=lastRenderedTimestamp))throw Error('動画のコマ順または再生時間が不正です。');lastRenderedTimestamp=timestamp;
+     durations.set(timestamp,duration);const outputFrame=snapshotVideoFrame(ctx,width,height,timestamp,duration);try{encoder.encode(outputFrame,{keyFrame:rendered%Math.max(1,Math.round(plan.fps*2))===0});}finally{outputFrame.close();}rendered++;
+     }
+     // Drain ready frames before applying the cap: an arriving earlier frame
+     // may immediately release the entire waiting sequence.
+     if(pendingFrames.size*width*height*4>64*1024*1024){const error=Error('動画のコマ順の復元に必要なメモリが不足しました。');error.name='VideoReorderBufferError';throw error;}
+    }});
+   if(!cancelled()&&nextFrame!==windowEnd)throw new DecodeFailure(Error('動画の必要なコマをすべて復元できませんでした。'),{...diagnostic,phase:'復元コマの確認',missingFrames:window.filter(index=>positionForIndex.get(index)>=nextFrame&&!pendingFrames.has(index)).slice(0,16).map(index=>index+1)});
+  }
   diagnostic.phase='合成動画の書き出し';if(failure)throw failure;if(cancelled())return;
   let timeout;try{await Promise.race([(async()=>{
    // The final second is the very same annotated photo, not an extra source pose.
