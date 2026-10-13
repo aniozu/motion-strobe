@@ -7,14 +7,17 @@ import {initializeOpeningPreference,openingAnimationEnabled} from '../src/openin
 const deferred=()=>{let resolve;const promise=new Promise(r=>resolve=r);return {promise,resolve};};
 const classes=()=>{const values=new Set();return {add:x=>values.add(x),remove:x=>values.delete(x),contains:x=>values.has(x)};};
 const tick=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
-function harness(t,{animation=true}={}){
- const raf=[],events=[];
+function harness(t,{animation=true,frameCallback=true}={}){
+ const raf=[],events=[],frames=[];
  const document=new EventTarget();document.visibilityState='visible';document.documentElement={classList:classes(),dataset:{homeAnimation:animation?'on':'off'}};document.documentElement.classList.add('intro-pending');
  const home=new EventTarget();home.hidden=false;home.ownerDocument=document;home.classList=classes();
- const video=new EventTarget();Object.assign(video,{src:'',currentTime:4,play(){events.push('play');return Promise.resolve();},pause(){events.push('pause');},load(){events.push('load');},setAttribute(name,value){this[name]=value;},getAttribute(){return this.src;},removeAttribute(){this.src='';}});home.video=video;const caption={textContent:''},figure={classList:classes()};home.querySelector=selector=>selector==='#homeExampleVideo'?video:selector==='#homeExampleCaption'?caption:selector==='.home-example'?figure:null;
+ const video=new EventTarget();Object.assign(video,{src:'',currentTime:4,readyState:2,seeking:false,play(){events.push('play');return Promise.resolve();},pause(){events.push('pause');},load(){events.push('load');},setAttribute(name,value){this[name]=value;},getAttribute(name){return this[name];},removeAttribute(name){this[name]='';}});
+ if(frameCallback)video.requestVideoFrameCallback=callback=>frames.push(callback);
+ home.video=video;const caption={textContent:''},figure={classList:classes()};home.querySelector=selector=>selector==='#homeExampleVideo'?video:selector==='#homeExampleCaption'?caption:selector==='.home-example'?figure:null;
  for(const [key,value] of Object.entries({window:new EventTarget(),requestAnimationFrame:cb=>raf.push(cb)})){const before=Object.getOwnPropertyDescriptor(globalThis,key);Object.defineProperty(globalThis,key,{value,writable:true,configurable:true});t.after(()=>before?Object.defineProperty(globalThis,key,before):delete globalThis[key]);}
  const paints=async(n=4)=>{for(let i=0;i<n;i++){for(const f of raf.splice(0))f();await tick();}};
- return {home,document,video,caption,figure,events,paints};
+ const frame=()=>{for(const callback of frames.splice(0))callback(0,{mediaTime:video.currentTime});};
+ return {home,document,video,caption,figure,events,paints,frame};
 }
 test('home becomes visible before movie playback starts',async t=>{
  const h=harness(t);await installHomeExample(h.home);assert(!h.video.src);assert(h.video.muted&&h.video.defaultMuted&&h.video.playsInline);assert.equal(h.video.playbackRate,2);assert.equal(h.video.defaultPlaybackRate,2);
@@ -27,11 +30,11 @@ test('returning home restarts the muted video without creating new media element
 test('cancelled or hidden home never starts playback',async t=>{
  const h=harness(t);await installHomeExample(h.home);const controller=new AbortController();controller.abort();await restartHomeExample(h.home,{signal:controller.signal});h.home.hidden=true;await restartHomeExample(h.home);assert(!h.events.includes('play'));assert(!h.video.src);
 });
-test('blocked autoplay and invalid movie leave the poster without throwing',async t=>{
- const h=harness(t);await installHomeExample(h.home);h.video.play=()=>Promise.reject(Error('blocked'));await restartHomeExample(h.home);assert.equal(h.video.poster,homeExamples[0].poster);h.video.dispatchEvent(new Event('error'));assert(!h.video.src);assert(h.events.includes('load'));
+test('blocked autoplay and invalid movie never reveal a composite poster or stale ending',async t=>{
+ const h=harness(t);await installHomeExample(h.home);h.video.play=()=>Promise.reject(Error('blocked'));await restartHomeExample(h.home);assert(!h.video.poster);assert(h.figure.classList.contains('is-example-loading'));h.video.dispatchEvent(new Event('error'));assert(!h.video.src);assert(h.events.includes('load'));assert(h.figure.classList.contains('is-example-loading'));
 });
 test('animation off shows poster without downloading movie or hiding controls',async t=>{
- const h=harness(t,{animation:false});await installHomeExample(h.home);await playHomeIntro(h.home,{prepareImage:options=>restartHomeExample(h.home,options)});assert(!h.video.src);assert(!h.events.includes('play'));assert(!h.home.classList.contains('is-entering'));assert(!h.document.documentElement.classList.contains('intro-pending'));
+ const h=harness(t,{animation:false});await installHomeExample(h.home);await playHomeIntro(h.home,{prepareImage:options=>restartHomeExample(h.home,options)});assert(!h.video.src);assert(!h.events.includes('play'));assert(!h.home.classList.contains('is-entering'));assert(!h.document.documentElement.classList.contains('intro-pending'));assert.equal(h.video.poster,homeExamples[0].poster);assert(!h.figure.classList.contains('is-example-loading'));
 });
 test('background tab pauses video and resumes without restarting its position',async t=>{
  const h=harness(t);await installHomeExample(h.home);await restartHomeExample(h.home);h.video.currentTime=8;h.document.visibilityState='hidden';h.document.dispatchEvent(new Event('visibilitychange'));assert.equal(h.events.at(-1),'pause');h.document.visibilityState='visible';h.document.dispatchEvent(new Event('visibilitychange'));assert.equal(h.events.at(-1),'play');assert.equal(h.video.currentTime,8);
@@ -57,14 +60,14 @@ test('a late cancelled play promise cannot pause a newer home playback',async t=
 });
 
 
-test('three examples rotate in order with matching posters, captions and labels, then restart from soccer',async t=>{
+test('three examples rotate with matching captions and labels, revealing only decoded video frames',async t=>{
  const h=harness(t);await installHomeExample(h.home);assert.equal(h.video.loop,false);assert.equal(homeExamples.length,3);
  await restartHomeExample(h.home);
  for(const i of [0,1,2,0]){
-  assert.equal(h.video.src,homeExamples[i].video);assert.equal(h.video.poster,homeExamples[i].poster);
+  assert.equal(h.video.src,homeExamples[i].video);assert(!h.video.poster);assert(h.figure.classList.contains('is-example-loading'));
   assert.equal(h.caption.textContent,homeExamples[i].caption);assert.equal(h.video['aria-label'],homeExamples[i].caption);
   assert.equal(h.video.playbackRate,2);assert(h.video.muted);
-  h.video.dispatchEvent(new Event('playing'));assert(h.figure.classList.contains('is-example-entering'));
+  h.video.dispatchEvent(new Event('playing'));assert(h.figure.classList.contains('is-example-loading'));h.frame();assert(h.figure.classList.contains('is-example-entering'));assert(!h.figure.classList.contains('is-example-loading'));
   h.video.dispatchEvent(new Event('ended'));assert(!h.figure.classList.contains('is-example-entering'));
  }
  await restartHomeExample(h.home);assert.equal(h.video.src,homeExamples[0].video);
@@ -74,4 +77,23 @@ test('hidden, aborted or disabled opening does not fetch the next example',async
  h.home.hidden=true;h.video.dispatchEvent(new Event('ended'));assert.equal(h.video.src,homeExamples[0].video);
  h.home.hidden=false;controller.abort();h.video.dispatchEvent(new Event('ended'));assert.equal(h.video.src,homeExamples[0].video);
  await restartHomeExample(h.home);h.document.documentElement.dataset.homeAnimation='off';h.video.dispatchEvent(new Event('ended'));assert.equal(h.video.src,homeExamples[0].video);
+});
+
+test('returning from an ending hides it until a fresh decoded frame is ready',async t=>{
+ const h=harness(t);await installHomeExample(h.home);await restartHomeExample(h.home);
+ h.video.dispatchEvent(new Event('playing'));h.frame();assert(!h.figure.classList.contains('is-example-loading'));
+ h.video.currentTime=14;await restartHomeExample(h.home);assert(h.figure.classList.contains('is-example-loading'));assert(!h.video.poster);
+ h.video.seeking=true;h.video.dispatchEvent(new Event('playing'));h.frame();assert(h.figure.classList.contains('is-example-loading'));
+ h.video.seeking=false;h.video.dispatchEvent(new Event('playing'));h.frame();assert(!h.figure.classList.contains('is-example-loading'));
+});
+test('late frame callbacks cannot reveal another example, an aborted intro or animation-off state',async t=>{
+ const h=harness(t);await installHomeExample(h.home);const controller=new AbortController();await restartHomeExample(h.home,{signal:controller.signal});
+ h.video.dispatchEvent(new Event('playing'));h.video.dispatchEvent(new Event('ended'));h.frame();assert(h.figure.classList.contains('is-example-loading'));
+ h.video.dispatchEvent(new Event('playing'));controller.abort();h.frame();assert(h.figure.classList.contains('is-example-loading'));
+ await restartHomeExample(h.home);h.video.dispatchEvent(new Event('playing'));h.document.documentElement.dataset.homeAnimation='off';await restartHomeExample(h.home);h.frame();assert.equal(h.video.poster,homeExamples[0].poster);assert(!h.figure.classList.contains('is-example-entering'));
+});
+test('browsers without video frame callbacks reveal playback on the next paint, never during a seek',async t=>{
+ const h=harness(t,{frameCallback:false});await installHomeExample(h.home);await restartHomeExample(h.home);
+ h.video.dispatchEvent(new Event('playing'));assert(h.figure.classList.contains('is-example-loading'));h.video.seeking=true;await h.paints();assert(h.figure.classList.contains('is-example-loading'));
+ h.video.seeking=false;h.video.dispatchEvent(new Event('playing'));await h.paints();assert(!h.figure.classList.contains('is-example-loading'));assert(!h.video.poster);
 });

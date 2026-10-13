@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {GraphViewport,bindGraphNavigation} from '../src/graph-viewport.js';
 import {graphTypes,fitGraph} from '../src/graph-data.js';
-import {graphGeometry,drawGraph} from '../src/graph-panel.js';
+import {graphGeometry,drawGraph,GraphPanel} from '../src/graph-panel.js';
 const close=(a,b)=>assert(Math.abs(a-b)<1e-9,`${a} != ${b}`);
 const base={x:{min:-10,max:10},y:{min:-10,max:10},t:{min:0,max:2}};
 const fraction=(range,f)=>range.min+(range.max-range.min)*f;
@@ -109,4 +109,25 @@ test('both objects draw distinct colors and every fitted curve follows all measu
  drawGraph(canvas,[...first,...second],graphTypes[2],'px',plots[0].fit,base,plots);
  assert.equal(events.filter(e=>e==='point:#2359db').length,2);assert.equal(events.filter(e=>e==='point:#e67819').length,2);
  const lastPoint=Math.max(events.lastIndexOf('point:#2359db'),events.lastIndexOf('point:#e67819'));assert(events.lastIndexOf('stroke:#2359db')>lastPoint);assert(events.lastIndexOf('stroke:#e67819')>lastPoint);
+});
+
+test('fit legends match rendered lines for either object, both objects and partial fit failures',t=>{
+ const before=Object.getOwnPropertyDescriptor(globalThis,'document');
+ globalThis.document={createElement(){return {style:{setProperty(name,value){this[name]=value;}}};}};
+ t.after(()=>before?Object.defineProperty(globalThis,'document',before):delete globalThis.document);
+ const first={label:'物体1',color:'#2359db',points:[{t:0,x:0,y:0},{t:1,x:1,y:2}]},second={label:'物体2',color:'#e67819',points:[{t:0,x:3,y:4},{t:1,x:4,y:6}]};
+ for(const series of [[first],[second],[first,second],[first,{...second,points:[second.points[0]]}],[{...first,fitColor:'#34a853'}]]){
+  const strokes=[],ctx={scale(){},fillRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){strokes.push(this.strokeStyle);},fillText(){},save(){},restore(){},translate(){},rotate(){},rect(){},clip(){},arc(){},fill(){}};
+  const legend={children:[],replaceChildren(){this.children=[];},append(span){this.children.push(span);}},nodes={'.graph-legend':legend,'.graph-fit-error':{},'.graph-fit-details':{},'.graph-equation':{}};
+  const card={type:graphTypes[2],select:{value:'1'},element:{querySelector:selector=>nodes[selector]},canvas:{clientWidth:400,clientHeight:230,getContext:()=>ctx,setAttribute(){}}};
+  const panel={series,data:{points:series.flatMap(o=>o.points),unit:'px'},viewport:{ranges:base},drawCard:GraphPanel.prototype.drawCard};
+  GraphPanel.prototype.fitCard.call(panel,card);
+  const fits=card.plots.filter(p=>p.fit),keys=legend.children.filter(e=>e.className==='fit-legend');
+  assert.equal(keys.length,fits.length);
+  for(let i=0;i<fits.length;i++){
+   assert.equal(keys[i].style['--fit-color'],strokes.at(-fits.length+i));
+   assert.equal(keys[i].textContent,series.length>1?fits[i].label+': フィット':'フィット');
+  }
+  card.select.value='';GraphPanel.prototype.fitCard.call(panel,card);assert(!legend.children.some(e=>e.className==='fit-legend'));
+ }
 });

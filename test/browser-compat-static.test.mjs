@@ -6,7 +6,7 @@ test('opening poster, worker, and asset cache versions agree with the release',a
  const [html,app,opening,manifest]=await Promise.all([read('../dist/index.html'),read('../dist/app.js'),read('../dist/opening.js'),read('../package.json')]);
  const version=JSON.parse(manifest).version;
  assert(opening.includes(`opening-soccer-poster.webp?v=${version}`));assert(opening.includes(`opening-soccer.mp4?v=${version}`));assert(app.includes(`worker.js?v=${version}`));
- assert(html.includes(`opening.js?v=${version}`));assert(html.includes(`opening-soccer-poster.webp?v=${version}`));
+ assert(html.includes(`opening.js?v=${version}`));assert(!/id="homeExampleVideo"[^>]*poster=/.test(html));assert(html.includes('home-example is-example-loading'));
 });
 test('picked files use the probe and processing diagnostics are available in the deployed UI',async()=>{
  const [html,source,app]=await Promise.all([read('../dist/index.html'),read('../src/app.js'),read('../dist/app.js')]);

@@ -118,7 +118,11 @@ export class GraphPanel{
   card.fit=card.plots.find(p=>p.fit)?.fit||null;
   if(equations.length){details.hidden=false;card.element.querySelector('.graph-equation').textContent=equations.join('\n');}
   if(errors.length){error.hidden=false;error.textContent=errors.join('\n');}
-  const legend=card.element.querySelector('.graph-legend');legend.replaceChildren();for(const plot of card.plots){const span=document.createElement('span');span.className='object-legend';span.style.setProperty('--object-color',plot.color);span.textContent=plot.label;legend.append(span);}if(card.fit){const span=document.createElement('span');span.className='fit-legend';span.textContent='フィット';legend.append(span);}
+  const legend=card.element.querySelector('.graph-legend');legend.replaceChildren();
+  for(const plot of card.plots){
+   const span=document.createElement('span');span.className='object-legend';span.style.setProperty('--object-color',plot.color);span.textContent=plot.label;legend.append(span);
+   if(plot.fit){const fitSpan=document.createElement('span');fitSpan.className='fit-legend';fitSpan.style.setProperty('--fit-color',plot.fitColor||plot.color);fitSpan.textContent=(card.plots.length>1?plot.label+': ':'')+'フィット';legend.append(fitSpan);}
+  }
   this.drawCard(card);
  }
  drawCard(card){if(this.data?.points.length)drawGraph(card.canvas,this.data.points,card.type,this.data.unit,card.fit,this.viewport.ranges,card.plots);}
