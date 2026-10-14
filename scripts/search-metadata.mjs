@@ -4,7 +4,7 @@ import {learningPages} from './learning-pages.mjs';
 export const searchOrigin=(process.env.SITE_URL||(process.env.GITHUB_PAGES==='true'?'https://aniozu.github.io/motion-strobe':'https://motion-strobe-lab.workspace-552571.chatgpt.site')).replace(/\/+$/,'');
 export const searchPages=[
  ...languages.map(l=>({...l,lang:l.code,file:languageFile(l.code),path:'/'+languagePath(l.code),slug:'app',name:l.code==='ja'?'モーションストロボ':'Motion Strobe',image:'sample-constant-speed.png'})),
- ...learningPages.map(p=>({...p,title:`${p.title} | ${p.name}`,image:p.image||'sample-constant-speed.png'}))
+ ...learningPages.map(p=>({...p,title:`${p.name}${p.lang==='ja'?'｜':' | '}${p.title.replace(/ Motion Strobe$/, '')}`,description:`${p.name}${p.lang==='ja'?(p.slug==='guide'?'の使い方。':'の解析例。'):' — '}${p.description}`,image:p.image||'sample-constant-speed.png'}))
 ];
 const escape=value=>String(value).replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 export const stripSearchMetadata=html=>html.replace(/<!-- search-metadata:start -->[\s\S]*?<!-- search-metadata:end -->\r?\n?/g,'');
@@ -15,7 +15,7 @@ export async function writeSearchMetadata(version){
   let html=stripSearchMetadata(await readFile(page.file,'utf8'));
   html=html.replace(/<title>[\s\S]*?<\/title>/g,'').replace(/<meta\b[^>]*\bname="(?:description|robots)"[^>]*>/g,'').replace(/<link\b[^>]*\brel="(?:canonical|alternate)"[^>]*>/g,'');
   const url=origin+page.path,peers=alternatePages(page),image=origin+'/'+page.image;
-  const website={'@type':'WebSite','@id':origin+'/#website',name:'Motion Strobe',url:origin+'/',inLanguage:languages.map(l=>l.code)};
+  const website={'@type':'WebSite','@id':origin+'/#website',name:page.name,...(page.lang==='ja'?{alternateName:'Motion Strobe'}:{}),url:origin+'/',inLanguage:languages.map(l=>l.code)};
   const webpage={'@type':'WebPage','@id':url+'#page',url,name:page.title,description:page.description,inLanguage:page.lang,isPartOf:{'@id':origin+'/#website'},primaryImageOfPage:{'@type':'ImageObject',url:image}};
   const entity=page.slug==='app'
    ?{'@type':'WebApplication','@id':url+'#application',name:page.name,url,description:page.description,applicationCategory:'EducationalApplication',operatingSystem:'Any',inLanguage:page.lang,isAccessibleForFree:true,softwareVersion:version,offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}
