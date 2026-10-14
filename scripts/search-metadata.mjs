@@ -3,7 +3,7 @@ import {languages,languagePath,languageFile} from './languages.mjs';
 import {learningPages} from './learning-pages.mjs';
 export const searchOrigin=(process.env.SITE_URL||(process.env.GITHUB_PAGES==='true'?'https://aniozu.github.io/motion-strobe':'https://motion-strobe-lab.workspace-552571.chatgpt.site')).replace(/\/+$/,'');
 export const searchPages=[
- ...languages.map(l=>({...l,lang:l.code,file:languageFile(l.code),path:'/'+languagePath(l.code),slug:'app',name:l.code==='ja'?'モーションストロボ':'Motion Strobe',image:'sample-constant-speed.png'})),
+ ...languages.map(l=>({...l,lang:l.code,file:languageFile(l.code),path:'/'+languagePath(l.code),slug:'app',name:l.code==='ja'?'モーションストロボ':'Motion Strobe',image:'motion-strobe-bouncing-ball.png',imageWidth:487,imageHeight:296,imageType:'image/png'})),
  ...learningPages.map(p=>({...p,title:`${p.name}${p.lang==='ja'?'｜':' | '}${p.title.replace(/ Motion Strobe$/, '')}`,description:`${p.name}${p.lang==='ja'?(p.slug==='guide'?'の使い方。':'の解析例。'):' — '}${p.description}`,image:p.image||'sample-constant-speed.png'}))
 ];
 const escape=value=>String(value).replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;');
@@ -16,9 +16,9 @@ export async function writeSearchMetadata(version){
   html=html.replace(/<title>[\s\S]*?<\/title>/g,'').replace(/<meta\b[^>]*\bname="(?:description|robots)"[^>]*>/g,'').replace(/<link\b[^>]*\brel="(?:canonical|alternate)"[^>]*>/g,'');
   const url=origin+page.path,peers=alternatePages(page),image=origin+'/'+page.image;
   const website={'@type':'WebSite','@id':origin+'/#website',name:page.name,...(page.lang==='ja'?{alternateName:'Motion Strobe'}:{}),url:origin+'/',inLanguage:languages.map(l=>l.code)};
-  const webpage={'@type':'WebPage','@id':url+'#page',url,name:page.title,description:page.description,inLanguage:page.lang,isPartOf:{'@id':origin+'/#website'},primaryImageOfPage:{'@type':'ImageObject',url:image}};
+  const webpage={'@type':'WebPage','@id':url+'#page',url,name:page.title,description:page.description,inLanguage:page.lang,isPartOf:{'@id':origin+'/#website'},primaryImageOfPage:{'@type':'ImageObject',url:image,...(page.imageWidth?{width:page.imageWidth,height:page.imageHeight}: {})}};
   const entity=page.slug==='app'
-   ?{'@type':'WebApplication','@id':url+'#application',name:page.name,url,description:page.description,applicationCategory:'EducationalApplication',operatingSystem:'Any',inLanguage:page.lang,isAccessibleForFree:true,softwareVersion:version,offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}
+   ?{'@type':'WebApplication','@id':url+'#application',name:page.name,url,image,mainEntityOfPage:{'@id':url+'#page'},description:page.description,applicationCategory:'EducationalApplication',operatingSystem:'Any',inLanguage:page.lang,isAccessibleForFree:true,softwareVersion:version,offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}
    :{'@type':'Article','@id':url+'#article',headline:page.title,description:page.description,inLanguage:page.lang,mainEntityOfPage:{'@id':url+'#page'},image:[image]};
   const nodes=[website,webpage,entity];
   if(page.slug!=='app')nodes.push({'@type':'BreadcrumbList','@id':url+'#breadcrumb',itemListElement:[{'@type':'ListItem',position:1,name:page.name,item:origin+'/'+languagePath(page.lang)},{'@type':'ListItem',position:2,name:page.title,item:url}]});
@@ -38,6 +38,7 @@ export async function writeSearchMetadata(version){
    `<meta property="og:locale" content="${page.locale}">`,
    ...peers.filter(p=>p.lang!==page.lang).map(p=>`<meta property="og:locale:alternate" content="${p.locale}">`),
    `<meta property="og:image" content="${escape(image)}">`,
+   ...(page.imageWidth?[`<meta property="og:image:width" content="${page.imageWidth}">`,`<meta property="og:image:height" content="${page.imageHeight}">`,`<meta property="og:image:type" content="${page.imageType}">`]:[]),
    `<meta property="og:image:alt" content="${escape(page.alt||page.title)}">`,
    '<meta name="twitter:card" content="summary_large_image">',
    `<meta name="twitter:title" content="${escape(page.title)}">`,

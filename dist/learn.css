@@ -20,3 +20,10 @@
 /* Separate the guide entry and match the start-screen action height. */
 .home-copy .home-guide-link{margin:16px 0 0;padding-top:16px;border-top:1px solid var(--line)}
 .home-guide-link .guide-entry{min-height:56px;padding:8px 18px;font-size:14px;line-height:1.4}
+
+/* A prominent route from the guide back to the application. */
+.learning-page .guide-start{margin:20px 0 24px}
+.learning-page .guide-start-button{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:56px;width:min(100%,360px);padding:14px 24px;font-size:18px;line-height:1.4;text-align:center}
+.learning-page .guide-start-button:hover{filter:brightness(.94)}
+.learning-page .guide-start-button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+@media(max-width:600px){.learning-page .guide-start-button{width:100%;font-size:17px}}
