@@ -1,15 +1,14 @@
 import {openingAnimationEnabled} from './opening-preference.js';
 export const homeExamples=[
- {id:'soccer',video:'opening-soccer.mp4?v=1.23.17',poster:'opening-soccer-poster.webp?v=1.23.17',caption:'解析例：サッカーボールの放物運動'},
- {id:'bouncing-ball',video:'opening-bouncing-ball.mp4?v=1.23.17',poster:'opening-bouncing-ball-poster.webp?v=1.23.17',caption:'解析例：スーパーボールのバウンド'},
- {id:'hammer',video:'opening-hammer.mp4?v=1.23.17',poster:'opening-hammer-poster.webp?v=1.23.17',caption:'解析例：ハンマーの放物運動'}
+ {id:'soccer',playbackRate:4,video:'opening-soccer.mp4?v=1.23.18',poster:'opening-soccer-poster.webp?v=1.23.18',caption:'解析例：サッカーボールの放物運動'},
+ {id:'bouncing-ball',video:'opening-bouncing-ball.mp4?v=1.23.18',poster:'opening-bouncing-ball-poster.webp?v=1.23.18',caption:'解析例：スーパーボールのバウンド'},
+ {id:'hammer',video:'opening-hammer.mp4?v=1.23.18',poster:'opening-hammer-poster.webp?v=1.23.18',caption:'解析例：ハンマーの放物運動'}
 ];
 const installed=new WeakMap();
 export function installHomeExample(home,example=homeExamples[0]){
  const video=home.querySelector('#homeExampleVideo');
  const figure=home.querySelector('.home-example'),caption=home.querySelector('#homeExampleCaption');
  const examples=example===homeExamples[0]?homeExamples:[example];
- video.playbackRate=2;video.defaultPlaybackRate=2;
  video.muted=true;video.defaultMuted=true;video.playsInline=true;
  video.loop=false;
  const state={home,example,examples,index:0,video,figure,caption,started:false,sequence:0,frameSequence:0};installed.set(home,state);
@@ -20,7 +19,7 @@ export function installHomeExample(home,example=homeExamples[0]){
  }else video.pause();};
  const advance=()=>{if(!state.started||!visible()||!openingAnimationEnabled(home.ownerDocument))return;
   setExample(state,(state.index+1)%examples.length);video.src=state.example.video;video.currentTime=0;
-  video.playbackRate=2;video.muted=true;video.play()?.catch(()=>{});
+  setPlaybackRate(state);video.muted=true;video.play()?.catch(()=>{});
  };
  video.addEventListener('ended',advance);
  video.addEventListener('playing',()=>{
@@ -43,9 +42,14 @@ export function installHomeExample(home,example=homeExamples[0]){
  // The intro never waits for the movie to load.
  return Promise.resolve();
 }
+function setPlaybackRate(state){
+ const rate=state.example.playbackRate??2;
+ state.video.defaultPlaybackRate=rate;state.video.playbackRate=rate;
+}
 function setExample(state,index){
  state.frameSequence++;
  state.index=index;state.example=state.examples[index];
+ setPlaybackRate(state);
  state.fadePending=true;
  state.figure?.classList.remove('is-example-entering');
  if(openingAnimationEnabled(state.home.ownerDocument)){
@@ -66,7 +70,7 @@ export async function restartHomeExample(home,{signal,isVisible=()=>!home.hidden
   video.removeAttribute('src');video.load();return;
  }
  if(video.getAttribute('src')!==example.video)video.src=example.video;
- video.playbackRate=2;video.muted=true;video.currentTime=0;state.started=true;
+ setPlaybackRate(state);video.muted=true;video.currentTime=0;state.started=true;
  signal?.addEventListener('abort',()=>{if(state.sequence===sequence){state.started=false;video.pause();}},{once:true});
  try{await video.play();}catch{/* Keep controls available without showing the composite poster. */}
  if(state.sequence!==sequence)return;

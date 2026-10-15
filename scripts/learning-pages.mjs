@@ -31,7 +31,7 @@ const content={ja:[
     "抽出プレビューで使うコマを順に確認できます。画像右上の「プレビュー」で停止・再開できます。",
     "「基準」の時刻を設定すると、必ず使うコマを選べます。通常はそのままで大丈夫です。右下の「写真を作る」を押し、合成が終わるまで待ちます。"
    ],
-   ["sampling-preview-005","sampling-005"]
+   "sampling-preview-005"
   ],
   [
    "4. 写真・動画の確認",
@@ -130,7 +130,7 @@ const content={ja:[
     "The extraction preview shows the selected frames in order. Use Preview at the top right of the image to pause or resume it.",
     "Setting the Reference time selects a frame that must be included. You can usually leave it as it is. Select Create photo at the bottom right and wait for the composite to finish."
    ],
-   ["sampling-preview-005","sampling-005"]
+   "sampling-preview-005"
   ],
   [
    "4. Review the photo or video",

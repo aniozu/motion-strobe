@@ -20,12 +20,12 @@ function harness(t,{animation=true,frameCallback=true}={}){
  return {home,document,video,caption,figure,events,paints,frame};
 }
 test('home becomes visible before movie playback starts',async t=>{
- const h=harness(t);await installHomeExample(h.home);assert(!h.video.src);assert(h.video.muted&&h.video.defaultMuted&&h.video.playsInline);assert.equal(h.video.playbackRate,2);assert.equal(h.video.defaultPlaybackRate,2);
+ const h=harness(t);await installHomeExample(h.home);assert(!h.video.src);assert(h.video.muted&&h.video.defaultMuted&&h.video.playsInline);assert.equal(h.video.playbackRate,4);assert.equal(h.video.defaultPlaybackRate,4);
  const p=playHomeIntro(h.home,{prepareImage:options=>restartHomeExample(h.home,options)});await h.paints();await p;
  assert(h.home.classList.contains('is-entering'));assert(!h.document.documentElement.classList.contains('intro-pending'));assert.equal(h.video.src,homeExamples[0].video);assert(h.events.includes('play'));
 });
 test('returning home restarts the muted video without creating new media elements',async t=>{
- const h=harness(t);await installHomeExample(h.home);await restartHomeExample(h.home);h.video.currentTime=8;await restartHomeExample(h.home);assert.equal(h.video.currentTime,0);assert.equal(h.video.playbackRate,2);assert.equal(h.events.filter(x=>x==='play').length,2);
+ const h=harness(t);await installHomeExample(h.home);await restartHomeExample(h.home);h.video.currentTime=8;await restartHomeExample(h.home);assert.equal(h.video.currentTime,0);assert.equal(h.video.playbackRate,4);assert.equal(h.events.filter(x=>x==='play').length,2);
 });
 test('cancelled or hidden home never starts playback',async t=>{
  const h=harness(t);await installHomeExample(h.home);const controller=new AbortController();controller.abort();await restartHomeExample(h.home,{signal:controller.signal});h.home.hidden=true;await restartHomeExample(h.home);assert(!h.events.includes('play'));assert(!h.video.src);
@@ -66,7 +66,7 @@ test('three examples rotate with matching captions and labels, revealing only de
  for(const i of [0,1,2,0]){
   assert.equal(h.video.src,homeExamples[i].video);assert(!h.video.poster);assert(h.figure.classList.contains('is-example-loading'));
   assert.equal(h.caption.textContent,homeExamples[i].caption);assert.equal(h.video['aria-label'],homeExamples[i].caption);
-  assert.equal(h.video.playbackRate,2);assert(h.video.muted);
+  assert.equal(h.video.playbackRate,i===0?4:2);assert.equal(h.video.defaultPlaybackRate,i===0?4:2);assert(h.video.muted);
   h.video.dispatchEvent(new Event('playing'));assert(h.figure.classList.contains('is-example-loading'));h.frame();assert(h.figure.classList.contains('is-example-entering'));assert(!h.figure.classList.contains('is-example-loading'));
   h.video.dispatchEvent(new Event('ended'));assert(!h.figure.classList.contains('is-example-entering'));
  }
