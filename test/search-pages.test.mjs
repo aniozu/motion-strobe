@@ -83,7 +83,7 @@ test('guide pages reuse the exact app header and settings, with only two concise
   assert.equal(html.match(/<header>[\s\S]*?<\/header>/)[0],app.match(/<header>[\s\S]*?<\/header>/)[0]);
   assert.equal(html.match(/<dialog id="settingsDialog"[\s\S]*?<\/dialog>/)[0],app.match(/<dialog id="settingsDialog"[\s\S]*?<\/dialog>/)[0]);
   assert(html.includes('href="style.css?v='));assert(!/授業|Classroom|physics lesson|examples\/pendulum/i.test(html));
-  if(page.slug==='guide'){assert(html.includes('examples/constant-speed/'));assert(html.includes('examples/projectile-motion/'));assert.equal([...html.matchAll(/class="operation-capture"/g)].length,10);}
+  if(page.slug==='guide'){assert(html.includes('examples/constant-speed/'));assert(html.includes('examples/projectile-motion/'));assert.equal([...html.matchAll(/class="operation-capture"/g)].length,11);}
  }
  const css=await readFile('dist/learn.css','utf8');assert(!/(?:^|})\s*(?:header|main|body|h1|h2|p|:root|\*)[ {]/m.test(css));
  for(const lang of ['ja','en']){const old=await readFile(`dist/${lang==='en'?'en/':''}examples/pendulum/index.html`,'utf8');assert(old.includes('noindex,follow'));assert(old.includes('url=../../guide/'));}
@@ -94,7 +94,7 @@ test('illustrated guides explain filming and sensitivity before detection, then 
  for(const lang of ['ja','en']){
   const page=learningPages.find(p=>p.lang===lang&&p.slug==='guide');
   assert.equal(page.sections.length,9);
-  assert.deepEqual(page.sections.flatMap(s=>s[2]?[s[2]].flat():[]),['range-013-073','range-end-013-073','sampling-005','result-013-073','video-options','detection-005','grid-settings','grid-result','coordinates','graphs']);
+  assert.deepEqual(page.sections.flatMap(s=>s[2]?[s[2]].flat():[]),['range-013-073','range-end-013-073','sampling-preview-005','sampling-005','result-013-073','video-options','detection-005','grid-settings','grid-result','coordinates','graphs']);
   const html=await readFile(page.file,'utf8');
   assert(!html.includes('<figcaption>'));
   assert(!html.match(/class="guide-toc"[\s\S]*?<li><a[^>]*>1\./));

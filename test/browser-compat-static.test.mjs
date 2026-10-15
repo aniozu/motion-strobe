@@ -11,10 +11,11 @@ test('opening assets and worker cache versions agree without a composite poster 
  assert(!/\bposter=/.test(video));
  assert(html.includes('home-example is-example-loading'));
 });
-test('picked files use the probe and processing diagnostics are available in the deployed UI',async()=>{
+test('picked files use the probe and failures offer retry without a processing-history panel',async()=>{
  const [html,source,app]=await Promise.all([read('../dist/index.html'),read('../src/app.js'),read('../dist/app.js')]);
  assert.match(source,/safeVideoBlob\(file\)/);assert.match(source,/await probeVideoBlob\(blob\)/);
- for(const id of ['decodeReport','decodeReportText','copyDecodeReport','retryDecode']){assert(html.includes(`id="${id}"`));assert(app.includes(id));}
+ assert(html.includes('id="retryDecode"'));assert(app.includes('retryDecode'));
+ for(const id of ['decodeReport','decodeReportText','copyDecodeReport']){assert(!html.includes(`id="${id}"`));assert(!app.includes(id));}
 });
 
 

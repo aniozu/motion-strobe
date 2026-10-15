@@ -28,9 +28,10 @@ const content={ja:[
    "3. 時間間隔を決めて合成する",
    [
     "右側の「時間間隔」を設定します。この例は0.05秒です。像が重なりすぎる場合は間隔を広げます。コマ/秒や総枚数の値を目安に決めます。",
+    "抽出プレビューで使うコマを順に確認できます。画像右上の「プレビュー」で停止・再開できます。",
     "「基準」の時刻を設定すると、必ず使うコマを選べます。通常はそのままで大丈夫です。右下の「写真を作る」を押し、合成が終わるまで待ちます。"
    ],
-   "sampling-005"
+   ["sampling-preview-005","sampling-005"]
   ],
   [
    "4. 写真・動画の確認",
@@ -126,9 +127,10 @@ const content={ja:[
    "3. Set the sampling interval and create a photo",
    [
     "Set Sampling interval on the right. This example uses 0.05 seconds. Increase the interval if the object images overlap too much. Use frames/s and Total frames to help choose an interval.",
+    "The extraction preview shows the selected frames in order. Use Preview at the top right of the image to pause or resume it.",
     "Setting the Reference time selects a frame that must be included. You can usually leave it as it is. Select Create photo at the bottom right and wait for the composite to finish."
    ],
-   "sampling-005"
+   ["sampling-preview-005","sampling-005"]
   ],
   [
    "4. Review the photo or video",

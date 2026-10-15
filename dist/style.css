@@ -132,8 +132,6 @@ body.is-editing{--editor-header-height:44px;min-height:100dvh}.is-editing header
  .workspace .steps{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media(max-width:370px) and (orientation:portrait){
- .workspace .steps>button .step-name{display:none}
- .workspace .steps>button[data-short]::after{content:attr(data-short)}
  .workspace .steps .home-step .step-number{display:inline-grid;width:18px;height:18px;margin-right:3px}
 }
 
@@ -184,7 +182,7 @@ body.is-editing{--editor-header-height:44px;min-height:100dvh}.is-editing header
 .home .home-visual{aspect-ratio:16/9;background:#e3e4df}
 .home-visual picture,.home-visual img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;background:#e3e4df}
 
-.decode-report{max-width:1500px;margin:16px auto;padding:16px 20px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:14px}.decode-report summary{cursor:pointer;font-weight:600}.decode-report p{line-height:1.6;color:var(--muted)}.decode-report pre{font-size:13px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;max-height:420px;overflow:auto}.error-box{white-space:pre-line}#retryDecode{margin-top:8px}@media(max-width:700px){.decode-report{margin:12px}}
+.error-box{white-space:pre-line}#retryDecode{margin-top:8px}
 
 .graph-axis-tools{display:flex;justify-content:space-between;gap:12px;margin-bottom:6px}
 .graph-axis-tools .graph-zoom{align-items:center;gap:5px}
@@ -218,7 +216,6 @@ html:not([lang=ja]) .auto-detect-action #autoDetect{min-width:0;white-space:norm
  html:not([lang=ja]) .workspace .steps>button{flex-direction:column;gap:4px;min-height:62px;padding:5px 4px}
  html:not([lang=ja]) .workspace .steps>button .step-number{display:inline-grid;flex:0 0 20px;height:20px;margin-right:0}
  html:not([lang=ja]) .workspace .steps>button .step-name{display:block}
- html:not([lang=ja]) .workspace .steps>button[data-short]::after{content:none}
 }
 
 /* Compact sampling summary and optional reference controls. */
@@ -387,9 +384,7 @@ html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
  .workspace .steps>button{line-height:1.3}
 }
 @media(max-width:480px) and (orientation:portrait){
- html[lang=ja] .workspace .steps>button .step-name{display:none}
- html[lang=ja] .workspace .steps>button[data-short]::after{content:attr(data-short)}
-}
+ html[lang=ja] html[lang=ja]}
 @media(max-width:900px) and (orientation:landscape){.workspace .editing-layout{grid-template-columns:minmax(0,1fr) clamp(238px,38vw,300px)}}
 #video::-webkit-media-controls-overlay-play-button,#video::-webkit-media-controls-start-playback-button{display:none!important}
 
@@ -448,3 +443,11 @@ html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
 
 /* Keep the shown extraction frame stable while the player prepares the next. */
 .sampling-preview-image{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;z-index:1}
+
+/* Keep complete Japanese step names on narrow screens. */
+@media(max-width:480px) and (orientation:portrait){
+ html[lang=ja] .workspace .steps{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px}
+ html[lang=ja] .workspace .steps>button{font-size:13px;padding:4px 2px;min-width:0;white-space:nowrap}
+ html[lang=ja] .workspace .steps>button .step-name{display:inline}
+ html[lang=ja] .workspace .steps>button .step-number{flex:none;width:16px;height:16px;font-size:11px;margin-right:2px}
+}

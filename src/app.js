@@ -15,7 +15,7 @@ import {frameTime,indexAtTime,analysisClock} from './frame-clock.js';
 import {GraphPanel} from './graph-panel.js';
 import {CalibrationEditor} from './calibration-editor.js';import {calibrationBasis,coordinateOrigin} from './calibration.js';import {installSamples} from './samples.js';import {framePlan} from './sampling.js';import {formatSeconds as fmt,setTimeDecimals} from './format.js';import {Timeline} from './timeline.js';import {bindFrameNudges,bindFrameInput,samplingLimits,applyTimePoint} from './time-controls.js';import {installContextHelp} from './context-help.js';import {CenterEditor} from './center-editor.js';import {gridOptions} from './annotations.js';import {GuideEditor} from './guide-editor.js';import {replaceFrameMark} from './tracking.js';import {coordinateTable,coordinateText} from './coordinates.js';
 installLanguagePicker();
-const $=id=>document.getElementById(id);const workerUrl=new URL('worker.js?v=1.23.16',import.meta.url);let worker=new Worker(workerUrl,{type:'module'});
+const $=id=>document.getElementById(id);const workerUrl=new URL('worker.js?v=1.23.17',import.meta.url);let worker=new Worker(workerUrl,{type:'module'});
 let preferences={interval:.1,resolution:960,timeDecimals:2,openingAnimation:true};try{preferences={...preferences,...JSON.parse(localStorage.getItem('motion-strobe-preferences')||'{}')};}catch{}
 if(!Number.isFinite(preferences.interval)||preferences.interval<=0)preferences.interval=.1;if(![720,960,1280].includes(preferences.resolution))preferences.resolution=960;
 preferences.timeDecimals=setTimeDecimals(preferences.timeDecimals);preferences.openingAnimation=preferences.openingAnimation!==false;
@@ -23,8 +23,7 @@ let state={stage:'range',count:2,period:1/60,fps:60,start:0,end:1,background:0,b
 let inputSource='file';
 function resetPositionData(){anchors=[];seedIndex=null;calibration=null;centerData=null;resultData=null;activeObject=0;objectTracks=[{id:0,anchors,seedIndex:null,summary:null},{id:1,anchors:[],seedIndex:null,summary:null}];}
 let samplingRangeKey=null,displayedPreviewInfo=null;
-let sourceClock=null,previewDetached=false,lastDiagnostics=null,lastFailedOperation=null,sampleProgress=false;
-const appVersion='1.23.16';
+let sourceClock=null,previewDetached=false,lastFailedOperation=null,sampleProgress=false;
 let guide=gridOptions(preferences.grid),anchors=[],centerData=null,seedIndex=null,calibration=null;
 let activeObject=0,objectTracks=[{id:0,anchors:[],seedIndex:null,summary:null},{id:1,anchors:[],seedIndex:null,summary:null}],resultData=null;
 function stashObject(){objectTracks[activeObject].anchors=anchors;objectTracks[activeObject].seedIndex=seedIndex;}
@@ -65,26 +64,6 @@ const showError=message=>{$('errorBox').textContent=message;$('errorBox').hidden
 const hideError=()=>{$('errorBox').hidden=true;$('retryDecode').hidden=true;};
 function suspendPreview(){samplingPreview.stop();samplingSurface.hide();const video=$('video');if(video.getAttribute('src')){video.pause();video.removeAttribute('src');video.load();previewDetached=true;}}
 function restorePreview(){if(previewDetached&&videoUrl){previewDetached=false;$('video').src=videoUrl;}}
-function diagnosticText(report){
- const seconds=p=>p?`${Number(p.mediaTime).toFixed(6)} s`:'なし';
- const lines=[`Motion Strobe ${appVersion}`,`ブラウザー: ${navigator.userAgent}`,`処理: ${report.operation}`];
- for(const d of report.attempts){
-  lines.push('',`試行 ${d.attempt}: ${d.strategy} — ${d.status}`,`形式: ${d.codec} / ${d.width} × ${d.height}`,`指定: 開始 ${d.requested?.first??'—'}コマ / 終了 ${d.requested?.last??'—'}コマ${d.requested?.background?` / 背景 ${d.requested.background}コマ`:''}${d.requested?.frames?` / 抽出 ${d.requested.frames}枚`:''}`,`段階: ${d.phase}`,`入力範囲: 圧縮コマ ${d.packetStart??'—'}〜${d.packetEnd??'—'}`,
-   `直前の投入: 圧縮コマ ${d.lastSubmitted?.packet??'—'} / 表示コマ ${d.lastSubmitted?.frame||'対象範囲外'} / 媒体時刻 ${seconds(d.lastSubmitted)}`,
-   `最後の復元: 表示コマ ${d.lastOutput?.frame??'—'} / 媒体時刻 ${seconds(d.lastOutput)}`,`復元コマ数: ${d.outputCount??0}`);
-  if(d.missingFrames?.length)lines.push(`未取得の表示コマ: ${d.missingFrames.join(', ')}`);
-  if(d.error)lines.push(`エラー: ${d.errorName}: ${d.error}`);
- }
- lines.push('','媒体時刻は動画に記録されたPTSです。デコードは非同期なので、直前の投入コマが原因とは限りません。動画の内容・ファイル名は記録しません。');
- return lines.join('\n');
-}
-function showDiagnostics(report){
- if(!report)return;lastDiagnostics=report;
- const last=report.attempts.at(-1),success=last?.status==='成功';
- $('decodeReport').hidden=false;if(!success)$('decodeReport').open=true;$('decodeReportTitle').textContent=`処理の詳細 · ${success?(report.recovered?'再試行で成功':'成功'):'失敗・再試行の記録'}`;
- $('decodeReportText').textContent=diagnosticText(report);
-}
-$('copyDecodeReport').onclick=async()=>{if(!lastDiagnostics)return;const text=diagnosticText(lastDiagnostics);try{await navigator.clipboard.writeText(text);toast('処理の詳細をコピーしました。');}catch{const area=$('decodeReportText');const range=document.createRange();range.selectNodeContents(area);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);toast('詳細を選択しました。コピーしてください。');}};
 $('retryDecode').onclick=()=>{if(task)return;if(lastFailedOperation==='extract')extraction();else if(lastFailedOperation==='export-video')createVideo();};
 const busy=(name,kind)=>{samplingPreview.stop();lastFocus=document.activeElement;task=kind;$('progressTitle').textContent=name;$('progress').value=0;$('progressNumber').textContent='0%';$('progressOverlay').hidden=false;$('cancelProcessing').focus();};
 const setProgress=(title,value)=>{$('progressTitle').textContent=title;if(value===null){$('progress').removeAttribute('value');$('progressNumber').textContent='';}else{$('progress').value=value;$('progressNumber').textContent=`${Math.round(value*100)}%`;}};
@@ -145,10 +124,10 @@ function extraction(){invalidateResult();if(state.stabilize||state.stabilization
 function compose(showModal=false){centerEditor.setBusy(true);clearExport();clearTimeout(debounce);setActions(false);if(showModal)busy('写真を合成中','compose');else{$('resultCount').textContent='更新中…';task='quick-compose';}hideError();post({type:'compose',first:state.start,last:state.end,reference:state.reference,step:state.step,factor:state.factor,sensitivity:Number($('sensitivity').value),labels:$('resultLabels').checked,...annotationSettings()});}
 async function handleWorkerMessage({data:m}){
  if(m.id!==requestId)return;
- if(m.type==='diagnostic'){showDiagnostics(m.diagnostics);return;}
+ if(m.type==='diagnostic')return;
  if(m.type==='progress'){if(task==='load')armLoadStall();if(task==='auto-detect')centerEditor.progress(m);else if(task!=='quick-compose'){setProgress(m.stage,task==='load'&&sampleProgress ? .75+m.value*.25 : m.value);}}
  if(m.type==='loaded'){
-  samplingPreview.stop();samplingRangeKey=null;displayedPreviewInfo=null;trackUsage('video_load',{input_source:inputSource});clearExport();lastDiagnostics=null;$('decodeReport').hidden=true;previewDetached=false;anchors=[];centerData=null;seedIndex=null;calibration=null;activeObject=0;objectTracks=[{id:0,anchors,seedIndex:null,summary:null},{id:1,anchors:[],seedIndex:null,summary:null}];resultData=null;$('resultLabels').checked=false;$('photoRate').checked=false;$('shutterSound').checked=false;$('referenceDetails').open=false;const x=m.metadata;sourceClock={...x,variable:x.variableTiming};state={stage:'range',...x,start:0,end:x.count-1,background:0,backgroundMode:'auto',stabilize:!!sampleSelection?.stabilize,stabilizationSummary:null,reference:0,step:Math.max(1,Math.round((sampleSelection?.interval||preferences.interval)/x.period)),factor:1};if(sampleSelection){state.start=Math.min(x.count-2,indexAtTime(state,sampleSelection.start));state.end=Math.min(x.count-1,Math.max(state.start+1,indexAtTime(state,sampleSelection.end)));state.background=Math.min(state.start,indexAtTime(state,sampleSelection.background));state.reference=state.start;backgroundAuto=false;if(sampleSelection.stabilize)$('videoSpeed').value='0.25';}else backgroundAuto=true;extracted=false;resultBlob=null;setActions(false);if(videoUrl)URL.revokeObjectURL(videoUrl);videoUrl=URL.createObjectURL(sourceFile);$('video').onloadedmetadata=()=>{if(state.stage==='range')seekTo(state.start);else if(state.stage==='sampling'){if(samplingPreview.running){samplingPreview.stop();samplingPreview.start();}else if(state.samplingPreviewMode==='reference')seekTo(state.reference);}};$('video').src=videoUrl;$('home').hidden=true;$('editor').hidden=false;document.body.classList.add('is-editing');finishBusy();stage('range');timeline.reset();$('goSampling').focus();
+  samplingPreview.stop();samplingRangeKey=null;displayedPreviewInfo=null;trackUsage('video_load',{input_source:inputSource});clearExport();previewDetached=false;anchors=[];centerData=null;seedIndex=null;calibration=null;activeObject=0;objectTracks=[{id:0,anchors,seedIndex:null,summary:null},{id:1,anchors:[],seedIndex:null,summary:null}];resultData=null;$('resultLabels').checked=false;$('photoRate').checked=false;$('shutterSound').checked=false;$('referenceDetails').open=false;const x=m.metadata;sourceClock={...x,variable:x.variableTiming};state={stage:'range',...x,start:0,end:x.count-1,background:0,backgroundMode:'auto',stabilize:!!sampleSelection?.stabilize,stabilizationSummary:null,reference:0,step:Math.max(1,Math.round((sampleSelection?.interval||preferences.interval)/x.period)),factor:1};if(sampleSelection){state.start=Math.min(x.count-2,indexAtTime(state,sampleSelection.start));state.end=Math.min(x.count-1,Math.max(state.start+1,indexAtTime(state,sampleSelection.end)));state.background=Math.min(state.start,indexAtTime(state,sampleSelection.background));state.reference=state.start;backgroundAuto=false;if(sampleSelection.stabilize)$('videoSpeed').value='0.25';}else backgroundAuto=true;extracted=false;resultBlob=null;setActions(false);if(videoUrl)URL.revokeObjectURL(videoUrl);videoUrl=URL.createObjectURL(sourceFile);$('video').onloadedmetadata=()=>{if(state.stage==='range')seekTo(state.start);else if(state.stage==='sampling'){if(samplingPreview.running){samplingPreview.stop();samplingPreview.start();}else if(state.samplingPreviewMode==='reference')seekTo(state.reference);}};$('video').src=videoUrl;$('home').hidden=true;$('editor').hidden=false;document.body.classList.add('is-editing');finishBusy();stage('range');timeline.reset();$('goSampling').focus();
  }else if(m.type==='extracted'){showStabilization(m.stabilization);extracted=true;compose(true);
  }else if(m.type==='composed'){
   if(task==='compose')trackUsage('photo_create');
@@ -164,7 +143,7 @@ async function handleWorkerMessage({data:m}){
  }else if(m.type==='video-exported'){
   showStabilization(m.stabilization);
   trackUsage('video_create');exportBlob=m.blob;exportSettings=videoSettingsKey();if(exportUrl)URL.revokeObjectURL(exportUrl);exportUrl=URL.createObjectURL(m.blob);$('exportPreview').src=exportUrl;finishBusy();setActions(true);showResultView('video');toast('合成動画を作成しました。再生して確認できます。');
- }else if(m.type==='error'){const failedTask=task;centerEditor.setBusy(false);if(task==='load'){$('home').hidden=false;$('editor').hidden=true;document.body.classList.remove('is-editing');$('video').pause();}finishBusy();setActions(!['compose','quick-compose'].includes(failedTask)&&!!resultBlob);if($('centerDialog').open){$('centerStatus').textContent=m.message;}if($('guideDialog').open)guideEditor.error(m.message);if($('calibrationDialog').open)calibrationEditor.error(m.message);if(state.stage==='result'&&!resultBlob)$('resultCount').textContent='更新失敗';showError(m.message);showDiagnostics(m.diagnostics);lastFailedOperation=failedTask;$('retryDecode').hidden=!['extract','export-video'].includes(failedTask);
+ }else if(m.type==='error'){const failedTask=task;centerEditor.setBusy(false);if(task==='load'){$('home').hidden=false;$('editor').hidden=true;document.body.classList.remove('is-editing');$('video').pause();}finishBusy();setActions(!['compose','quick-compose'].includes(failedTask)&&!!resultBlob);if($('centerDialog').open){$('centerStatus').textContent=m.message;}if($('guideDialog').open)guideEditor.error(m.message);if($('calibrationDialog').open)calibrationEditor.error(m.message);if(state.stage==='result'&&!resultBlob)$('resultCount').textContent='更新失敗';showError(m.message);lastFailedOperation=failedTask;$('retryDecode').hidden=!['extract','export-video'].includes(failedTask);
  }else if(m.type==='cancelled'){centerEditor.setBusy(false);finishBusy();setActions(!!resultBlob);toast('処理をキャンセルしました。');}
 }
 function handleWorkerError(){centerEditor.setBusy(false);finishBusy();setActions(!!resultBlob);const message='処理を開始できませんでした。動画を選び直してお試しください。';$('centerStatus').textContent=message;showError(message);resetWorker();}
@@ -173,7 +152,7 @@ function resetWorker(){try{worker.terminate();}catch{}worker=new Worker(workerUr
 function armLoadStall(){clearTimeout(loadStallTimer);loadStallTimer=setTimeout(()=>{if(task!=='load')return;resetWorker();finishBusy();$('home').hidden=false;$('editor').hidden=true;document.body.classList.remove('is-editing');showError('動画の読み込みが停止しました。もう一度選び直してください。iPadでは写真・ファイル選択後の一時ファイルを安全なBlobに変換して再試行できます。');},20000);}
 bindWorker();
 $('chooseVideo').onclick=()=>$('fileInput').click();$('captureVideo').onclick=()=>$('cameraInput').click();for(const id of ['fileInput','cameraInput'])$(id).onchange=e=>{if(e.target.files[0]){inputSource=id==='cameraInput'?'camera':'file';load(e.target.files[0]);}e.target.value='';};
-installSamples({initialSampleId:new URLSearchParams(location.search).get('sample'),onChoose:async sample=>{trackUsage('sample_select',{sample_id:sample.id});inputSource='sample';try{busy('サンプルを読み込み中','demo');demoAbort=new AbortController();const blob=await downloadSample(sample.video+'?v=1.23.16',{signal:demoAbort.signal,expectedSize:sample.bytes,onProgress:p=>{if(task==='demo')setProgress('サンプルを読み込み中',p.value===null?null:p.value*.7);}});if(task!=='demo'||demoAbort.signal.aborted)return;await load(new File([blob],`${sample.title}.mp4`,{type:'video/mp4'}),sample.range,true);}catch(e){finishBusy();if(e.name!=='AbortError')showError('サンプルを読み込めませんでした。');}}});
+installSamples({initialSampleId:new URLSearchParams(location.search).get('sample'),onChoose:async sample=>{trackUsage('sample_select',{sample_id:sample.id});inputSource='sample';try{busy('サンプルを読み込み中','demo');demoAbort=new AbortController();const blob=await downloadSample(sample.video+'?v=1.23.17',{signal:demoAbort.signal,expectedSize:sample.bytes,onProgress:p=>{if(task==='demo')setProgress('サンプルを読み込み中',p.value===null?null:p.value*.7);}});if(task!=='demo'||demoAbort.signal.aborted)return;await load(new File([blob],`${sample.title}.mp4`,{type:'video/mp4'}),sample.range,true);}catch(e){finishBusy();if(e.name!=='AbortError')showError('サンプルを読み込めませんでした。');}}});
 
 $('cancelProcessing').onclick=()=>{if(task==='demo'){demoAbort?.abort();finishBusy();toast('処理をキャンセルしました。');}else post({type:'cancel'});};
 $('goSampling').onclick=()=>stage('sampling');$('backRange').onclick=()=>stage('range');document.querySelector('.steps [data-stage="range"]').onclick=()=>stage('range');document.querySelector('.steps [data-stage="sampling"]').onclick=()=>stage('sampling');document.querySelector('.steps [data-stage="result"]').onclick=()=>{if(resultBlob)stage('result');};
