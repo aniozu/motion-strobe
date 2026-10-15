@@ -5,8 +5,8 @@ export function playbackTime(seconds){
 
 // Use the browser's media engine, with controls outside its native overlay.
 export class SourcePlayer{
- constructor({video,button,seek,readout,onManual=()=>{},onError=()=>{},canUse=()=>true,labels}){
-  Object.assign(this,{video,button,seek,readout,onManual,onError,canUse,labels,scrubbing:false});
+ constructor({video,button,seek,readout,onManual=()=>{},onError=()=>{},canUse=()=>true,getTime=()=>video.currentTime,labels}){
+  Object.assign(this,{video,button,seek,readout,onManual,onError,canUse,getTime,labels,scrubbing:false});
   video.controls=false;
   button.addEventListener('click',()=>this.toggle());
   seek.addEventListener('pointerdown',()=>this.beginScrub());
@@ -31,7 +31,7 @@ export class SourcePlayer{
   this.video.currentTime=Math.max(0,Math.min(duration,value));this.update();
  }
  update(){
-  const duration=Number.isFinite(this.video.duration)?Math.max(0,this.video.duration):0,current=Math.max(0,this.video.currentTime||0),enabled=this.canUse()&&!!this.video.getAttribute('src');
+  const duration=Number.isFinite(this.video.duration)?Math.max(0,this.video.duration):0,current=Math.max(0,this.getTime()||0),enabled=this.canUse()&&!!this.video.getAttribute('src');
   this.button.disabled=!enabled;this.button.textContent=this.video.paused?'▶':'❚❚';this.button.setAttribute('aria-label',this.video.paused?this.labels.play:this.labels.pause);
   this.seek.disabled=!enabled||duration<=0;this.seek.max=String(duration);
   if(!this.scrubbing)this.seek.value=String(Math.min(duration,current));

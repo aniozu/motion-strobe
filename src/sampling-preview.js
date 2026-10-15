@@ -16,19 +16,48 @@ export function initialSampling(state,target=10){
  return {reference:best.reference,step:best.step};
 }
 
-// Only one seek can be in flight. A slow seek delays the next tick, never queues it.
+// Prepare one image ahead while the current image remains on screen. Display
+// deadlines use a monotonic clock; a late frame never triggers catch-up bursts.
 export class SamplingPreview{
- constructor({show,onChange=()=>{},delay=250,schedule=(fn,ms)=>globalThis.setTimeout(fn,ms),cancel=id=>globalThis.clearTimeout(id)}){
-  Object.assign(this,{show,onChange,delay,schedule,cancel,indices:[],position:0,running:false,sequence:0});
+ constructor({show,prepare,onPresent=()=>{},onChange=()=>{},delay=250,now=()=>globalThis.performance.now(),schedule=(fn,ms)=>globalThis.setTimeout(fn,ms),cancel=id=>globalThis.clearTimeout(id)}){
+  Object.assign(this,{show,prepare,onPresent,onChange,delay,now,schedule,cancel,indices:[],position:0,running:false,sequence:0,interval:delay});
  }
  setPlan(indices){
   if(indices.length===this.indices.length&&indices.every((n,i)=>n===this.indices[i]))return;
-  const resume=this.running;this.stop();this.indices=[...indices];this.position=0;if(resume)this.start();
+  const resume=this.running;this.stop();this.indices=[...indices];this.position=0;this.interval=this.delay;if(resume)this.start();
  }
  start(){
   if(this.running||!this.indices.length)return;
   this.running=true;this.onChange(true);const sequence=++this.sequence;
-  this.abort=new AbortController();this.advance(sequence,this.abort.signal);
+  this.abort=new AbortController();this.lastPresented=null;
+  if(this.prepare)this.bufferNext(sequence,this.abort.signal);else this.advance(sequence,this.abort.signal);
+ }
+ async bufferNext(sequence,signal){
+  if(sequence!==this.sequence||!this.running||signal.aborted)return;
+  const began=this.now();let frame;
+  try{frame=await this.prepare(this.indices[this.position],{signal});}catch{}
+  if(sequence!==this.sequence||!this.running||signal.aborted){frame?.dispose?.();return;}
+  if(!frame||typeof frame.present!=='function'){frame?.dispose?.();this.stop();return;}
+  this.prepared=frame;
+  // Leave headroom on slower decoders, then return toward 250 ms gradually.
+  // The first image is immediate; subsequent images get a full display period.
+  if(this.lastPresented!==null){
+   const needed=Math.max(this.delay,Math.min(this.delay*2,this.now()-began+16));
+   this.interval=needed>this.interval?needed:Math.max(needed,this.interval-8);
+  }
+  const due=this.lastPresented===null?this.now():this.lastPresented+this.interval;
+  const present=()=>{
+   this.timer=null;
+   if(sequence!==this.sequence||!this.running||signal.aborted)return;
+   const remaining=due-this.now();
+   if(remaining>0){this.timer=this.schedule(present,remaining);return;}
+   this.prepared=null;
+   try{frame.present();this.onPresent(this.indices[this.position]);}
+   catch{frame.dispose?.();this.stop();return;}
+   frame.dispose?.();this.lastPresented=this.now();
+   if(this.indices.length>1){this.position=(this.position+1)%this.indices.length;this.bufferNext(sequence,signal);}
+  };
+  if(due<=this.now())present();else this.timer=this.schedule(present,due-this.now());
  }
  async advance(sequence,signal){
   if(sequence!==this.sequence||!this.running||signal.aborted)return;
@@ -38,7 +67,7 @@ export class SamplingPreview{
   if(shown===false){this.stop();return;}
   this.timer=this.schedule(()=>{this.position=(this.position+1)%this.indices.length;this.advance(sequence,signal);},this.delay);
  }
- stop(){this.cancel(this.timer);this.timer=null;this.sequence++;this.abort?.abort();this.running=false;this.onChange(false);}
+ stop(){this.cancel(this.timer);this.timer=null;this.sequence++;this.abort?.abort();this.prepared?.dispose?.();this.prepared=null;this.running=false;this.onChange(false);}
 }
 
 // Seek inside a frame's presentation interval, not onto its rounded boundary.

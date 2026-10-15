@@ -445,3 +445,6 @@ html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
  .center-dialog .center-tools{gap:10px;border-top:0;padding-top:0}
  .center-dialog .center-image{height:clamp(110px,calc(88dvh - 165px),340px)}
 }
+
+/* Keep the shown extraction frame stable while the player prepares the next. */
+.sampling-preview-image{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;z-index:1}
