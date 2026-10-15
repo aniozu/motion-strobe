@@ -59,7 +59,7 @@ body.is-editing{--editor-header-height:44px;min-height:100dvh}.is-editing header
 .workspace #resultPanel #factor button{flex:1 1 auto;white-space:nowrap;padding:4px 2px}
 @media(max-width:370px) and (orientation:portrait){.workspace #resultPanel{column-gap:6px}}
 
-.workspace .steps>button[data-stage].active{background:var(--blue);color:#fff;box-shadow:0 2px 6px #2359db22}.workspace .steps>button[data-stage].active .step-number{background:#fff;color:var(--blue)}.workspace .sampling-timeline .timeline-top{display:none}
+.workspace .steps>button[data-stage].active{background:var(--blue);color:#fff;box-shadow:0 2px 6px #2359db22}.workspace .steps>button[data-stage].active .step-number{background:#fff;color:var(--blue)}
 @media(max-width:370px) and (orientation:portrait){.workspace .steps>button[data-stage] .step-number{display:inline-grid;width:18px;height:18px;margin-right:3px}.workspace .steps>button[data-stage]{padding:4px}.workspace .steps .change-video{padding-left:4px;font-size:14px}}
 
 /* Shared type scale across range, sampling and result; key sampling metrics stay prominent. */
@@ -328,9 +328,9 @@ html:not([lang=ja]) .workspace .steps{flex-wrap:wrap}
 html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
 @media(max-width:480px){.language-picker{max-width:7em;font-size:13px}.header-actions{gap:5px}header{padding-left:12px;padding-right:12px}.brand{gap:5px;font-size:14px}}
 /* Selected boundary frame: preserve the existing preview dimensions and controls. */
-.view-area[data-preview-frame=start]{--preview-frame-color:#2359db}.view-area[data-preview-frame=end]{--preview-frame-color:#df902c}.view-area[data-preview-frame=reference]{--preview-frame-color:#a05bc6}.view-area[data-preview-frame=background]{--preview-frame-color:#169f86}
-.view-area[data-preview-frame=start]::after,.view-area[data-preview-frame=end]::after,.view-area[data-preview-frame=reference]::after,.view-area[data-preview-frame=background]::after{content:"";position:absolute;inset:0;border:3px solid var(--preview-frame-color);border-radius:inherit;pointer-events:none;z-index:2}
-.preview-frame-label{position:absolute;top:12px;left:12px;z-index:3;color:var(--preview-frame-color);background:#fff;padding:5px 10px;border:1px solid currentColor;border-radius:7px;font-size:14px;font-weight:700;pointer-events:none}
+ .view-area[data-preview-frame=background]{--preview-frame-color:#169f86}.view-area[data-preview-frame=extract]{--preview-frame-color:#2359db}.view-area[data-preview-frame=start]{--preview-frame-color:#2359db}.view-area[data-preview-frame=end]{--preview-frame-color:#df902c}.view-area[data-preview-frame=reference]{--preview-frame-color:#a05bc6}
+.view-area[data-preview-frame=background]::after,.view-area[data-preview-frame=extract]::after,.view-area[data-preview-frame=start]::after,.view-area[data-preview-frame=end]::after,.view-area[data-preview-frame=reference]::after{content:"";position:absolute;inset:0;border:3px solid var(--preview-frame-color);border-radius:inherit;pointer-events:none;z-index:2}
+.preview-frame-label{color:var(--preview-frame-color);pointer-events:none}
 .time-fields .background-point{align-items:start}.background-point .point-label{min-height:36px;display:flex;align-items:center}.background-point .background-options{align-self:start}
 
 .home-example{min-width:0;margin:0}.home-example figcaption{margin-top:12px;text-align:center;font-size:13px;line-height:1.6;color:var(--muted)}.home-visual video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;background:#e3e4df}
@@ -345,5 +345,103 @@ html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
 .workspace #resultPanel .result-actions{grid-template-columns:repeat(2,minmax(0,1fr)) minmax(44px,.55fr);align-items:stretch}
 .workspace #resultPanel .result-actions button{width:100%;min-width:0;min-height:44px;padding:8px 5px;line-height:1.35;white-space:normal;overflow-wrap:anywhere;text-wrap:balance;text-align:center}
 
-.camera-correction-option{margin:12px 0}
+.camera-correction-option{margin:8px 0;padding:0}
+.camera-correction-option .check{align-items:center;line-height:1.5;margin:0}
+.camera-correction-option .check input{flex:none;margin:0}
 .stabilization-result{font-size:12px;line-height:1.5;color:var(--muted,#51636f);margin:0 0 12px}
+
+
+
+/* Matching frame and preview chips leave room for the image on small screens. */
+.preview-overlay{position:absolute;top:8px;left:8px;right:8px;display:flex;align-items:center;gap:6px;z-index:3;pointer-events:none}
+.workspace .preview-chip{display:inline-flex;align-items:center;gap:5px;height:28px;min-height:28px;min-width:0;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:rgba(255,255,255,.86);font-size:13px;font-weight:600;line-height:1.25;white-space:nowrap}
+.workspace .preview-frame-label{flex:0 1 auto;border-color:currentColor}
+.preview-frame-title{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.preview-frame-count{flex:none;font-variant-numeric:tabular-nums}
+.sampling-preview-controls{margin-left:auto;max-width:48%;min-width:0;flex:0 1 auto;pointer-events:auto}
+.sampling-preview-controls button{max-width:100%;color:var(--ink)}
+.sampling-preview-controls button>span:first-child{flex:none}
+.sampling-preview-controls button>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* A thin, translucent playback strip keeps the video visible underneath. */
+.source-playback-controls{position:absolute;bottom:6px;left:8px;right:8px;z-index:3;display:flex;align-items:center;gap:6px;height:30px;padding:0 6px 0 0;background:rgba(14,24,34,.22);border:1px solid #ffffff26;border-radius:6px;color:#fff;text-shadow:0 1px 2px #0008}
+.workspace .source-playback-controls button{flex:none;width:28px;min-width:28px;height:28px;min-height:28px;padding:0;border:0;background:transparent;color:#fff;font-size:14px;line-height:1;text-shadow:inherit}
+#sourceSeek{flex:1;min-width:0;width:0;height:28px;min-height:28px;margin:0;padding:0;background:transparent;appearance:none;-webkit-appearance:none}
+#sourceSeek::-webkit-slider-runnable-track{height:2px;border-radius:2px;background:#ffffffa6}
+#sourceSeek::-webkit-slider-thumb{width:11px;height:11px;margin-top:-4.5px;border:0;border-radius:50%;background:#fff;appearance:none;-webkit-appearance:none}
+#sourceSeek::-moz-range-track{height:2px;border-radius:2px;background:#ffffffa6}
+#sourceSeek::-moz-range-thumb{width:11px;height:11px;border:0;border-radius:50%;background:#fff}
+#sourcePlaybackTime{flex:none;white-space:nowrap;font-size:11px;font-variant-numeric:tabular-nums}
+.source-playback-controls:focus-within{background:rgba(14,24,34,.38)}
+@media(hover:hover){.source-playback-controls:hover{background:rgba(14,24,34,.38)}}
+.workspace #rangeTimeline,.workspace #samplingTimeline{margin:0 0 10px}
+.workspace .panel-heading{min-height:28px;margin-bottom:8px}
+.workspace .timeline-top{min-height:26px;flex-wrap:wrap;row-gap:4px}
+.workspace .zoom-tools{margin-left:auto}
+@media(max-width:759px) and (orientation:portrait){
+ .is-editing main{height:auto;min-height:calc(100dvh - var(--editor-header-height))}
+ .workspace{height:auto;min-height:calc(100dvh - var(--editor-header-height))}
+ .workspace .editing-layout{flex:none}
+ .workspace .view-area{flex:none;min-height:0;height:clamp(190px,36svh,340px)}
+ .workspace .side-panel{flex:none;max-height:none;overflow:visible}
+ .workspace .preview-chip{font-size:12px;padding:4px 7px}
+ .workspace .steps>button{line-height:1.3}
+}
+@media(max-width:480px) and (orientation:portrait){
+ html[lang=ja] .workspace .steps>button .step-name{display:none}
+ html[lang=ja] .workspace .steps>button[data-short]::after{content:attr(data-short)}
+}
+@media(max-width:900px) and (orientation:landscape){.workspace .editing-layout{grid-template-columns:minmax(0,1fr) clamp(238px,38vw,300px)}}
+#video::-webkit-media-controls-overlay-play-button,#video::-webkit-media-controls-start-playback-button{display:none!important}
+
+.home-example.is-example-loading video,.home-example.is-example-loading figcaption{visibility:hidden}
+
+/* Position detection: image first on touch screens, controls alongside on wide screens. */
+.center-dialog{width:min(1160px,96vw);max-height:94dvh;padding:16px 20px;overflow:auto}
+.center-dialog .dialog-heading{margin-bottom:12px}.center-dialog .dialog-heading h2{font-size:18px}
+.center-dialog .center-layout{display:grid;grid-template-columns:minmax(0,1fr) 250px;grid-template-rows:auto 1fr;grid-template-areas:"picture targets" "picture tools";gap:14px 20px;align-items:start}
+.center-dialog .center-picture{grid-area:picture;min-width:0}
+.center-dialog .center-targets{grid-area:targets;display:grid;gap:12px;min-width:0}
+.center-dialog .center-tools{grid-area:tools;display:flex;flex-direction:column;gap:16px;min-width:0}
+.center-dialog .center-control-label,.center-dialog .tracking-mode-field>span{font-size:14px;font-weight:600;color:var(--ink);line-height:1.4}
+.center-dialog .center-targets .object-tabs{width:max-content;max-width:100%;margin:5px 0 0}
+.center-dialog .object-tabs button{min-height:34px;padding:6px 12px;min-width:0;white-space:normal}
+.center-dialog .tracking-mode-field{display:grid;gap:5px;margin:0}
+.center-dialog .tracking-mode-field select{width:100%;min-width:0;max-width:100%;font-size:14px;min-height:36px;padding:7px 8px;border:1px solid var(--line);border-radius:7px;background:#f8fafc;color:var(--ink)}
+.center-dialog #centerInstruction{min-height:2.8em;margin:0 0 8px;font-size:14px;line-height:1.4;color:var(--ink)}
+.center-dialog .center-image{height:clamp(160px,calc(88dvh - 210px),600px);min-height:0}
+.center-dialog .center-image canvas{width:auto;height:auto;max-width:100%;max-height:100%}
+.center-dialog .center-frame-meta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:8px 0 3px;font-size:14px;font-variant-numeric:tabular-nums;line-height:1.4}
+.center-dialog #centerTime{white-space:nowrap;flex:none}
+.center-dialog #centerStatus{min-width:0;color:var(--muted);text-align:right;overflow-wrap:anywhere}
+.center-dialog .center-frames{margin:0;gap:8px}
+.center-dialog .center-frames button{min-height:32px;width:32px;padding:0;font-size:18px}
+.center-dialog .center-gesture-hint{font-size:12px;line-height:1.5;color:var(--muted);margin:6px 0 0}
+.center-dialog .center-method{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:8px}
+.center-dialog .center-method>.center-control-label{flex:none}
+.center-dialog .center-method .center-modes{flex:0 1 auto;min-width:0;max-width:100%;margin:0}
+.center-dialog .center-modes button{min-width:44px;min-height:34px;font-size:14px;padding:6px 8px;line-height:1.3;white-space:normal}
+.center-dialog .auto-detect-action{width:100%;gap:6px}
+.center-dialog .auto-detect-action #autoDetect{flex:1;min-width:0;min-height:40px;padding:8px 10px;white-space:normal;line-height:1.4}
+.center-dialog .auto-detect-action>.help-small{flex:none}
+.center-dialog .auto-detection-result{text-align:left;font-size:13px}
+.center-dialog .detection-progress{margin:0}
+.center-dialog .center-secondary-actions{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:6px}
+.center-dialog .center-secondary-actions button{font-size:13px;min-height:32px;padding:5px 8px;line-height:1.4;white-space:normal}
+@media(max-width:799px){
+ .center-dialog{padding:12px;max-height:96dvh}
+ .center-dialog .center-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;grid-template-areas:"targets" "picture" "tools";gap:10px}
+ .center-dialog .center-targets{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end}
+ .center-dialog .center-targets .object-tabs{width:100%}
+ .center-dialog .object-tabs button{flex:1;padding:6px 4px}
+ .center-dialog .center-image{height:clamp(170px,34svh,340px)}
+ .center-dialog .center-tools{gap:12px;border-top:1px solid var(--line);padding-top:10px}
+ .center-dialog #centerInstruction{margin-bottom:6px}
+}
+@media(min-width:600px) and (max-height:500px) and (orientation:landscape){
+ .center-dialog{padding:10px 12px}
+ .center-dialog .dialog-heading{margin-bottom:6px}
+ .center-dialog .center-layout{grid-template-columns:minmax(0,1fr) 230px;grid-template-rows:auto 1fr;grid-template-areas:"picture targets" "picture tools";gap:10px 14px}
+ .center-dialog .center-targets{grid-template-columns:1fr;gap:8px}
+ .center-dialog .center-tools{gap:10px;border-top:0;padding-top:0}
+ .center-dialog .center-image{height:clamp(110px,calc(88dvh - 165px),340px)}
+}

@@ -52,9 +52,9 @@ const content={ja:[
    "6. 物体の位置を検出する",
    [
     "「完成」画面の右側、「物体の位置検出」にある「位置を検出」を押します。開いた画面の画像で物体をタップすると、その近くの中心を決定します。",
-    "「全コマを自動検出」で、指定した位置を手がかりに他のコマを追跡します。上の時刻バーや±でコマを切り替え、結果を確認します。誤った点は「手動」で直し、物体が写っていないコマは「なし」にします。",
+    "「全コマを自動検出」で、指定した位置を手がかりに他のコマを追跡します。時刻バーや±でコマを切り替え、結果を確認します。誤った点は「手動」で直し、物体が写っていないコマは「なし」にします。",
     "ハンマーの重心の印など、同じ部分を追う場合は「追跡方法」を「指定した点」にし、印をタップして「全コマを自動検出」を押します。「要確認」は手動で直します。物体の中心を追う場合は「物体の中心」を使います。",
-    "2つの物体を調べる場合は、上の「物体1」「物体2」を切り替えてそれぞれ指定します。画像はピンチやホイールで拡大でき、「移動」で表示位置を動かせます。"
+    "2つの物体を調べる場合は、「物体1」「物体2」を切り替えてそれぞれ指定します。画像はホイールやピンチで拡大できます。PCはSpaceキーを押しながらドラッグ、タッチ画面は2本指で画像を移動します。"
    ],
    "detection-005"
   ],
@@ -150,9 +150,9 @@ const content={ja:[
    "6. Detect object positions",
    [
     "On the right of the Result screen, select Detect positions under Object position detection. Tap the object in the image to estimate its center nearby.",
-    "Use Detect all frames to track the other frames from the position you marked. Inspect the results with the time slider and ± buttons at the top. Correct mistakes in Manual mode and choose Skip when the object is absent.",
+    "Use Detect all frames to track the other frames from the position you marked. Inspect the results with the time slider and ± buttons. Correct mistakes in Manual mode and choose Skip when the object is absent.",
     "To track a fixed point, such as a center-of-mass marker on a hammer, set Tracking method to Selected point, tap the marker, and select Detect all frames. Correct results marked Needs review manually. Use Object center when you want to detect the center of the object image.",
-    "For two objects, select Object 1 or Object 2 at the top and mark each separately. Pinch or scroll to zoom; use Pan to move the image."
+    "For two objects, select Object 1 or Object 2 and mark each separately. Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen."
    ],
    "detection-005"
   ],

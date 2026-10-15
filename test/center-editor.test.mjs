@@ -3,7 +3,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {Cen
 function editorHarness(){
  const elements=new Map(),modes=['target','center','none'].map(mode=>({dataset:{centerMode:mode},classList:{toggle(){}},setAttribute(k,v){this[k]=v;}}));
  const context={save(){},restore(){},translate(){},scale(){},clearRect(){},drawImage(){},setLineDash(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){}};
- const el=id=>{if(!elements.has(id))elements.set(id,{classList:{toggle(){}},setAttribute(key,value){this[key]=value;},addEventListener(){},querySelectorAll(){return modes;},showModal(){},getContext(){return context;},getBoundingClientRect(){return {left:10,top:20,width:200,height:100};},setPointerCapture(){},width:400,height:200});return elements.get(id);};
+ const el=id=>{if(['centerZoomIn','centerZoomOut','centerZoomReset','centerZoomLevel','centerPan'].includes(id))throw Error('Removed viewport control: '+id);if(!elements.has(id))elements.set(id,{classList:{toggle(){}},setAttribute(key,value){this[key]=value;},addEventListener(){},querySelectorAll(){return modes;},showModal(){},getContext(){return context;},getBoundingClientRect(){return {left:10,top:20,width:200,height:100};},setPointerCapture(){},width:400,height:200});return elements.get(id);};
  elements.set('skipCenter',modes[2]);globalThis.document={getElementById:el};const preview=[],anchors=[],skipped=[],reset=[],automatic=[],cancelled=[];
  const editor=new CenterEditor({preview:i=>preview.push(i),onAnchor:a=>anchors.push(a),onSkip:i=>skipped.push(i),onReset:i=>reset.push(i),onAuto:i=>automatic.push(i),onCancel:()=>cancelled.push(true)});
  const data={indices:[3,6,9],centers:[{index:3,confidence:'unset'},{index:6,x:100,y:50,confidence:'manual',source:'object'},{index:9,confidence:'skipped'}],size:{width:400,height:200},period:1/60,first:3,anchors:[]};editor.setData(data);editor.image={};
@@ -22,25 +22,38 @@ test('automatic action requires a manual seed, keeps the initial seed and offers
 });
 
 test('auto, manual and none have distinct instructions and none never writes a tapped position',()=>{
- const h=editorHarness();h.editor.select(1);h.editor.setBusy(false);assert.equal(h.el('centerInstruction').textContent,'検出する物体をタップすると、位置を自動で決定します。');
- h.modes[1].onclick();assert.equal(h.el('centerInstruction').textContent,'タップ・ドラッグで物体の中心を決めます。');
- h.modes[2].onclick();assert.deepEqual(h.skipped,[6]);assert.equal(h.editor.mode,'none');h.editor.setBusy(false);assert.equal(h.el('centerInstruction').textContent,'このコマでは物体の位置を検出しません。');
+ const h=editorHarness();h.editor.select(1);h.editor.setBusy(false);assert.equal(h.el('centerInstruction').textContent,'画像の物体をクリック／タップしてください。近くの中心を検出します。');
+ h.modes[1].onclick();assert.equal(h.el('centerInstruction').textContent,'画像をクリック／タップ、またはドラッグして位置を手動で決めます。');
+ h.modes[2].onclick();assert.deepEqual(h.skipped,[6]);assert.equal(h.editor.mode,'none');h.editor.setBusy(false);assert.equal(h.el('centerInstruction').textContent,'このコマは検出しません。');
  h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointerup({clientX:60,clientY:45,pointerId:1});assert.equal(h.anchors.length,0);
  h.modes[0].onclick();assert.equal(h.editor.mode,'target');h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointerup({clientX:60,clientY:45,pointerId:1});assert.equal(h.anchors.length,1);assert.equal(h.anchors[0].index,6);
 });
 
 test('zoomed manual taps map to source pixels, pan never changes a center, and reset restores the whole image',()=>{
- const h=editorHarness();h.editor.select(1);h.editor.setBusy(false);h.modes[1].onclick();h.el('centerZoomIn').onclick();h.el('centerZoomIn').onclick();assert.equal(h.editor.viewport.scale,2.25);
+ const h=editorHarness();h.editor.select(1);h.editor.setBusy(false);h.modes[1].onclick();for(let i=0;i<2;i++)h.el('centerCanvas').onwheel({clientX:110,clientY:70,deltaY:-Math.log(1.5)/.005,preventDefault(){}});assert(Math.abs(h.editor.viewport.scale-2.25)<1e-9);
  h.el('centerCanvas').onpointerdown({clientX:85,clientY:57.5,pointerId:1});h.el('centerCanvas').onpointerup({clientX:85,clientY:57.5,pointerId:1});
  assert.equal(h.anchors.length,1);assert.equal(h.anchors[0].index,6);assert.equal(h.anchors[0].spaceWidth,400);assert.equal(h.anchors[0].spaceHeight,200);assert(Math.abs(h.anchors[0].x-(200-50/2.25))<1e-9);assert(Math.abs(h.anchors[0].y-(100-25/2.25))<1e-9);
- h.editor.setData(h.data);const before=h.editor.viewport.x;h.el('centerPan').onclick();h.el('centerCanvas').onpointerdown({clientX:110,clientY:70,pointerId:2});h.el('centerCanvas').onpointermove({clientX:130,clientY:70,pointerId:2});h.el('centerCanvas').onpointerup({clientX:130,clientY:70,pointerId:2});assert(h.editor.viewport.x<before);assert.equal(h.anchors.length,1);
- h.el('centerZoomReset').onclick();assert.equal(h.editor.viewport.scale,1);assert.deepEqual(h.editor.point({clientX:60,clientY:45}),{x:100,y:50});assert.equal(h.el('centerZoomOut').disabled,true);
+ h.editor.setData(h.data);const before=h.editor.viewport.x;h.el('centerCanvas').onkeydown({code:'Space',key:' ',preventDefault(){}});h.el('centerCanvas').onpointerdown({clientX:110,clientY:70,pointerId:2});h.el('centerCanvas').onpointermove({clientX:130,clientY:70,pointerId:2});h.el('centerCanvas').onkeyup({code:'Space',key:' ',preventDefault(){}});h.el('centerCanvas').onpointerup({clientX:130,clientY:70,pointerId:2});assert(h.editor.viewport.x<before);assert.equal(h.anchors.length,1);
+ for(let i=0;i<12;i++)h.el('centerCanvas').onwheel({clientX:110,clientY:70,deltaY:100,preventDefault(){}});assert.equal(h.editor.viewport.scale,1);assert.deepEqual(h.editor.point({clientX:60,clientY:45}),{x:100,y:50});
 });
 test('two-finger pinch and pan cannot accidentally place a center, including when one finger lifts first',()=>{
  const h=editorHarness();h.editor.select(1);h.editor.setBusy(false);h.modes[1].onclick();const canvas=h.el('centerCanvas');
  canvas.onpointerdown({clientX:85,clientY:70,pointerId:1});canvas.onpointerdown({clientX:135,clientY:70,pointerId:2});canvas.onpointermove({clientX:185,clientY:70,pointerId:2});assert.equal(h.editor.viewport.scale,2);
  canvas.onpointerup({clientX:185,clientY:70,pointerId:2});canvas.onpointermove({clientX:90,clientY:75,pointerId:1});canvas.onpointerup({clientX:90,clientY:75,pointerId:1});assert.equal(h.anchors.length,0);
  canvas.onpointerdown({clientX:110,clientY:70,pointerId:3});canvas.onpointerup({clientX:110,clientY:70,pointerId:3});assert.equal(h.anchors.length,1);
+});
+test('Space started during a drag and focus loss never leave a pending position edit',()=>{
+ const h=editorHarness();h.editor.select(1);h.editor.setBusy(false);h.modes[1].onclick();const canvas=h.el('centerCanvas');
+ canvas.onwheel({clientX:110,clientY:70,deltaY:-100,preventDefault(){}});const before=h.editor.viewport.x;
+ canvas.onpointerdown({clientX:110,clientY:70,pointerId:1});
+ canvas.onkeydown({code:'Space',key:' ',preventDefault(){}});
+ canvas.onpointermove({clientX:135,clientY:70,pointerId:1});
+ canvas.onkeyup({code:'Space',key:' ',preventDefault(){}});
+ canvas.onpointerup({clientX:135,clientY:70,pointerId:1});
+ assert(h.editor.viewport.x<before);assert.equal(h.anchors.length,0);assert.equal(h.editor.panPointer,null);
+ canvas.onkeydown({code:'Space',key:' ',preventDefault(){}});canvas.onblur();assert.equal(h.editor.panMode,false);
+ canvas.onpointerdown({clientX:110,clientY:70,pointerId:2});canvas.onpointerup({clientX:110,clientY:70,pointerId:2});
+ assert.equal(h.anchors.length,1);assert.equal(h.anchors[0].mode,'center');
 });
 test('wheel zoom anchors the source point and skips zoom while processing; frame changes retain zoom',()=>{
  const h=editorHarness();h.editor.select(1);h.editor.setBusy(false);const point={clientX:110,clientY:70};const before=h.editor.point(point);let prevented=false;
@@ -50,7 +63,7 @@ test('wheel zoom anchors the source point and skips zoom while processing; frame
 
 test('selected-point mode preserves the tapped coordinate, disables center snapping and survives object switches',()=>{
  const h=editorHarness(),data={...h.data,trackingMode:'point',objectId:0};h.editor.setData(data);h.editor.select(1);h.editor.setBusy(false);
- assert.equal(h.el('centerTrackingMode').value,'point');assert.equal(h.modes[0].hidden,true);assert.match(h.el('centerInstruction').textContent,/同じ点/);
+ assert.equal(h.el('centerTrackingMode').value,'point');assert.equal(h.modes[0].hidden,true);assert.match(h.el('centerInstruction').textContent,/印や点/);
  h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointerup({clientX:60,clientY:45,pointerId:1});
  assert.equal(h.anchors[0].mode,'center');assert.equal(h.anchors[0].x,100);assert.equal(h.anchors[0].y,50);
  h.editor.setData({...h.data,objectId:1,trackingMode:'center'});assert.equal(h.modes[0].hidden,false);

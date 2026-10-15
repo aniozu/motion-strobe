@@ -230,6 +230,20 @@
   "動画はこの端末内で処理され、サーバーにアップロードされることはありません。": "Videos are processed on your device and are never uploaded to a server.",
   "動画を再作成": "Recreate video",
   "放物運動の動画に人工的な揺れを加えたサンプルです。": "This projectile-motion sample has artificial camera movement added.",
-  "カメラの動きを補正": "Correct camera movement",
-  "カメラの動きを補正済み": "Camera movement corrected"
+  "カメラの動きを補正": "Correct camera motion",
+  "カメラの動きを補正済み": "Camera movement corrected",
+  "一時停止": "Pause",
+  "プレビュー": "Preview",
+  "抽出するコマ": "Frames to extract",
+  "動画を再生": "Play video",
+  "動画を一時停止": "Pause video",
+  "動画を再生できませんでした。": "Could not play the video.",
+  "動画の再生位置": "Video playback position",
+  "抽出プレビューを停止": "Pause extraction preview",
+  "抽出プレビューを再開": "Resume extraction preview",
+  "物体": "Object",
+  "検出方法": "Detection mode",
+  "このコマをやり直す": "Reset this frame",
+  "物体の位置を指定": "Set the object position",
+  "ホイール／ピンチで拡大 · Space＋ドラッグ／2本指で移動": "Wheel/pinch to zoom · Space-drag/two fingers to pan"
 }

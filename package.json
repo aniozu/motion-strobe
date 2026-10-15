@@ -1,6 +1,6 @@
 {
   "name": "motion-strobe-web",
-  "version": "1.23.7",
+  "version": "1.23.15",
   "private": true,
   "type": "module",
   "scripts": {
