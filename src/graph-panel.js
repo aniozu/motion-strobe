@@ -10,7 +10,8 @@ function bounds(values){
 }
 export function sharedGraphRanges(points){
  if(!points.length)return null;
- return Object.fromEntries(['x','y','t'].map(key=>[key,bounds(points.map(point=>point[key]))]));
+ const coordinate=bounds(points.flatMap(p=>[p.x,p.y]));
+ return {x:coordinate,y:coordinate,t:bounds(points.map(p=>p.t))};
 }
 function ticks({min,max},count=4){
  const rough=(max-min)/count,base=10**Math.floor(Math.log10(rough)),ratio=rough/base;

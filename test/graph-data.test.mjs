@@ -65,23 +65,23 @@ test('all three plots draw measured points, label the correct axes and overlay t
  }
 });
 
-test('asymmetric motion fits x and y independently while matching axes stay linked across graphs',()=>{
+test('asymmetric coordinate data uses one spatial range across every graph and a common time range',()=>{
  const points=[{x:0,y:0,t:0},{x:100,y:-20,t:.1},{x:40,y:5,t:.2}],ranges=sharedGraphRanges(points);
- assert.notDeepEqual(ranges.x,ranges.y);assert(ranges.x.min<0&&ranges.x.max>100);assert(ranges.y.min<-20&&ranges.y.max>5);assert(ranges.y.min>-25&&ranges.y.max<10);
+ assert.deepEqual(ranges.x,ranges.y);assert(ranges.x.min<-20);assert(ranges.x.max>100);
  const [yx,xt,yt]=graphTypes.map(type=>graphGeometry(360,230,type,ranges));
- assert.notDeepEqual(yx.xRange,yx.yRange);assert.deepEqual(yx.xRange,xt.yRange);assert.deepEqual(yx.yRange,yt.yRange);
+ assert.deepEqual(yx.xRange,yx.yRange);assert.deepEqual(yx.xRange,xt.yRange);assert.deepEqual(xt.yRange,yt.yRange);
  assert.deepEqual(xt.xRange,yt.xRange);assert(xt.xRange.min<=0&&xt.xRange.max>=.2);
  assert.equal(sharedGraphRanges([]),null);
 });
 test('plots use available rectangular space and independent ranges after resize',()=>{
  const ranges=sharedGraphRanges([{x:0,y:0,t:0},{x:120,y:-80,t:.2}]);
  for(const [width,height] of [[400,230],[260,280],[240,190],[600,280]]){
-  const [yx,xt,yt]=graphTypes.map(type=>graphGeometry(width,height,type,ranges)),xSpan=ranges.x.max-ranges.x.min,ySpan=ranges.y.max-ranges.y.min;
-  const horizontal=(yx.area.right-yx.area.left)/xSpan,vertical=(yx.area.bottom-yx.area.top)/ySpan;
-  assert.notEqual(horizontal,vertical);close((yx.area.bottom-yx.area.top)/xSpan,(xt.area.bottom-xt.area.top)/xSpan);close(vertical,(yt.area.bottom-yt.area.top)/ySpan);assert.equal(yx.area.top,18);assert.equal(yx.area.bottom,height-44);
+  const [yx,xt,yt]=graphTypes.map(type=>graphGeometry(width,height,type,ranges)),span=ranges.x.max-ranges.x.min;
+  const horizontal=(yx.area.right-yx.area.left)/span,vertical=(yx.area.bottom-yx.area.top)/span;
+  assert.notEqual(horizontal,vertical);close(vertical,(xt.area.bottom-xt.area.top)/span);close(vertical,(yt.area.bottom-yt.area.top)/span);assert.equal(yx.area.top,18);assert.equal(yx.area.bottom,height-44);
   close(xt.area.right-xt.area.left,yt.area.right-yt.area.left);
  }
- const flat=sharedGraphRanges([{x:0,y:0,t:0}]);assert(flat.x.max>flat.x.min);assert(flat.y.max>flat.y.min);assert(flat.t.max>flat.t.min);
+ const flat=sharedGraphRanges([{x:0,y:0,t:0}]);assert(flat.x.max>flat.x.min);assert(flat.t.max>flat.t.min);
 });
 test('rendered points follow independent axis ranges without forcing a one-unit square',()=>{
  const arcs=[];const ctx={scale(){},fillRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},fillText(){},save(){},restore(){},translate(){},rotate(){},rect(){},clip(){},arc(...p){arcs.push(p);},fill(){}};
@@ -91,17 +91,4 @@ test('rendered points follow independent axis ranges without forcing a one-unit 
  const {area}=graphGeometry(400,230,graphTypes[0],ranges);
  close(arcs[1][0]-arcs[0][0],(area.right-area.left)/4);close(arcs[0][1]-arcs[2][1],(area.bottom-area.top)/4);
  assert.notEqual(arcs[1][0]-arcs[0][0],arcs[0][1]-arcs[2][1]);
-});
-
-test('initial plots fill both dimensions even when y motion is tiny compared with x motion',()=>{
- const points=[{x:0,y:-.01,t:0},{x:500,y:0,t:1},{x:1000,y:.01,t:2}],before=structuredClone(points),ranges=sharedGraphRanges(points);
- for(const type of graphTypes){
-  const arcs=[],ctx={scale(){},fillRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},fillText(){},save(){},restore(){},translate(){},rotate(){},rect(){},clip(){},arc(x,y){arcs.push({x,y});},fill(){}};
-  const canvas={clientWidth:400,clientHeight:230,getContext:()=>ctx,setAttribute(){}};
-  drawGraph(canvas,points,type,'m',null);const {area}=graphGeometry(400,230,type,ranges);
-  for(const p of arcs){assert(p.x>area.left&&p.x<area.right);assert(p.y>area.top&&p.y<area.bottom);}
-  const usedX=(Math.max(...arcs.map(p=>p.x))-Math.min(...arcs.map(p=>p.x)))/(area.right-area.left),usedY=(Math.max(...arcs.map(p=>p.y))-Math.min(...arcs.map(p=>p.y)))/(area.bottom-area.top);
-  assert(usedX>.85&&usedX<.9,type.id+' horizontal');assert(usedY>.85&&usedY<.9,type.id+' vertical');
- }
- assert.deepEqual(points,before);
 });
