@@ -420,5 +420,10 @@
   "画像をクリック／タップ、またはドラッグして位置を手動で決めます。": "Click, tap or drag in the image to set the position manually.",
   "このコマは検出しません。": "No position is detected in this frame.",
   "追いかける印や点をクリック／タップして指定します。": "Click or tap the marker or point you want to track.",
-  "ホイールやピンチで拡大縮小します。PCはSpaceキーを押しながらドラッグ、タッチ画面は2本指のドラッグで画像を移動します。": "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen."
+  "ホイールやピンチで拡大縮小します。PCはSpaceキーを押しながらドラッグ、タッチ画面は2本指のドラッグで画像を移動します。": "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.",
+  "カメラの動きを補正": "Correct camera motion",
+  "静止した背景を基準に、カメラの位置・回転・大きさのずれを補正します。": "Uses the stationary background to correct camera shifts, rotation and changes in scale.",
+  "画面の端で欠ける部分は背景で補います。": "Areas missing at the edges are filled with the background.",
+  "オフにすると、時刻や±で背景のコマを選べます。同じ構図で物体が写っていないコマを選ぶときれいに合成できます。": "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.",
+  "物体を切り出すための比較画像です。「自動背景」をオンにすると、選んだ範囲の複数コマから背景を作ります。": "When Auto background is checked, the background is built from multiple frames in the selected range."
 }

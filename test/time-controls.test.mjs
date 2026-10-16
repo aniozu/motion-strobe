@@ -56,6 +56,18 @@ test('all four time controls move by exactly one source frame and seek the pause
   const h=controls(period),index=h.state[point];h.button(point,1).onclick();assert.equal(h.state[point],index+1);assert.equal(h.video.currentTime,(index+1)*period);h.button(point,-1).onclick();assert.equal(h.state[point],index);assert.equal(h.video.currentTime,index*period);assert.equal(h.video.paused,2);
  }
 });
+test('automatic background locks its frame nudges and manual mode restores one-frame adjustment',()=>{
+ const state={count:20,start:3,end:18,reference:10,background:5,backgroundMode:'auto'};
+ const buttons=[-1,1].map(nudge=>({dataset:{timePoint:'background',nudge:String(nudge)}}));
+ const changes=[];
+ const bound=bindFrameNudges({buttons,getState:()=>state,canChange:(point,s)=>point!=='background'||s.backgroundMode==='manual',onChange:(point,value)=>{changes.push(value);state[point]=value;bound.update();}});
+ bound.update();assert(buttons.every(b=>b.disabled));
+ buttons[1].onclick();assert.equal(state.background,5);assert.deepEqual(changes,[]);
+ state.backgroundMode='manual';bound.update();assert(buttons.every(b=>!b.disabled));
+ buttons[1].onclick();buttons[0].onclick();assert.deepEqual(changes,[6,5]);
+ state.background=0;bound.update();assert(buttons[0].disabled);assert(!buttons[1].disabled);
+ state.backgroundMode='auto';bound.update();buttons[1].onclick();assert.equal(state.background,0);assert(buttons.every(b=>b.disabled));
+});
 test('time bounds retain a valid range and automatic background follows start until edited explicitly',()=>{
  const h=controls();h.button('start',1).onclick();assert.equal(h.state.background,55);assert.equal(h.auto(),true);h.button('background',1).onclick();assert.equal(h.auto(),false);h.button('start',1).onclick();assert.equal(h.state.background,56);
  h.state.reference=h.state.start;h.bound.update();assert.equal(h.button('reference',-1).disabled,true);const before=h.video.paused;h.button('reference',-1).onclick();assert.equal(h.video.paused,before);

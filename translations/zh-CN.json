@@ -535,5 +535,12 @@
   "Click, tap or drag in the image to set the position manually.": "在图像中点击、轻触或拖动，手动指定位置。",
   "No position is detected in this frame.": "此帧不检测位置。",
   "Click or tap the marker or point you want to track.": "点击或轻触要跟踪的标记或点。",
-  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "使用滚轮或双指手势缩放图像。在电脑上按住空格键拖动，在触摸屏上用双指拖动，即可平移图像。"
+  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "使用滚轮或双指手势缩放图像。在电脑上按住空格键拖动，在触摸屏上用双指拖动，即可平移图像。",
+  "About camera motion correction": "相机运动校正说明",
+  "Uses the stationary background to correct camera shifts, rotation and changes in scale.": "以静止背景为基准，校正相机移动、旋转和缩放造成的画面偏移。",
+  "Areas missing at the edges are filled with the background.": "画面边缘缺失的区域会用背景填补。",
+  "Object positions": "物体位置",
+  "Auto background": "自动背景",
+  "When Auto background is checked, the background is built from multiple frames in the selected range.": "勾选“自动背景”后，将使用所选时间范围内的多个画面生成背景。",
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "取消勾选后，可通过时间或±选择背景画面。选择构图相同且没有运动物体的画面，可以得到更干净的合成效果。"
 }

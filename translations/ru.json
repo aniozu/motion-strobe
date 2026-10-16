@@ -535,5 +535,12 @@
   "Click, tap or drag in the image to set the position manually.": "Укажите положение вручную щелчком, касанием или перетаскиванием на изображении.",
   "No position is detected in this frame.": "В этом кадре положение не определяется.",
   "Click or tap the marker or point you want to track.": "Нажмите на метку или точку, которую хотите отслеживать.",
-  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Меняйте масштаб колесом мыши или жестом щипка. Для сдвига изображения на компьютере удерживайте Пробел и перетаскивайте, а на сенсорном экране перетаскивайте двумя пальцами."
+  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Меняйте масштаб колесом мыши или жестом щипка. Для сдвига изображения на компьютере удерживайте Пробел и перетаскивайте, а на сенсорном экране перетаскивайте двумя пальцами.",
+  "About camera motion correction": "О коррекции движения камеры",
+  "Uses the stationary background to correct camera shifts, rotation and changes in scale.": "По неподвижному фону корректирует смещение, поворот и изменение масштаба изображения из-за движения камеры.",
+  "Areas missing at the edges are filled with the background.": "Недостающие области по краям заполняются фоном.",
+  "Object positions": "Положения объекта",
+  "Auto background": "Автоматический фон",
+  "When Auto background is checked, the background is built from multiple frames in the selected range.": "Когда включён Автоматический фон, фон создаётся из нескольких кадров выбранного диапазона.",
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Снимите флажок, чтобы выбрать фоновый кадр по времени или кнопками ±. Кадр с тем же ракурсом без движущегося объекта даёт более чистый результат."
 }

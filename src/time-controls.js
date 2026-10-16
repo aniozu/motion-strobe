@@ -37,10 +37,10 @@ export function pointBounds(state,point){
  if(point==='reference')return [state.start,state.end];
  return [0,max];
 }
-export function bindFrameNudges({buttons,getState,onChange}){
+export function bindFrameNudges({buttons,getState,onChange,canChange=()=>true}){
  const controls=[...buttons];
- for(const b of controls)b.onclick=()=>{const s=getState(),point=b.dataset.timePoint,[low,high]=pointBounds(s,point),value=Math.max(low,Math.min(high,s[point]+Number(b.dataset.nudge)));if(value!==s[point])onChange(point,value);};
- return {update(){const s=getState();for(const b of controls){const [low,high]=pointBounds(s,b.dataset.timePoint),v=s[b.dataset.timePoint];b.disabled=Number(b.dataset.nudge)<0?v<=low:v>=high;}}};
+ for(const b of controls)b.onclick=()=>{const s=getState(),point=b.dataset.timePoint;if(!canChange(point,s))return;const [low,high]=pointBounds(s,point),value=Math.max(low,Math.min(high,s[point]+Number(b.dataset.nudge)));if(value!==s[point])onChange(point,value);};
+ return {update(){const s=getState();for(const b of controls){const [low,high]=pointBounds(s,b.dataset.timePoint),v=s[b.dataset.timePoint];b.disabled=!canChange(b.dataset.timePoint,s)||(Number(b.dataset.nudge)<0?v<=low:v>=high);}}};
 }
 
 export function applyTimePoint(state,point,value,autoBackground,video){

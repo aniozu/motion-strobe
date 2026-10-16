@@ -539,5 +539,12 @@
   "Click, tap or drag in the image to set the position manually.": "Définissez la position manuellement en cliquant, en appuyant ou en faisant glisser dans l’image.",
   "No position is detected in this frame.": "Aucune position n’est détectée dans cette image.",
   "Click or tap the marker or point you want to track.": "Cliquez ou appuyez sur le repère ou le point à suivre.",
-  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Zoomez avec la molette ou par pincement. Pour déplacer l’image, maintenez la touche Espace et faites glisser sur ordinateur, ou faites glisser avec deux doigts sur un écran tactile."
+  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Zoomez avec la molette ou par pincement. Pour déplacer l’image, maintenez la touche Espace et faites glisser sur ordinateur, ou faites glisser avec deux doigts sur un écran tactile.",
+  "About camera motion correction": "À propos de la correction des mouvements de la caméra",
+  "Uses the stationary background to correct camera shifts, rotation and changes in scale.": "Utilise le fond immobile comme référence pour corriger les déplacements, les rotations et les changements d’échelle de la caméra.",
+  "Areas missing at the edges are filled with the background.": "Les zones manquantes sur les bords sont remplies à partir du fond.",
+  "Object positions": "Positions de l’objet",
+  "Auto background": "Fond automatique",
+  "When Auto background is checked, the background is built from multiple frames in the selected range.": "Lorsque Fond automatique est coché, le fond est créé à partir de plusieurs images de la plage sélectionnée.",
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Décochez cette option pour choisir une image de fond avec son instant ou ±. Une image avec le même cadrage et sans objet mobile donne un résultat plus net."
 }

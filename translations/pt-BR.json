@@ -535,5 +535,12 @@
   "Click, tap or drag in the image to set the position manually.": "Defina a posição manualmente clicando, tocando ou arrastando na imagem.",
   "No position is detected in this frame.": "Nenhuma posição é detectada neste quadro.",
   "Click or tap the marker or point you want to track.": "Clique ou toque na marca ou no ponto que deseja acompanhar.",
-  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Amplie com a roda do mouse ou com o gesto de pinça. Para mover a imagem, segure a barra de espaço e arraste no computador, ou arraste com dois dedos em uma tela sensível ao toque."
+  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Amplie com a roda do mouse ou com o gesto de pinça. Para mover a imagem, segure a barra de espaço e arraste no computador, ou arraste com dois dedos em uma tela sensível ao toque.",
+  "About camera motion correction": "Sobre a correção do movimento da câmera",
+  "Uses the stationary background to correct camera shifts, rotation and changes in scale.": "Usa o fundo parado como referência para corrigir deslocamentos, rotações e mudanças de escala da câmera.",
+  "Areas missing at the edges are filled with the background.": "As áreas que faltam nas bordas são preenchidas com o fundo.",
+  "Object positions": "Posições do objeto",
+  "Auto background": "Fundo automático",
+  "When Auto background is checked, the background is built from multiple frames in the selected range.": "Com Fundo automático marcado, o fundo é criado a partir de vários quadros do intervalo selecionado.",
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Desmarque para escolher um quadro de fundo pelo instante ou com ±. Um quadro com o mesmo enquadramento e sem o objeto em movimento produz um resultado mais limpo."
 }

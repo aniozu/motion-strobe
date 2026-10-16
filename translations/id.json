@@ -535,5 +535,12 @@
   "Click, tap or drag in the image to set the position manually.": "Tentukan posisi secara manual dengan mengeklik, mengetuk, atau menyeret pada gambar.",
   "No position is detected in this frame.": "Posisi tidak dideteksi pada frame ini.",
   "Click or tap the marker or point you want to track.": "Klik atau ketuk tanda atau titik yang ingin dilacak.",
-  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Perbesar atau perkecil dengan roda mouse atau gerakan mencubit. Untuk menggeser gambar, tahan Spasi sambil menyeret di komputer, atau seret dengan dua jari pada layar sentuh."
+  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Perbesar atau perkecil dengan roda mouse atau gerakan mencubit. Untuk menggeser gambar, tahan Spasi sambil menyeret di komputer, atau seret dengan dua jari pada layar sentuh.",
+  "About camera motion correction": "Tentang koreksi gerakan kamera",
+  "Uses the stationary background to correct camera shifts, rotation and changes in scale.": "Menggunakan latar yang diam sebagai acuan untuk mengoreksi pergeseran, putaran, dan perubahan skala akibat gerakan kamera.",
+  "Areas missing at the edges are filled with the background.": "Area yang kosong di tepi gambar diisi dengan latar.",
+  "Object positions": "Posisi objek",
+  "Auto background": "Latar otomatis",
+  "When Auto background is checked, the background is built from multiple frames in the selected range.": "Jika Latar otomatis dicentang, latar dibuat dari beberapa bingkai dalam rentang yang dipilih.",
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Hapus centang untuk memilih bingkai latar menggunakan waktu atau ±. Bingkai dengan komposisi yang sama tanpa objek bergerak menghasilkan gabungan yang lebih bersih."
 }

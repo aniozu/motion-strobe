@@ -539,5 +539,12 @@
   "Click, tap or drag in the image to set the position manually.": "Define la posición manualmente haciendo clic, tocando o arrastrando en la imagen.",
   "No position is detected in this frame.": "No se detecta ninguna posición en este fotograma.",
   "Click or tap the marker or point you want to track.": "Haz clic o toca la marca o el punto que quieras seguir.",
-  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Amplía con la rueda o con un gesto de pellizco. Para desplazar la imagen, mantén pulsada la barra espaciadora y arrastra en el ordenador, o arrastra con dos dedos en una pantalla táctil."
+  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Amplía con la rueda o con un gesto de pellizco. Para desplazar la imagen, mantén pulsada la barra espaciadora y arrastra en el ordenador, o arrastra con dos dedos en una pantalla táctil.",
+  "About camera motion correction": "Acerca de la corrección del movimiento de la cámara",
+  "Uses the stationary background to correct camera shifts, rotation and changes in scale.": "Usa el fondo fijo como referencia para corregir desplazamientos, giros y cambios de escala de la cámara.",
+  "Areas missing at the edges are filled with the background.": "Las zonas que quedan vacías en los bordes se rellenan con el fondo.",
+  "Object positions": "Posiciones del objeto",
+  "Auto background": "Fondo automático",
+  "When Auto background is checked, the background is built from multiple frames in the selected range.": "Al marcar Fondo automático, el fondo se crea a partir de varios fotogramas del intervalo seleccionado.",
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Desmárcalo para elegir un fotograma de fondo mediante su tiempo o ±. Un fotograma con el mismo encuadre y sin el objeto móvil permite una composición más limpia."
 }

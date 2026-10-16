@@ -245,5 +245,8 @@
   "検出方法": "Detection mode",
   "このコマをやり直す": "Reset this frame",
   "物体の位置を指定": "Set the object position",
-  "ホイール／ピンチで拡大 · Space＋ドラッグ／2本指で移動": "Wheel/pinch to zoom · Space-drag/two fingers to pan"
+  "ホイール／ピンチで拡大 · Space＋ドラッグ／2本指で移動": "Wheel/pinch to zoom · Space-drag/two fingers to pan",
+  "カメラの動き補正の説明": "About camera motion correction",
+  "物体の位置": "Object positions",
+  "自動背景": "Auto background"
 }

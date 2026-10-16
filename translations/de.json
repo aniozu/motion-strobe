@@ -539,5 +539,12 @@
   "Click, tap or drag in the image to set the position manually.": "Lege die Position im Bild manuell durch Klicken, Tippen oder Ziehen fest.",
   "No position is detected in this frame.": "In diesem Frame wird keine Position erkannt.",
   "Click or tap the marker or point you want to track.": "Klicke oder tippe auf die Markierung oder den Punkt, den du verfolgen möchtest.",
-  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Zoome mit dem Mausrad oder einer Pinch-Geste. Halte zum Verschieben am Computer die Leertaste gedrückt und ziehe; auf einem Touchscreen ziehst du mit zwei Fingern."
+  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Zoome mit dem Mausrad oder einer Pinch-Geste. Halte zum Verschieben am Computer die Leertaste gedrückt und ziehe; auf einem Touchscreen ziehst du mit zwei Fingern.",
+  "About camera motion correction": "Hinweise zur Korrektur der Kamerabewegung",
+  "Uses the stationary background to correct camera shifts, rotation and changes in scale.": "Korrigiert Verschiebungen, Drehungen und Größenänderungen anhand des unbewegten Hintergrunds.",
+  "Areas missing at the edges are filled with the background.": "Fehlende Bereiche an den Bildrändern werden mit dem Hintergrund aufgefüllt.",
+  "Object positions": "Objektpositionen",
+  "Auto background": "Automatischer Hintergrund",
+  "When Auto background is checked, the background is built from multiple frames in the selected range.": "Wenn Automatischer Hintergrund aktiviert ist, wird der Hintergrund aus mehreren Bildern des gewählten Zeitbereichs erstellt.",
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Deaktiviere die Option, um ein Hintergrundbild über die Zeit oder ± auszuwählen. Ein Bild mit demselben Ausschnitt ohne bewegtes Objekt ergibt ein saubereres Ergebnis."
 }

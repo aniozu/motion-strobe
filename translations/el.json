@@ -535,5 +535,12 @@
   "Click, tap or drag in the image to set the position manually.": "Ορίστε τη θέση χειροκίνητα με κλικ, πάτημα ή σύρσιμο στην εικόνα.",
   "No position is detected in this frame.": "Δεν εντοπίζεται θέση σε αυτό το καρέ.",
   "Click or tap the marker or point you want to track.": "Κάντε κλικ ή πατήστε το σημάδι ή το σημείο που θέλετε να παρακολουθήσετε.",
-  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Μεγεθύνετε με τον τροχό ή με κίνηση τσιμπήματος. Για μετακίνηση, κρατήστε πατημένο το Space και σύρετε στον υπολογιστή ή σύρετε με δύο δάχτυλα στην οθόνη αφής."
+  "Zoom with the wheel or a pinch gesture. To pan, hold Space and drag on a computer, or drag with two fingers on a touchscreen.": "Μεγεθύνετε με τον τροχό ή με κίνηση τσιμπήματος. Για μετακίνηση, κρατήστε πατημένο το Space και σύρετε στον υπολογιστή ή σύρετε με δύο δάχτυλα στην οθόνη αφής.",
+  "About camera motion correction": "Σχετικά με τη διόρθωση κίνησης της κάμερας",
+  "Uses the stationary background to correct camera shifts, rotation and changes in scale.": "Χρησιμοποιεί το ακίνητο φόντο ως αναφορά για να διορθώσει τη μετατόπιση, την περιστροφή και τις αλλαγές κλίμακας λόγω της κίνησης της κάμερας.",
+  "Areas missing at the edges are filled with the background.": "Τα κενά στις άκρες της εικόνας συμπληρώνονται με το φόντο.",
+  "Object positions": "Θέσεις αντικειμένου",
+  "Auto background": "Αυτόματο φόντο",
+  "When Auto background is checked, the background is built from multiple frames in the selected range.": "Όταν είναι επιλεγμένο το Αυτόματο φόντο, το φόντο δημιουργείται από πολλά καρέ του επιλεγμένου διαστήματος.",
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Καταργήστε την επιλογή για να διαλέξετε καρέ φόντου με τον χρόνο ή τα ±. Ένα καρέ με την ίδια σύνθεση και χωρίς κινούμενο αντικείμενο δίνει καθαρότερο αποτέλεσμα."
 }
