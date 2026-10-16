@@ -248,5 +248,12 @@
   "ホイール／ピンチで拡大 · Space＋ドラッグ／2本指で移動": "Wheel/pinch to zoom · Space-drag/two fingers to pan",
   "カメラの動き補正の説明": "About camera motion correction",
   "物体の位置": "Object positions",
-  "自動背景": "Auto background"
+  "自動背景": "Auto background",
+  "自動検出が完了しました": "Automatic detection complete",
+  "未検出コマに移動": "Go to undetected frame",
+  "未検出・未指定・要確認のコマに順番に移動します。「なし」にしたコマは対象外です。": "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.",
+  "物体の位置の説明": "About object positions",
+  "直線フィット": "Linear fit",
+  "動きに角度を合わせる": "Align angle with motion",
+  "角度を合わせる物体": "Object for angle alignment"
 }

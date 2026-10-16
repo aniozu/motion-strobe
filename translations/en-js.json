@@ -425,5 +425,16 @@
   "静止した背景を基準に、カメラの位置・回転・大きさのずれを補正します。": "Uses the stationary background to correct camera shifts, rotation and changes in scale.",
   "画面の端で欠ける部分は背景で補います。": "Areas missing at the edges are filled with the background.",
   "オフにすると、時刻や±で背景のコマを選べます。同じ構図で物体が写っていないコマを選ぶときれいに合成できます。": "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.",
-  "物体を切り出すための比較画像です。「自動背景」をオンにすると、選んだ範囲の複数コマから背景を作ります。": "When Auto background is checked, the background is built from multiple frames in the selected range."
+  "物体を切り出すための比較画像です。「自動背景」をオンにすると、選んだ範囲の複数コマから背景を作ります。": "When Auto background is checked, the background is built from multiple frames in the selected range.",
+  " コマ成功": " frames detected",
+  "未検出 ": "Undetected ",
+  " · 要確認 ": " · Review ",
+  " · なし ": " · Skipped ",
+  "物体の位置": "Object positions",
+  "コマの位置から角度を設定しました。": " frames used to set the angle.",
+  "軸の向きは「座標データ」の長さ・軸の校正で変更します。": "Change the axis direction under Coordinate data → Calibrate length and axes.",
+  "検出した位置を直線フィットし、横軸の角度に合わせます。": "Fit a line to the detected positions and align the horizontal axis.",
+  "動きのある2コマ以上の位置が必要です。": "Detect at least two distinct positions.",
+  "時刻・コマ/秒・物体の位置を、それぞれオン・オフします。コマ/秒は写真に表示します。": "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.",
+  "「動きに角度を合わせる」は、選んだ物体の検出位置を1次関数でフィットして横軸を合わせます。未検出・要確認・なしのコマは使いません。": "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded."
 }

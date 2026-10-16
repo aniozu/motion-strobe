@@ -542,5 +542,21 @@
   "Object positions": "物体位置",
   "Auto background": "自动背景",
   "When Auto background is checked, the background is built from multiple frames in the selected range.": "勾选“自动背景”后，将使用所选时间范围内的多个画面生成背景。",
-  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "取消勾选后，可通过时间或±选择背景画面。选择构图相同且没有运动物体的画面，可以得到更干净的合成效果。"
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "取消勾选后，可通过时间或±选择背景画面。选择构图相同且没有运动物体的画面，可以得到更干净的合成效果。",
+  "Automatic detection complete": "自动检测已完成",
+  "Go to undetected frame": "跳转到未检测画面",
+  "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.": "依次查看未检测、未指定及需要确认的画面。设为“跳过”的画面不在范围内。",
+  " frames detected": " 帧",
+  "Undetected ": "未检测 ",
+  " · Review ": " · 待确认 ",
+  " · Skipped ": " · 跳过 ",
+  "About object positions": "关于物体位置",
+  "Linear fit": "线性拟合",
+  "Align angle with motion": "按运动方向设置角度",
+  " frames used to set the angle.": "帧位置已用于设置角度。",
+  "Fit a line to the detected positions and align the horizontal axis.": "对检测到的位置进行直线拟合，使横轴与运动方向一致。",
+  "Detect at least two distinct positions.": "请至少检测两个不同的位置。",
+  "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "分别开启或关闭时间、帧/秒及物体位置。帧/秒显示在照片上。",
+  "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "“按运动方向设置角度”会对所选物体的位置进行一次函数拟合并对齐横轴。不使用未检测、待确认或跳过的帧。",
+  "Object for angle alignment": "用于角度对齐的物体"
 }

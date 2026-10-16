@@ -1,4 +1,5 @@
 import {calibrationBasis} from './calibration.js';
+import {fitMotionAngle} from './motion-angle.js';
 import {drawAnnotations,gridOptions,measuredCenters,normalizeGuideAngle} from './annotations.js';
 
 export function angleFromStroke(start,end){
@@ -14,6 +15,12 @@ export class GuideEditor{
   this.$('guideAngleNumber').oninput=()=>{const input=this.$('guideAngleNumber');if(input.value!==''&&Number.isFinite(input.valueAsNumber))this.setAngle(input.valueAsNumber,true);};
   this.$('guideAngleNumber').onchange=()=>this.update();
   this.$('resetGuideAngle').onclick=()=>this.setAngle(0);
+  this.fitButtons=[...this.dialog.querySelectorAll('[data-guide-fit-object]')];
+  for(const button of this.fitButtons)button.onclick=()=>{if(this.calibration)return;this.fitObject=Number(button.dataset.guideFitObject);this.updateFit();};
+  this.$('fitGuideAngle').onclick=()=>{
+   if(this.calibration)return;const fit=fitMotionAngle(this.centers,this.fitObject);if(!fit)return;
+   this.setAngle(fit.angle);this.$('guideFitStatus').hidden=false;this.$('guideFitStatus').textContent=`${fit.count}コマの位置から角度を設定しました。`;
+  };
   for(const id of ['guidePoints','guideObject1','guideObject2','guideColor','guideThickness','guideOpacity'])this.$(id).oninput=()=>{
    this.draft=gridOptions({...this.draft,object1:this.$('guideObject1').checked,object2:this.$('guideObject2').checked,points:this.$('guidePoints').checked,color:this.$('guideColor').value,thickness:Number(this.$('guideThickness').value),opacity:Number(this.$('guideOpacity').value)/100});this.update();
   };
@@ -30,9 +37,10 @@ export class GuideEditor{
   this.canvas.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home'].includes(e.key))return;e.preventDefault();this.setAngle(e.key==='Home'?0:this.draft.angle+(e.key==='ArrowLeft'?-1:1)*(e.shiftKey?5:1));};
   this.dialog.addEventListener('close',()=>{this.token++;this.drag=null;this.image=null;if(this.frame!==null)cancelAnimationFrame(this.frame);this.frame=null;});
  }
- open({guide,centers,labels,calibration=null}){
+ open({guide,centers,labels,calibration=null,objectId=0}){
   this.token++;this.image=null;this.centers=centers;this.labels=labels;this.drag=null;
   this.calibration=calibration;this.draft=gridOptions({...guide,enabled:true,angle:calibrationBasis(calibration,{width:calibration?.width,height:calibration?.height})?.angle??guide.angle});
+  this.fitObject=fitMotionAngle(centers,objectId)?objectId:fitMotionAngle(centers,1-objectId)?1-objectId:objectId;this.updateFit();
   for(const id of ['guideAngle','guideAngleNumber','resetGuideAngle'])this.$(id).disabled=!!calibration;this.$('guideCalibrationNote').hidden=!calibration;this.$('guidePreviewStatus').textContent='画像を準備中…';this.$('guidePreviewStatus').hidden=false;this.canvas.setAttribute('aria-busy','true');
   this.canvas.getContext('2d').clearRect(0,0,this.canvas.width,this.canvas.height);this.update();this.dialog.showModal();
  }
@@ -47,6 +55,12 @@ export class GuideEditor{
  point(e){const r=this.canvas.getBoundingClientRect();return {x:Math.max(0,Math.min(this.canvas.width,(e.clientX-r.left)*this.canvas.width/r.width)),y:Math.max(0,Math.min(this.canvas.height,(e.clientY-r.top)*this.canvas.height/r.height))};}
  setAngle(value,keepInput=false){if(this.calibration)return;const angle=Number(value);if(!Number.isFinite(angle))return;this.draft={...this.draft,angle:normalizeGuideAngle(Math.max(-90,Math.min(90,angle)))};this.update(keepInput);}
  setPointScale(value,keepInput=false){const scale=Number(value);if(!Number.isFinite(scale))return;this.draft={...this.draft,pointScale:Math.round(Math.max(.2,Math.min(5,scale))*10)/10};this.update(false,keepInput);}
+ updateFit(){
+  const fit=fitMotionAngle(this.centers,this.fitObject);
+  for(const button of this.fitButtons){const selected=Number(button.dataset.guideFitObject)===this.fitObject;button.disabled=!!this.calibration;button.classList.toggle('active',selected);button.setAttribute('aria-pressed',String(selected));}
+  this.$('fitGuideAngle').disabled=!!this.calibration||!fit;this.$('guideFitStatus').hidden=!!this.calibration||!!fit;
+  this.$('guideFitStatus').textContent=fit?'':'動きのある2コマ以上の位置が必要です。';
+ }
  update(keepInput=false,keepPointInput=false){
   for(const [id,key] of [['guidePoints','points'],['guideObject1','object1'],['guideObject2','object2'],['guideColor','color'],['guideThickness','thickness']]){if(['points','object1','object2'].includes(key))this.$(id).checked=this.draft[key];else this.$(id).value=this.draft[key];}
   this.$('guideAngle').value=this.draft.angle;if(!keepInput)this.$('guideAngleNumber').value=this.draft.angle;this.$('guideOpacity').value=Math.round(this.draft.opacity*100);this.$('guideOpacityValue').textContent=`${Math.round(this.draft.opacity*100)}%`;

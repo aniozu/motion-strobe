@@ -3,7 +3,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {Cen
 function editorHarness(){
  const elements=new Map(),modes=['target','center','none'].map(mode=>({dataset:{centerMode:mode},classList:{toggle(){}},setAttribute(k,v){this[k]=v;}}));
  const context={save(){},restore(){},translate(){},scale(){},clearRect(){},drawImage(){},setLineDash(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){}};
- const el=id=>{if(['centerZoomIn','centerZoomOut','centerZoomReset','centerZoomLevel','centerPan'].includes(id))throw Error('Removed viewport control: '+id);if(!elements.has(id))elements.set(id,{classList:{toggle(){}},setAttribute(key,value){this[key]=value;},addEventListener(){},querySelectorAll(){return modes;},showModal(){},getContext(){return context;},getBoundingClientRect(){return {left:10,top:20,width:200,height:100};},setPointerCapture(){},width:400,height:200});return elements.get(id);};
+ const el=id=>{if(['centerZoomIn','centerZoomOut','centerZoomReset','centerZoomLevel','centerPan'].includes(id))throw Error('Removed viewport control: '+id);if(!elements.has(id))elements.set(id,{classList:{toggle(){}},setAttribute(key,value){this[key]=value;},addEventListener(){},querySelectorAll(){return modes;},showModal(){this.open=true;},close(){this.open=false;},focus(){this.focused=true;},getContext(){return context;},getBoundingClientRect(){return {left:10,top:20,width:200,height:100};},setPointerCapture(){},width:400,height:200});return elements.get(id);};
  elements.set('skipCenter',modes[2]);globalThis.document={getElementById:el};const preview=[],anchors=[],skipped=[],reset=[],automatic=[],cancelled=[];
  const editor=new CenterEditor({preview:i=>preview.push(i),onAnchor:a=>anchors.push(a),onSkip:i=>skipped.push(i),onReset:i=>reset.push(i),onAuto:i=>automatic.push(i),onCancel:()=>cancelled.push(true)});
  const data={indices:[3,6,9],centers:[{index:3,confidence:'unset'},{index:6,x:100,y:50,confidence:'manual',source:'object'},{index:9,confidence:'skipped'}],size:{width:400,height:200},period:1/60,first:3,anchors:[]};editor.setData(data);editor.image={};
@@ -77,4 +77,27 @@ test('switching objects shows independent seeds and skipped frames without repla
  const second={...h.data,objectId:1,centers:[{index:3,confidence:'unset'},{index:6,confidence:'skipped'},{index:9,x:250,y:80,confidence:'manual'}],anchors:[{index:6,mode:'skip'},{index:9,x:250,y:80,mode:'center',source:'manual'}],seedIndex:9};
  h.editor.setData(second);h.editor.select(1);h.editor.setBusy(false);assert.equal(h.editor.mode,'none');assert.equal(h.editor.seed().x,250);
  h.editor.setData(first);h.editor.select(1);h.editor.setBusy(false);assert.equal(h.editor.mode,'target');assert.equal(h.editor.seed().x,100);assert.equal(h.editor.centers[1].x,100);assert.equal(first.anchors.length,1);
+});
+
+test('missing-frame button opens the first unresolved frame, wraps, and locks during preview',()=>{
+ const h=editorHarness();assert.equal(h.el('centerNextMissing').disabled,false);
+ h.el('centerNextMissing').onclick();assert.equal(h.editor.index,3);assert.equal(h.el('centerDialog').open,true);assert.equal(h.el('centerNextMissing').disabled,true);
+ h.editor.setBusy(false);h.el('centerNextMissing').onclick();assert.equal(h.editor.index,3);assert(!h.preview.includes(9));
+ h.editor.setData({...h.data,centers:h.data.centers.map(center=>center.index===3?{index:3,x:10,y:20,confidence:'manual'}:center)});
+ assert.equal(h.el('centerNextMissing').disabled,true);
+});
+
+test('result popup offers direct review, and closing it never cancels or edits positions',()=>{
+ const h=editorHarness(),summary={successful:1,total:3,missing:1,uncertain:0,skipped:1};
+ h.editor.showDetectionResults([{objectId:0,summary}]);assert.equal(h.el('autoDetectionDialog').open,true);assert.equal(h.el('autoResultCount0').textContent,'1/3 コマ成功');assert.equal(h.el('autoResultObject1').hidden,true);assert.equal(h.el('reviewMissingFrames').disabled,false);
+ h.el('closeDetectionResult').onclick();assert.equal(h.el('autoDetectionDialog').open,false);assert.equal(h.preview.length,0);assert.equal(h.cancelled.length,0);
+ h.editor.showDetectionResults([{objectId:0,summary}]);h.el('reviewMissingFrames').onclick();assert.equal(h.el('autoDetectionDialog').open,false);assert.equal(h.editor.index,3);assert.equal(h.el('centerDialog').open,true);
+ h.editor.setBusy(false);h.editor.showDetectionResults([{objectId:0,summary:{successful:2,total:3,missing:0,uncertain:0,skipped:1}}]);assert.equal(h.el('reviewMissingFrames').disabled,true);assert.equal(h.el('closeDetectionResult').focused,true);
+});
+
+
+test('completed automatic tracking keeps an off-grid manual seed available for another run',()=>{
+ const h=editorHarness(),data={...h.data,anchors:[{index:4,x:100,y:50,mode:'center',source:'manual'}],seedIndex:4};
+ h.editor.setData(data);assert.equal(h.el('autoDetect').disabled,true);
+ h.editor.setData({...data,autoEnabled:true});assert.equal(h.el('autoDetect').disabled,false);h.el('autoDetect').onclick();assert.deepEqual(h.automatic,[4]);
 });

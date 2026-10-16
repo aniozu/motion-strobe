@@ -349,3 +349,13 @@ test('selected-point tracking runs inside the worker on the existing cache, with
  const prior=messages.filter(m=>m.type==='auto-detected').length,pending=send({type:'auto-detect',...settings,id:402});await send({type:'cancel',id:403});await pending;assert.equal(messages.filter(m=>m.type==='auto-detected').length,prior);assert.equal(messages.at(-1).type,'cancelled');
  await send({type:'compose',...settings,factor:1,id:404});assert.equal(messages.at(-1).type,'composed');assert.equal(decoded.length,packets);
 });
+
+test('resampling reuses an off-grid seed for center and selected-point tracking without including it in the result',async()=>{
+ const settings={first:2,last:20,reference:2,step:4,sensitivity:30,background:0,maxDimension:640,trackingSeeds:[8]};
+ const seed={index:8,x:70.125,y:34.25,mode:'center',source:'manual'},fixed={index:10,x:74.25,y:34.5,mode:'center',source:'manual'},skip={index:14,mode:'skip'};
+ for(const trackingMode of ['center','point']){
+  await send({type:'extract',...settings,id:500});assert.equal(messages.at(-1).type,'extracted');assert.deepEqual(messages.at(-1).indices,[2,6,10,14,18]);const packets=decoded.length;
+  await send({type:'auto-detect',...settings,seedIndex:8,anchors:[seed,fixed,skip],trackingMode,replay:true,id:501});
+  const result=messages.at(-1);assert.equal(result.type,'auto-detected',JSON.stringify(result));assert.deepEqual(result.marks.map(mark=>mark.index),[2,6,10,14,18]);assert.deepEqual(result.marks.find(mark=>mark.index===10),fixed);assert.deepEqual(result.marks.find(mark=>mark.index===14),skip);assert.equal(decoded.length,packets);
+ }
+});

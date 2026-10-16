@@ -1,5 +1,5 @@
-Motion Strobe 1.23.25
-Source commit: 955a81f0bf890d38c56c49dc50617a105e3c7469
-Cumulative code update from 1.23.17 through 1.23.25.
+Motion Strobe 1.23.29
+Source commit: 65c05552532a9494c1b4c47d4a65084f31b0e430
+Cumulative code update from 1.23.17 through 1.23.29.
 GitHub Pages: https://aniozu.github.io/motion-strobe/
 Sample videos and images are unchanged.

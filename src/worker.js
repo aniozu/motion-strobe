@@ -36,12 +36,15 @@ self.onmessage=async({data:m})=>{
   send('loaded',{metadata:{fps:clock.fps,period:clock.period,times:clock.times,playbackTimes:clock.playbackTimes,variableTiming:clock.variable,hasRateEdits:clock.hasRateEdits,count:clock.ordered.length,width:rotation%180?track.video.height:track.video.width,height:rotation%180?track.video.width:track.video.height,rotation,codec:track.codec,approximateTiming:clock.approximate,canShutterSound:!!(await shutterAudioConfig()),canExportVideo:typeof VideoEncoder!=='undefined'}});
  }else if(m.type==='extract'){
   if(!media)throw Error('動画を選び直してください。');
+  const previousReference=m.reuseTrackingCoordinates?stabilization?.referenceIndex:null;
   cache=new Map();const extractionCache=cache;background=null;photoBase=null;stabilization=null;
   const targets=framePlan(m.first,m.last,m.reference,m.step,1,analysisClock(media.clock,m.captureFps));if(targets.length>240)throw Error('画像が多すぎます。時間間隔を広げるか、範囲を短くしてください（最大240枚）。');
   const autoBackground=m.backgroundMode==='auto';
   const backgroundTargets=autoBackground?backgroundIndices(m.first,m.last,analysisClock(media.clock,m.captureFps)):[m.background];
   const fallbackReferenceIndex=Math.floor(m.first+(m.last-m.first)*.25);
-  const required=new Set([...targets,...backgroundTargets,...(m.stabilize?[m.first,fallbackReferenceIndex]:[])]);const rotated=media.rotation%180!==0;
+  const referenceIndex=Number.isInteger(previousReference)?previousReference:m.first;
+  const trackingSeeds=(m.trackingSeeds||[]).filter(index=>Number.isInteger(index)&&index>=0&&index<media.clock.ordered.length);
+  const required=new Set([...targets,...backgroundTargets,...trackingSeeds,...(m.stabilize?[referenceIndex,fallbackReferenceIndex]:[])]);const rotated=media.rotation%180!==0;
   size=outputSize(rotated?media.track.video.height:media.track.video.width,rotated?media.track.video.width:media.track.video.height,required.size,m.maxDimension);
   const canvas=new OffscreenCanvas(size.width,size.height),ctx=canvas.getContext('2d',{willReadFrequently:true});
   const extracted=await runDecodeRecovery({media,operation:'コマ抽出',requested:{first:m.first+1,last:m.last+1,background:m.background+1,frames:targets.length},cancelled:()=>job!==current,
@@ -66,8 +69,8 @@ self.onmessage=async({data:m})=>{
   if(extracted&&job===current){
    let referencePixels;
    if(m.stabilize){
-    referencePixels=cache.get(m.first);
-    const registration=await registerFrames({indices:[...required].sort((a,b)=>a-b),getFrame:index=>cache.get(index),width:size.width,height:size.height,referenceIndex:m.first,fallbackReferenceIndex,timeForIndex:index=>frameTime(media.clock,index,true),cancelled:()=>job!==current,yieldTurn,onProgress:p=>send('progress',{stage:'背景を照合してカメラの動きを補正中',value:.8+p*.15})});
+    referencePixels=cache.get(referenceIndex);
+    const registration=await registerFrames({indices:[...required].sort((a,b)=>a-b),getFrame:index=>cache.get(index),width:size.width,height:size.height,referenceIndex,fallbackReferenceIndex,timeForIndex:index=>frameTime(media.clock,index,true),cancelled:()=>job!==current,yieldTurn,onProgress:p=>send('progress',{stage:'背景を照合してカメラの動きを補正中',value:.8+p*.15})});
     if(!registration||job!==current)return;
     const aligned=new OffscreenCanvas(size.width,size.height),alignedCtx=aligned.getContext('2d',{willReadFrequently:true});
     for(const index of required){
@@ -78,7 +81,7 @@ self.onmessage=async({data:m})=>{
    }
    let estimated;
    try{estimated=autoBackground?await estimateBackground(backgroundTargets.map(index=>cache.get(index)),{cancelled:()=>job!==current,yieldTurn,onProgress:p=>send('progress',{stage:'背景を自動作成中',value:(m.stabilize?.95:.9)+p*(m.stabilize?.05:.1)})}):cache.get(m.background);}
-   finally{const retained=new Set(targets);for(const index of extractionCache.keys())if(!retained.has(index))extractionCache.delete(index);}
+   finally{const retained=new Set([...targets,...trackingSeeds]);for(const index of extractionCache.keys())if(!retained.has(index))extractionCache.delete(index);}
    if(job!==current)return;
    if(referencePixels){estimated=new Uint8ClampedArray(estimated);for(let p=0;p<estimated.length;p+=4)if(estimated[p+3]<255)estimated.set(referencePixels.subarray(p,p+4),p);}
    background=estimated;
@@ -90,12 +93,14 @@ self.onmessage=async({data:m})=>{
   if(job===current)send('center-selected',{mark:{index:m.index,...picked,mode:'center',spaceWidth:size.width,spaceHeight:size.height}});
  }else if(m.type==='auto-detect'){
   if(!background)throw Error('写真を作成してから物体を選んでください。');
+  const targets=framePlan(m.first,m.last,m.reference,m.step,1,analysisClock(media.clock,m.captureFps)),wanted=new Set(targets);
+  const indices=[...new Set([...targets,...(m.replay&&cache.has(m.seedIndex)?[m.seedIndex]:[])])].sort((a,b)=>a-b);
   if(m.trackingMode==='point'){
-   const marks=await trackSelectedPoint({indices:framePlan(m.first,m.last,m.reference,m.step,1,analysisClock(media.clock,m.captureFps)),getFrame:index=>cache.get(index),background,width:size.width,height:size.height,marks:m.anchors||[],seedIndex:m.seedIndex,sensitivity:m.sensitivity,cancelled:()=>job!==current,yieldTurn,onProgress:value=>send('progress',{stage:'指定した点の色・回転を照合中',value})});
-   if(marks&&job===current)send('auto-detected',{marks,objectId:m.objectId??0});
+   const marks=await trackSelectedPoint({indices,getFrame:index=>cache.get(index),background,width:size.width,height:size.height,marks:m.anchors||[],seedIndex:m.seedIndex,sensitivity:m.sensitivity,cancelled:()=>job!==current,yieldTurn,onProgress:value=>send('progress',{stage:'指定した点の色・回転を照合中',value})});
+   if(marks&&job===current)send('auto-detected',{marks:marks.filter(mark=>wanted.has(mark.index)),objectId:m.objectId??0});
    return;
   }
-  const indices=framePlan(m.first,m.last,m.reference,m.step,1,analysisClock(media.clock,m.captureFps)),frames=[];
+  const frames=[];
   for(let n=0;n<indices.length;n++){
    if(job!==current)return;const index=indices[n],frame=cache.get(index);
    if(!frame)throw Error('画像が不足しています。写真を作り直してください。');
@@ -107,7 +112,7 @@ self.onmessage=async({data:m})=>{
   if(job!==current)return;
   send('progress',{stage:'コマ間の動きを照合中',value:.95});await yieldTurn();if(job!==current)return;
   const marks=trackCandidates(frames,size.width,size.height,m.anchors||[],m.seedIndex);
-  if(job===current)send('auto-detected',{marks,objectId:m.objectId??0});
+  if(job===current)send('auto-detected',{marks:marks.filter(mark=>wanted.has(mark.index)),objectId:m.objectId??0});
  }else if(m.type==='guide-preview'){
   if(!photoBase)throw Error('写真を作成してからグリッドを設定してください。');
   if(!photoBase.blob){

@@ -16,7 +16,7 @@ test('English and Japanese routes keep the same controls and link to each other'
  assert.match(en,/Analyze motion from video/);
  assert.match(jp,/動画から、ストロボ写真・動画を作成します。/);
  assert.match(en,/Create strobe photos and videos from a video\./);
- assert.match(en,/Center grid/);
+ assert.match(en,/Object positions/);
  assert.doesNotMatch(en.replace(/<select\b[^>]*id="languageSelect"[^>]*>[\s\S]*?<\/select>/,'').replace(/<nav\b[^>]*data-language-links[^>]*>[\s\S]*?<\/nav>/,''),/[\u3040-\u30ff\u3400-\u9fff]/);
 });
 

@@ -542,5 +542,21 @@
   "Object positions": "Положения объекта",
   "Auto background": "Автоматический фон",
   "When Auto background is checked, the background is built from multiple frames in the selected range.": "Когда включён Автоматический фон, фон создаётся из нескольких кадров выбранного диапазона.",
-  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Снимите флажок, чтобы выбрать фоновый кадр по времени или кнопками ±. Кадр с тем же ракурсом без движущегося объекта даёт более чистый результат."
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Снимите флажок, чтобы выбрать фоновый кадр по времени или кнопками ±. Кадр с тем же ракурсом без движущегося объекта даёт более чистый результат.",
+  "Automatic detection complete": "Автоматическое обнаружение завершено",
+  "Go to undetected frame": "К необнаруженному кадру",
+  "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.": "Переходите по необнаруженным, неотмеченным и сомнительным кадрам. Пропущенные кадры исключены.",
+  " frames detected": " кадров обнаружено",
+  "Undetected ": "Не обнаружено ",
+  " · Review ": " · Проверить ",
+  " · Skipped ": " · Пропущено ",
+  "About object positions": "О положениях объектов",
+  "Linear fit": "Линейная аппроксимация",
+  "Align angle with motion": "Направить ось вдоль движения",
+  " frames used to set the angle.": " кадров использовано для настройки угла.",
+  "Fit a line to the detected positions and align the horizontal axis.": "Аппроксимируйте обнаруженные положения прямой и выровняйте горизонтальную ось.",
+  "Detect at least two distinct positions.": "Определите не менее двух разных положений.",
+  "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Включайте и выключайте время, кадры/с и положения объектов отдельно. Частота кадров показана на фото.",
+  "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Направить ось вдоль движения аппроксимирует положения выбранного объекта функцией первой степени и выравнивает горизонтальную ось. Необнаруженные, сомнительные и пропущенные кадры исключаются.",
+  "Object for angle alignment": "Объект для настройки угла"
 }

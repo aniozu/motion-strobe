@@ -62,8 +62,8 @@ const content={ja:[
   [
    "7. 表示の調整",
    [
-    "位置検出の画面を閉じ、「完成」画面の右側の「表示」を使います。「時刻」「コマ/秒」で文字の表示を切り替え、「物体中心のグリッド」で検出位置の線・中心点を表示します。",
-    "グリッドの横の「設定」を押すと、縦横・縦だけ・横だけ・線なしを選べます。「中心点を表示」と「中心点の大きさ」で点の表示・サイズを変えます。物体1・物体2のどちらに表示するかも選べます。",
+    "位置検出の画面を閉じ、「完成」画面の右側の「表示」を使います。「時刻」「コマ/秒」で文字の表示を切り替え、「物体の位置」で検出位置の線・中心点を表示します。",
+    "「物体の位置」の横の「設定」を押すと、縦横・縦だけ・横だけ・線なしを選べます。「中心点を表示」と「中心点の大きさ」で点の表示・サイズを変えます。物体1・物体2のどちらに表示するかも選べます。",
     "線の角度、色、太さ、不透明度を調整し、下の「適用」を押します。写真と動画に反映されます。位置を検出していないコマには、線や中心点は表示されません。"
    ],
    [
@@ -161,8 +161,8 @@ const content={ja:[
   [
    "7. Adjust the display",
    [
-    "Close the detection screen and use Display on the right of the Result screen. Time and frames/s toggle the labels. Center grid displays lines and center points at detected positions.",
-    "Select Settings next to Center grid to choose both lines, vertical only, horizontal only or no lines. Show center point toggles the points; Center point size changes their size. You can also choose which objects to display.",
+    "Close the detection screen and use Display on the right of the Result screen. Time and frames/s toggle the labels. Object positions displays lines and center points at detected positions.",
+    "Select Settings next to Object positions to choose both lines, vertical only, horizontal only or no lines. Show center point toggles the points; Center point size changes their size. You can also choose which objects to display.",
     "Adjust the angle, color, width and opacity, then select Apply at the bottom. The changes apply to photos and videos. Frames without a detected position have no grid or center point."
    ],
    [

@@ -1,10 +1,19 @@
 import {formatSeconds} from './format.js';
 import {ImageViewport} from './image-viewport.js';
+import {reviewFramePositions,nextReviewPosition} from './detection-summary.js';
 export class CenterEditor{
- constructor({preview,onAnchor,onReset,onSkip,onAuto,onCancel,onTrackingMode=()=>{}}){
+ constructor({preview,onAnchor,onReset,onSkip,onAuto,onCancel,onTrackingMode=()=>{},onReviewObject=()=>{}}){
   this.dialog=document.getElementById('centerDialog');this.canvas=document.getElementById('centerCanvas');this.preview=preview;this.onAnchor=onAnchor;this.mode='target';this.centers=[];this.indices=[];this.index=null;this.image=null;this.url=null;this.pending=false;
   const $=id=>document.getElementById(id);
   this.$=$;this.trackingMode='center';
+  this.resultDialog=$('autoDetectionDialog');this.detectionResults=[];
+  $('centerNextMissing').onclick=()=>this.jumpToMissing();
+  $('closeDetectionResult').onclick=()=>this.resultDialog.close();
+  $('reviewMissingFrames').onclick=()=>{
+   const unresolved=result=>result.summary.missing+result.summary.uncertain>0;
+   const result=this.detectionResults.find(result=>result.objectId===this.objectId&&unresolved(result))||this.detectionResults.find(unresolved);
+   if(!result)return;this.resultDialog.close();onReviewObject(result.objectId);this.jumpToMissing(true);
+  };
   $('centerTrackingMode').onchange=()=>{if(this.pending)return;this.trackingMode=$('centerTrackingMode').value==='point'?'point':'center';this.mode=this.trackingMode==='point'?'center':'target';onTrackingMode(this.trackingMode);this.update();};this.onCancel=onCancel;this.automatic=false;this.viewport=new ImageViewport();this.pointers=new Map();this.panMode=false;this.panPointer=null;
   $('autoDetect').onclick=()=>{const seed=this.seed();if(!this.pending&&seed){this.automatic=true;this.progress({stage:'自動検出を準備中',value:0});this.setBusy(true);onAuto(seed.index);}};
   $('cancelDetection').onclick=()=>onCancel?.();
@@ -45,10 +54,30 @@ export class CenterEditor{
  zoom(factor,point){if(this.pending||!this.image)return;this.viewport.zoom(factor,point?.x,point?.y);this.draw();this.updateZoom();}
  updateZoom(){this.canvas.setAttribute('data-pan',String(this.panMode||this.panPointer!==null));}
  releaseGesture(){this.panMode=false;this.panPointer=null;this.drag=null;this.pointers.clear();this.pinch=null;this.gestureBlocked=false;this.updateZoom();this.draw();}
- seed(){return (this.anchors||[]).find(a=>a.index===this.seedIndex&&this.indices.includes(a.index)&&a.mode==='center'&&a.source!=='auto')||(this.anchors||[]).find(a=>this.indices.includes(a.index)&&a.mode==='center'&&a.source!=='auto');}
+ seed(){const valid=a=>(this.autoEnabled||this.indices.includes(a.index))&&a.mode==='center'&&a.source!=='auto'&&[a.x,a.y].every(Number.isFinite);return (this.anchors||[]).find(a=>a.index===this.seedIndex&&valid(a))||(this.anchors||[]).find(valid);}
  progress({stage,value}){this.$('detectionProgress').hidden=false;this.$('detectionTitle').textContent=`${stage} · ${Math.round(value*100)}%`;this.$('detectionBar').value=value;}
- setData({centers,indices,size,period,first,anchors,seedIndex,objectId=0,otherCenters=[],trackingMode='center'}){this.trackingMode=trackingMode;this.$('centerTrackingMode').value=trackingMode;if(this.objectId!==undefined&&this.objectId!==objectId)this.mode='target';this.objectId=objectId;this.otherCenters=otherCenters;this.seedIndex=seedIndex;this.centers=centers;this.indices=indices;if(this.viewport.width!==size.width||this.viewport.height!==size.height)this.viewport.reset(size.width,size.height);this.size=size;this.period=period;this.first=first;this.anchors=anchors;this.setBusy(false);this.update();this.draw();}
- open(){if(!this.indices.length)return;this.dialog.showModal();this.viewport.reset(this.size.width,this.size.height);this.releaseGesture();const wanted=this.indices.findIndex(n=>n===this.index);this.select(wanted<0?0:wanted);}
+ setData({centers,indices,size,period,first,anchors,seedIndex,objectId=0,otherCenters=[],trackingMode='center',autoEnabled=false}){this.autoEnabled=autoEnabled;this.trackingMode=trackingMode;this.$('centerTrackingMode').value=trackingMode;if(this.objectId!==undefined&&this.objectId!==objectId)this.mode='target';this.objectId=objectId;this.otherCenters=otherCenters;this.seedIndex=seedIndex;this.centers=centers;this.indices=indices;if(this.viewport.width!==size.width||this.viewport.height!==size.height)this.viewport.reset(size.width,size.height);this.size=size;this.period=period;this.first=first;this.anchors=anchors;this.setBusy(false);this.update();this.draw();}
+ open(position){if(!this.indices.length)return;this.dialog.showModal();this.viewport.reset(this.size.width,this.size.height);this.releaseGesture();const wanted=this.indices.findIndex(n=>n===this.index);this.select(Number.isInteger(position)?position:wanted<0?0:wanted);}
+ jumpToMissing(fromStart=false){
+  if(this.pending)return false;
+  const position=nextReviewPosition(this.indices,this.centers,fromStart?-1:this.position??-1);
+  if(position===null)return false;
+  if(this.dialog.open)this.select(position);else this.open(position);
+  this.canvas.focus?.({preventScroll:true});return true;
+ }
+ showDetectionResults(results){
+  this.detectionResults=results;
+  for(const id of [0,1]){
+   const result=results.find(result=>result.objectId===id);this.$(`autoResultObject${id}`).hidden=!result;
+   if(!result)continue;const {summary}=result;
+   this.$(`autoResultCount${id}`).textContent=`${summary.successful}/${summary.total} コマ成功`;
+   this.$(`autoResultDetails${id}`).textContent=`未検出 ${summary.missing} · 要確認 ${summary.uncertain} · なし ${summary.skipped}`;
+  }
+  const missing=results.some(result=>result.summary.missing+result.summary.uncertain>0);
+  this.$('reviewMissingFrames').disabled=!missing;
+  if(!this.resultDialog.open)this.resultDialog.showModal();
+  this.$(missing?'reviewMissingFrames':'closeDetectionResult').focus?.();
+ }
  select(position){if(this.pending||!this.indices.length)return;this.position=Math.max(0,Math.min(this.indices.length-1,position));this.index=this.indices[this.position];const current=this.centers.find(p=>p.index===this.index);if(current?.confidence==='skipped')this.mode='none';else if(this.mode==='none')this.mode='target';this.setBusy(true);this.preview(this.index);this.update();}
  accept({blob,index,size}){if(index!==this.index)return;const image=new Image(),url=URL.createObjectURL(blob);image.onload=()=>{if(index!==this.index){URL.revokeObjectURL(url);return;}if(this.url)URL.revokeObjectURL(this.url);this.url=url;this.image=image;this.canvas.width=size.width;this.canvas.height=size.height;this.setBusy(false);this.draw();};image.onerror=()=>{URL.revokeObjectURL(url);this.setBusy(false);this.$('centerStatus').textContent='画像を表示できませんでした。';};image.src=url;}
  setBusy(pending){this.pending=pending;if(pending)this.releaseGesture();if(!pending){this.automatic=false;this.$('detectionProgress').hidden=true;}for(const id of ['centerFrame','centerPrevious','centerNext','resetCenters','skipCenter'])this.$(id).disabled=pending;this.canvas.setAttribute('aria-busy',String(pending));this.update();this.updateZoom();}
@@ -57,6 +86,7 @@ export class CenterEditor{
   const $=this.$;for(const b of this.dialog.querySelectorAll('[data-center-mode]')){b.hidden=this.trackingMode==='point'&&b.dataset.centerMode==='target';b.disabled=this.pending;b.classList.toggle('active',b.dataset.centerMode===this.mode);b.setAttribute('aria-pressed',String(b.dataset.centerMode===this.mode));}
   $('autoDetect').disabled=this.pending||!this.seed();$('autoDetect').textContent=this.automatic?'自動検出中…':'全コマを自動検出';
   $('centerTrackingMode').disabled=this.pending;
+  $('centerNextMissing').disabled=this.pending||!reviewFramePositions(this.indices,this.centers).length;
   $('centerInstruction').textContent=this.mode==='none'?'このコマは検出しません。':this.trackingMode==='point'?'追いかける印や点をクリック／タップして指定します。':this.mode==='target'?'画像の物体をクリック／タップしてください。近くの中心を検出します。':'画像をクリック／タップ、またはドラッグして位置を手動で決めます。';
   $('centerFrame').max=Math.max(0,this.indices.length-1);$('centerFrame').value=this.position||0;
   const center=this.centers.find(p=>p.index===this.index);

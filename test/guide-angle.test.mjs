@@ -35,12 +35,13 @@ test('drawing either way along a movement chooses the same axis; very short taps
 function harness(){
  const elements=new Map(),callbacks=new Map(),frames=new Map();let frameId=0;
  const buttons=['both','vertical','horizontal','none'].map(mode=>({dataset:{guideLines:mode},classList:{toggle(){}},setAttribute(k,v){this[k]=v;}}));
+ const fitButtons=[0,1].map(id=>({dataset:{guideFitObject:String(id)},classList:{toggle(){}},setAttribute(k,v){this[k]=v;}}));
  const ctx={clearRect(){},drawImage(){},save(){},restore(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){},setLineDash(){}};
- const el=id=>{if(!elements.has(id))elements.set(id,{open:false,value:'',checked:false,width:400,height:200,classList:{toggle(){}},getContext:()=>ctx,getBoundingClientRect:()=>({left:10,top:20,width:200,height:100}),setPointerCapture(){},setAttribute(k,v){this[k]=v;},querySelectorAll:()=>buttons,showModal(){this.open=true;},close(){this.open=false;callbacks.get('close')?.();},addEventListener(k,fn){callbacks.set(k,fn);}});return elements.get(id);};
+ const el=id=>{if(!elements.has(id))elements.set(id,{open:false,value:'',checked:false,width:400,height:200,classList:{toggle(){}},getContext:()=>ctx,getBoundingClientRect:()=>({left:10,top:20,width:200,height:100}),setPointerCapture(){},setAttribute(k,v){this[k]=v;},querySelectorAll:selector=>selector==='[data-guide-fit-object]'?fitButtons:buttons,showModal(){this.open=true;},close(){this.open=false;callbacks.get('close')?.();},addEventListener(k,fn){callbacks.set(k,fn);}});return elements.get(id);};
  globalThis.document={getElementById:el};globalThis.requestAnimationFrame=fn=>{const id=++frameId;frames.set(id,fn);return id;};globalThis.cancelAnimationFrame=id=>frames.delete(id);
  const images=[];globalThis.Image=class{constructor(){images.push(this);}};
  const applied=[],editor=new GuideEditor({onApply:x=>applied.push(x)}),guide=gridOptions({angle:0,points:false});editor.open({guide,centers:[{x:100,y:50,confidence:'manual'}],labels:false});
- return {editor,el,buttons,images,applied,guide,flush(){for(const [id,fn]of frames){frames.delete(id);fn();}}};
+ return {editor,el,buttons,fitButtons,images,applied,guide,flush(){for(const [id,fn]of frames){frames.delete(id);fn();}}};
 }
 test('photo drag uses image coordinates, previews a draft, and applies only on request',()=>{
  const h=harness();h.editor.accept({blob:new Blob(['png']),size:{width:400,height:200}});h.images[0].onload();h.flush();
@@ -91,4 +92,20 @@ test('center-size slider and numeric draft synchronize, validate limits, cancel 
  h.editor.open({guide:h.guide,centers,labels:false});assert.equal(h.el('guidePointScale').value,1);
  h.el('guidePoints').checked=true;h.el('guidePoints').oninput();h.el('guidePointScale').value=5;h.el('guidePointScale').oninput();h.el('applyGuides').onclick();assert.equal(h.applied[0].pointScale,5);
  h.editor.open({guide:h.applied[0],centers,labels:false});assert.equal(h.el('guidePointScaleNumber').value,5);
+});
+
+test('motion-fit controls use one selected object and change only the angle draft until Apply',()=>{
+ const h=harness(),centers=[{x:10,y:10,confidence:'manual',objectId:0},{x:40,y:40,confidence:'auto',objectId:0},{x:10,y:50,confidence:'manual',objectId:1},{x:40,y:35,confidence:'auto',objectId:1},{x:40,y:160,confidence:'uncertain',objectId:1}],original=structuredClone(centers);
+ h.editor.open({guide:h.guide,centers,labels:false,objectId:1});assert.equal(h.editor.fitObject,1);assert.equal(h.fitButtons[1]['aria-pressed'],'true');assert.equal(h.fitButtons[0]['aria-pressed'],'false');assert.equal(h.el('fitGuideAngle').disabled,false);assert.equal(h.el('guideFitStatus').hidden,true);
+ h.el('fitGuideAngle').onclick();assert.equal(h.editor.draft.angle,-26.6);assert.equal(h.el('guideAngleNumber').value,-26.6);assert.match(h.el('guideFitStatus').textContent,/2コマ/);assert.equal(h.guide.angle,0);assert.equal(h.applied.length,0);assert.deepEqual(centers,original);
+ h.fitButtons[0].onclick();assert.equal(h.fitButtons[0]['aria-pressed'],'true');assert.equal(h.fitButtons[1]['aria-pressed'],'false');h.el('fitGuideAngle').onclick();assert.equal(h.editor.draft.angle,45);
+ h.el('guideDialog').close();assert.equal(h.applied.length,0);h.editor.open({guide:h.guide,centers,labels:false});assert.equal(h.editor.draft.angle,0);
+ h.el('fitGuideAngle').onclick();h.el('applyGuides').onclick();assert.equal(h.applied[0].angle,45);
+});
+test('motion fit selects an available object, disables unmeasured or stationary paths and respects calibrated axes',()=>{
+ const h=harness(),centers=[{x:10,y:10,confidence:'manual',objectId:1},{x:30,y:20,confidence:'auto',objectId:1}];
+ h.editor.open({guide:h.guide,centers,labels:false});assert.equal(h.editor.fitObject,1);assert.equal(h.fitButtons[1]['aria-pressed'],'true');assert.equal(h.fitButtons[0]['aria-pressed'],'false');assert.equal(h.el('fitGuideAngle').disabled,false);
+ h.fitButtons[0].onclick();assert.equal(h.fitButtons[0]['aria-pressed'],'true');assert.equal(h.fitButtons[1]['aria-pressed'],'false');assert.equal(h.el('fitGuideAngle').disabled,true);assert.match(h.el('guideFitStatus').textContent,/2コマ/);
+ h.editor.open({guide:h.guide,centers:[{x:10,y:10,confidence:'manual'},{x:10,y:10,confidence:'auto'}],labels:false});assert.equal(h.el('fitGuideAngle').disabled,true);
+ const calibration={a:{x:0,y:0},b:{x:100,y:0},length:1,width:400,height:200};h.editor.open({guide:h.guide,centers,labels:false,calibration});assert.equal(h.el('fitGuideAngle').disabled,true);assert(h.fitButtons.every(button=>button.disabled));h.el('fitGuideAngle').onclick();assert.equal(h.editor.draft.angle,0);
 });

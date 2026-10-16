@@ -8,3 +8,17 @@ export function detectionSummary(marks){
  }
  return summary;
 }
+
+export function reviewFramePositions(indices,centers){
+ const byIndex=new Map(centers.map(center=>[center.index,center]));
+ return indices.flatMap((index,position)=>{
+  const center=byIndex.get(index);
+  if(center?.confidence==='skipped')return [];
+  return !center||['unset','missing','uncertain'].includes(center.confidence)||![center.x,center.y].every(Number.isFinite)?[position]:[];
+ });
+}
+
+export function nextReviewPosition(indices,centers,position=-1){
+ const positions=reviewFramePositions(indices,centers);
+ return positions.find(next=>next>position)??positions[0]??null;
+}

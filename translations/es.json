@@ -546,5 +546,21 @@
   "Object positions": "Posiciones del objeto",
   "Auto background": "Fondo automático",
   "When Auto background is checked, the background is built from multiple frames in the selected range.": "Al marcar Fondo automático, el fondo se crea a partir de varios fotogramas del intervalo seleccionado.",
-  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Desmárcalo para elegir un fotograma de fondo mediante su tiempo o ±. Un fotograma con el mismo encuadre y sin el objeto móvil permite una composición más limpia."
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Desmárcalo para elegir un fotograma de fondo mediante su tiempo o ±. Un fotograma con el mismo encuadre y sin el objeto móvil permite una composición más limpia.",
+  "Automatic detection complete": "Detección automática completada",
+  "Go to undetected frame": "Ir al fotograma no detectado",
+  "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.": "Revisa en orden los fotogramas no detectados, sin marcar o inciertos. Se excluyen los marcados como Omitir.",
+  " frames detected": " fotogramas detectados",
+  "Undetected ": "No detectados ",
+  " · Review ": " · Revisar ",
+  " · Skipped ": " · Omitidos ",
+  "About object positions": "Acerca de las posiciones de los objetos",
+  "Linear fit": "Ajuste lineal",
+  "Align angle with motion": "Alinear ángulo con el movimiento",
+  " frames used to set the angle.": " fotogramas usados para ajustar el ángulo.",
+  "Fit a line to the detected positions and align the horizontal axis.": "Ajusta una recta a las posiciones detectadas y alinea el eje horizontal.",
+  "Detect at least two distinct positions.": "Detecta al menos dos posiciones distintas.",
+  "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Activa o desactiva Tiempo, fotogramas/s y posiciones de los objetos. Los fotogramas/s aparecen en la foto.",
+  "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Alinear ángulo con el movimiento ajusta una función de primer grado a las posiciones del objeto seleccionado y alinea el eje horizontal. Se excluyen los fotogramas no detectados, dudosos y omitidos.",
+  "Object for angle alignment": "Objeto para alinear el ángulo"
 }

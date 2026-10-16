@@ -542,5 +542,21 @@
   "Object positions": "물체 위치",
   "Auto background": "자동 배경",
   "When Auto background is checked, the background is built from multiple frames in the selected range.": "자동 배경을 체크하면 선택한 시간 범위의 여러 프레임으로 배경을 만듭니다.",
-  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "체크를 해제하면 시각이나 ±로 배경 프레임을 선택할 수 있습니다. 같은 구도에서 움직이는 물체가 없는 프레임을 선택하면 더 깔끔하게 합성됩니다."
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "체크를 해제하면 시각이나 ±로 배경 프레임을 선택할 수 있습니다. 같은 구도에서 움직이는 물체가 없는 프레임을 선택하면 더 깔끔하게 합성됩니다.",
+  "Automatic detection complete": "자동 검출이 완료되었습니다",
+  "Go to undetected frame": "미검출 프레임으로 이동",
+  "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.": "미검출·미지정·확인 필요 프레임을 차례로 확인합니다. 건너뛰기로 설정한 프레임은 제외합니다.",
+  " frames detected": " 프레임 검출 성공",
+  "Undetected ": "미검출 ",
+  " · Review ": " · 확인 필요 ",
+  " · Skipped ": " · 건너뜀 ",
+  "About object positions": "물체 위치 설명",
+  "Linear fit": "선형 피팅",
+  "Align angle with motion": "움직임에 각도 맞추기",
+  " frames used to set the angle.": "프레임의 위치로 각도를 설정했습니다.",
+  "Fit a line to the detected positions and align the horizontal axis.": "검출된 위치를 직선에 피팅하여 가로축의 각도를 맞춥니다.",
+  "Detect at least two distinct positions.": "서로 다른 위치를 두 프레임 이상 검출하세요.",
+  "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "시각, 프레임/초, 물체 위치를 각각 켜거나 끕니다. 프레임/초는 사진에 표시됩니다.",
+  "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "움직임에 각도 맞추기는 선택한 물체의 위치를 일차함수로 피팅하여 가로축을 맞춥니다. 미검출, 확인 필요, 건너뛴 프레임은 제외합니다.",
+  "Object for angle alignment": "각도를 맞출 물체"
 }

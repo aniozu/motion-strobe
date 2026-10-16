@@ -546,5 +546,21 @@
   "Object positions": "Objektpositionen",
   "Auto background": "Automatischer Hintergrund",
   "When Auto background is checked, the background is built from multiple frames in the selected range.": "Wenn Automatischer Hintergrund aktiviert ist, wird der Hintergrund aus mehreren Bildern des gewählten Zeitbereichs erstellt.",
-  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Deaktiviere die Option, um ein Hintergrundbild über die Zeit oder ± auszuwählen. Ein Bild mit demselben Ausschnitt ohne bewegtes Objekt ergibt ein saubereres Ergebnis."
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Deaktiviere die Option, um ein Hintergrundbild über die Zeit oder ± auszuwählen. Ein Bild mit demselben Ausschnitt ohne bewegtes Objekt ergibt ein saubereres Ergebnis.",
+  "Automatic detection complete": "Automatische Erkennung abgeschlossen",
+  "Go to undetected frame": "Zum unerkannten Bild",
+  "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.": "Gehe der Reihe nach zu unerkannten, unmarkierten und unsicheren Bildern. Übersprungene Bilder werden ausgelassen.",
+  " frames detected": " Bilder erkannt",
+  "Undetected ": "Unerkannt ",
+  " · Review ": " · Prüfen ",
+  " · Skipped ": " · Übersprungen ",
+  "About object positions": "Über Objektpositionen",
+  "Linear fit": "Lineare Anpassung",
+  "Align angle with motion": "Winkel an Bewegung ausrichten",
+  " frames used to set the angle.": " Bilder zum Einstellen des Winkels verwendet.",
+  "Fit a line to the detected positions and align the horizontal axis.": "Eine Gerade an die erkannten Positionen anpassen und die horizontale Achse ausrichten.",
+  "Detect at least two distinct positions.": "Mindestens zwei unterschiedliche Positionen erkennen.",
+  "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Zeit, Bilder/s und Objektpositionen einzeln ein- oder ausblenden. Bilder/s wird im Foto angezeigt.",
+  "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Winkel an Bewegung ausrichten passt eine Funktion ersten Grades an die Positionen des gewählten Objekts an und richtet die horizontale Achse aus. Unerkannte, unsichere und übersprungene Bilder werden ausgeschlossen.",
+  "Object for angle alignment": "Objekt für die Winkelausrichtung"
 }

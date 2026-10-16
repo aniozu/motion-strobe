@@ -542,5 +542,21 @@
   "Object positions": "Posisi objek",
   "Auto background": "Latar otomatis",
   "When Auto background is checked, the background is built from multiple frames in the selected range.": "Jika Latar otomatis dicentang, latar dibuat dari beberapa bingkai dalam rentang yang dipilih.",
-  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Hapus centang untuk memilih bingkai latar menggunakan waktu atau ±. Bingkai dengan komposisi yang sama tanpa objek bergerak menghasilkan gabungan yang lebih bersih."
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Hapus centang untuk memilih bingkai latar menggunakan waktu atau ±. Bingkai dengan komposisi yang sama tanpa objek bergerak menghasilkan gabungan yang lebih bersih.",
+  "Automatic detection complete": "Deteksi otomatis selesai",
+  "Go to undetected frame": "Ke bingkai yang belum terdeteksi",
+  "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.": "Telusuri bingkai yang belum terdeteksi, belum ditandai, atau belum pasti. Bingkai yang ditandai Lewati dikecualikan.",
+  " frames detected": " bingkai terdeteksi",
+  "Undetected ": "Belum terdeteksi ",
+  " · Review ": " · Periksa ",
+  " · Skipped ": " · Dilewati ",
+  "About object positions": "Tentang posisi objek",
+  "Linear fit": "Pencocokan linear",
+  "Align angle with motion": "Sesuaikan sudut dengan gerak",
+  " frames used to set the angle.": " bingkai digunakan untuk mengatur sudut.",
+  "Fit a line to the detected positions and align the horizontal axis.": "Cocokkan garis ke posisi yang terdeteksi dan sejajarkan sumbu horizontal.",
+  "Detect at least two distinct positions.": "Deteksi setidaknya dua posisi yang berbeda.",
+  "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Aktifkan atau nonaktifkan Waktu, bingkai/detik, dan posisi objek secara terpisah. Bingkai/detik ditampilkan pada foto.",
+  "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Sesuaikan sudut dengan gerak mencocokkan fungsi linear ke posisi objek yang dipilih dan menyelaraskan sumbu horizontal. Bingkai yang belum terdeteksi, meragukan, atau dilewati tidak digunakan.",
+  "Object for angle alignment": "Objek untuk penyesuaian sudut"
 }

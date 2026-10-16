@@ -542,5 +542,21 @@
   "Object positions": "Θέσεις αντικειμένου",
   "Auto background": "Αυτόματο φόντο",
   "When Auto background is checked, the background is built from multiple frames in the selected range.": "Όταν είναι επιλεγμένο το Αυτόματο φόντο, το φόντο δημιουργείται από πολλά καρέ του επιλεγμένου διαστήματος.",
-  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Καταργήστε την επιλογή για να διαλέξετε καρέ φόντου με τον χρόνο ή τα ±. Ένα καρέ με την ίδια σύνθεση και χωρίς κινούμενο αντικείμενο δίνει καθαρότερο αποτέλεσμα."
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Καταργήστε την επιλογή για να διαλέξετε καρέ φόντου με τον χρόνο ή τα ±. Ένα καρέ με την ίδια σύνθεση και χωρίς κινούμενο αντικείμενο δίνει καθαρότερο αποτέλεσμα.",
+  "Automatic detection complete": "Η αυτόματη ανίχνευση ολοκληρώθηκε",
+  "Go to undetected frame": "Μετάβαση σε μη ανιχνευμένο καρέ",
+  "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.": "Ελέγξτε διαδοχικά μη ανιχνευμένα, μη σημειωμένα και αβέβαια καρέ. Τα καρέ με Παράλειψη εξαιρούνται.",
+  " frames detected": " καρέ ανιχνεύθηκαν",
+  "Undetected ": "Μη ανιχνευμένα ",
+  " · Review ": " · Έλεγχος ",
+  " · Skipped ": " · Παράλειψη ",
+  "About object positions": "Σχετικά με τις θέσεις αντικειμένων",
+  "Linear fit": "Γραμμική προσαρμογή",
+  "Align angle with motion": "Γωνία σύμφωνα με την κίνηση",
+  " frames used to set the angle.": " καρέ χρησιμοποιήθηκαν για τη ρύθμιση της γωνίας.",
+  "Fit a line to the detected positions and align the horizontal axis.": "Προσαρμόζει ευθεία στις ανιχνευμένες θέσεις και ευθυγραμμίζει τον οριζόντιο άξονα.",
+  "Detect at least two distinct positions.": "Ανιχνεύστε τουλάχιστον δύο διαφορετικές θέσεις.",
+  "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Ενεργοποιήστε ή απενεργοποιήστε χωριστά τον χρόνο, τα καρέ/δευτ. και τις θέσεις αντικειμένων. Τα καρέ/δευτ. εμφανίζονται στη φωτογραφία.",
+  "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Η Γωνία σύμφωνα με την κίνηση προσαρμόζει συνάρτηση πρώτου βαθμού στις θέσεις του επιλεγμένου αντικειμένου και ευθυγραμμίζει τον οριζόντιο άξονα. Εξαιρούνται μη ανιχνευμένα, αβέβαια και παραλειπόμενα καρέ.",
+  "Object for angle alignment": "Αντικείμενο για ευθυγράμμιση γωνίας"
 }

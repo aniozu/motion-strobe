@@ -542,5 +542,21 @@
   "Object positions": "物體位置",
   "Auto background": "自動背景",
   "When Auto background is checked, the background is built from multiple frames in the selected range.": "勾選「自動背景」後，會使用所選時間範圍內的多個畫面產生背景。",
-  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "取消勾選後，可透過時間或±選擇背景畫面。選擇構圖相同且沒有移動物體的畫面，可以得到更乾淨的合成效果。"
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "取消勾選後，可透過時間或±選擇背景畫面。選擇構圖相同且沒有移動物體的畫面，可以得到更乾淨的合成效果。",
+  "Automatic detection complete": "自動偵測已完成",
+  "Go to undetected frame": "移至未偵測畫面",
+  "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.": "依序檢視未偵測、未指定及待核對的畫面。設為「略過」的畫面不在範圍內。",
+  " frames detected": " 幀偵測成功",
+  "Undetected ": "未偵測 ",
+  " · Review ": " · 待確認 ",
+  " · Skipped ": " · 略過 ",
+  "About object positions": "關於物體位置",
+  "Linear fit": "線性擬合",
+  "Align angle with motion": "依運動方向設定角度",
+  " frames used to set the angle.": "幀位置已用於設定角度。",
+  "Fit a line to the detected positions and align the horizontal axis.": "對偵測到的位置進行直線擬合，使橫軸與運動方向一致。",
+  "Detect at least two distinct positions.": "請至少偵測兩個不同的位置。",
+  "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "分別開啟或關閉時間、幀/秒及物體位置。幀/秒顯示在照片上。",
+  "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "「依運動方向設定角度」會對所選物體的位置進行一次函數擬合並對齊橫軸。不使用未偵測、待核對或略過的畫面。",
+  "Object for angle alignment": "用於角度對齊的物體"
 }

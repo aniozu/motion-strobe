@@ -1,7 +1,7 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {languages,languagePath,languageFile} from './languages.mjs';
 import {learningPages} from './learning-pages.mjs';
-export const searchOrigin=(process.env.SITE_URL||(process.env.GITHUB_PAGES==='true'?'https://aniozu.github.io/motion-strobe':'https://aniozu.github.io/motion-strobe')).replace(/\/+$/,'');
+export const searchOrigin=(process.env.SITE_URL||(process.env.GITHUB_PAGES==='true'?'https://aniozu.github.io/motion-strobe':'https://motion-strobe-lab.workspace-552571.chatgpt.site')).replace(/\/+$/,'');
 export const searchPages=[
  ...languages.map(l=>({...l,lang:l.code,file:languageFile(l.code),path:'/'+languagePath(l.code),slug:'app',name:l.code==='ja'?'モーションストロボ':'Motion Strobe',image:'motion-strobe-bouncing-ball.png',imageWidth:487,imageHeight:296,imageType:'image/png'})),
  ...learningPages.map(p=>({...p,title:`${p.name}${p.lang==='ja'?'｜':' | '}${p.title.replace(/ Motion Strobe$/, '')}`,description:`${p.name}${p.lang==='ja'?(p.slug==='guide'?'の使い方。':'の解析例。'):' — '}${p.description}`,image:p.image||'sample-constant-speed.png'}))

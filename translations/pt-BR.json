@@ -542,5 +542,21 @@
   "Object positions": "Posições do objeto",
   "Auto background": "Fundo automático",
   "When Auto background is checked, the background is built from multiple frames in the selected range.": "Com Fundo automático marcado, o fundo é criado a partir de vários quadros do intervalo selecionado.",
-  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Desmarque para escolher um quadro de fundo pelo instante ou com ±. Um quadro com o mesmo enquadramento e sem o objeto em movimento produz um resultado mais limpo."
+  "Uncheck it to choose a background frame using its time or ±. A frame with the same view and no moving object gives a cleaner result.": "Desmarque para escolher um quadro de fundo pelo instante ou com ±. Um quadro com o mesmo enquadramento e sem o objeto em movimento produz um resultado mais limpo.",
+  "Automatic detection complete": "Detecção automática concluída",
+  "Go to undetected frame": "Ir ao quadro não detectado",
+  "Step through undetected, unmarked and uncertain frames. Frames marked Skip are excluded.": "Percorra os quadros não detectados, não marcados e incertos. Quadros marcados para pular são excluídos.",
+  " frames detected": " quadros detectados",
+  "Undetected ": "Não detectados ",
+  " · Review ": " · Revisar ",
+  " · Skipped ": " · Ignorados ",
+  "About object positions": "Sobre as posições dos objetos",
+  "Linear fit": "Ajuste linear",
+  "Align angle with motion": "Alinhar ângulo ao movimento",
+  " frames used to set the angle.": " quadros usados para definir o ângulo.",
+  "Fit a line to the detected positions and align the horizontal axis.": "Ajusta uma reta às posições detectadas e alinha o eixo horizontal.",
+  "Detect at least two distinct positions.": "Detecte pelo menos duas posições distintas.",
+  "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Ative ou desative Tempo, quadros/s e posições dos objetos. Os quadros/s aparecem na foto.",
+  "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Alinhar ângulo ao movimento ajusta uma função de primeiro grau às posições do objeto selecionado e alinha o eixo horizontal. Quadros não detectados, incertos ou ignorados são excluídos.",
+  "Object for angle alignment": "Objeto para alinhar o ângulo"
 }
