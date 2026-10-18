@@ -2,27 +2,36 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {CenterEditor} from '../src/center-editor.js';
 function editorHarness(){
  const elements=new Map(),modes=['target','center','none'].map(mode=>({dataset:{centerMode:mode},classList:{toggle(){}},setAttribute(k,v){this[k]=v;}}));
- const context={save(){},restore(){},translate(){},scale(){},clearRect(){},drawImage(){},setLineDash(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){}};
+ const rectangles=[],context={save(){},restore(){},translate(){},scale(){},clearRect(){},drawImage(){},setLineDash(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},strokeRect(...args){rectangles.push({args,color:this.strokeStyle});},arc(){},fill(){}};
  const el=id=>{if(['centerZoomIn','centerZoomOut','centerZoomReset','centerZoomLevel','centerPan'].includes(id))throw Error('Removed viewport control: '+id);if(!elements.has(id))elements.set(id,{classList:{toggle(){}},setAttribute(key,value){this[key]=value;},addEventListener(){},querySelectorAll(){return modes;},showModal(){this.open=true;},close(){this.open=false;},focus(){this.focused=true;},getContext(){return context;},getBoundingClientRect(){return {left:10,top:20,width:200,height:100};},setPointerCapture(){},width:400,height:200});return elements.get(id);};
  elements.set('skipCenter',modes[2]);globalThis.document={getElementById:el};const preview=[],anchors=[],skipped=[],reset=[],automatic=[],cancelled=[];
  const editor=new CenterEditor({preview:i=>preview.push(i),onAnchor:a=>anchors.push(a),onSkip:i=>skipped.push(i),onReset:i=>reset.push(i),onAuto:i=>automatic.push(i),onCancel:()=>cancelled.push(true)});
  const data={indices:[3,6,9],centers:[{index:3,confidence:'unset'},{index:6,x:100,y:50,confidence:'manual',source:'object'},{index:9,confidence:'skipped'}],size:{width:400,height:200},period:1/60,first:3,anchors:[]};editor.setData(data);editor.image={};
- return {editor,data,el,modes,preview,anchors,skipped,reset,automatic,cancelled};
+ return {editor,data,el,modes,preview,anchors,skipped,reset,automatic,cancelled,rectangles};
 }
+test('the inspection frame shows the measured object bounds, with uncertainty color and no box for a manual point',()=>{
+ const h=editorHarness(),mark={index:6,x:100,y:50,confidence:'auto',bounds:{x:80,y:30,w:40,h:35}};
+ h.editor.index=6;h.editor.setData({...h.data,centers:[mark]});
+ assert.deepEqual(h.rectangles.at(-1),{args:[80,30,40,35],color:'#52f0c9'});
+ h.editor.setData({...h.data,centers:[{...mark,confidence:'uncertain'}]});assert.equal(h.rectangles.at(-1).color,'#ef9e35');
+ h.rectangles.length=0;h.editor.setData({...h.data,centers:[{index:6,x:100,y:50,confidence:'manual',source:'manual'}]});assert.equal(h.rectangles.length,0);
+ h.editor.setData({...h.data,trackingMode:'point',centers:[mark]});assert.equal(h.rectangles.length,0);
+});
 test('tap selection and center drag carry only the displayed frame and its coordinate space',()=>{const h=editorHarness();h.editor.select(1);assert.deepEqual(h.preview,[6]);h.editor.setBusy(false);h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointerup({clientX:60,clientY:45,pointerId:1});assert.deepEqual(h.anchors[0],{index:6,x:100,y:50,mode:'target',source:'manual',spaceWidth:400,spaceHeight:200});
  h.editor.setData(h.data);h.modes[1].onclick();h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointermove({clientX:70,clientY:55,pointerId:1});h.el('centerCanvas').onpointerup({clientX:70,clientY:55,pointerId:1});assert.equal(h.anchors[1].mode,'center');assert.equal(h.anchors[1].index,6);assert.equal(h.anchors[1].x,120);assert.equal(h.anchors[1].y,70);assert.equal(h.data.centers[1].x,100);
 });
 test('skip and reset address only the current frame and expose the skipped state',()=>{const h=editorHarness();h.editor.select(2);h.editor.setBusy(false);assert.equal(h.el('skipCenter')['aria-pressed'],'true');assert.match(h.el('centerStatus').textContent,/3\/3.*検出なし/);h.el('skipCenter').onclick();assert.deepEqual(h.skipped,[9]);h.editor.setData(h.data);h.el('resetCenters').onclick();assert.deepEqual(h.reset,[9]);});
 
-test('automatic action requires a manual seed, keeps the initial seed and offers progress cancellation',()=>{
- const h=editorHarness();assert.equal(h.el('autoDetect').disabled,true);
+test('automatic action accepts no hint, keeps a supplied seed and offers progress cancellation',()=>{
+ const h=editorHarness();assert.equal(h.el('autoDetect').disabled,false);
+ h.el('autoDetect').onclick();assert.deepEqual(h.automatic,[null]);assert(h.editor.pending);h.editor.setBusy(false);h.automatic.length=0;
  const data={...h.data,anchors:[{index:6,x:100,y:50,mode:'center',source:'object'},{index:9,x:150,y:60,mode:'center',source:'manual'}],seedIndex:9};h.editor.setData(data);h.editor.select(1);h.editor.setBusy(false);
  assert.equal(h.el('autoDetect').disabled,false);h.el('autoDetect').onclick();assert.deepEqual(h.automatic,[9]);assert.equal(h.editor.pending,true);assert.equal(h.el('detectionProgress').hidden,false);assert.equal(h.el('centerFrame').disabled,true);
  h.editor.progress({stage:'物体を検出中 2/3',value:2/3});assert.match(h.el('detectionTitle').textContent,/67%/);h.el('cancelDetection').onclick();assert.equal(h.cancelled.length,1);h.editor.setBusy(false);assert.equal(h.el('detectionProgress').hidden,true);
 });
 
 test('auto, manual and none have distinct instructions and none never writes a tapped position',()=>{
- const h=editorHarness();h.editor.select(1);h.editor.setBusy(false);assert.equal(h.el('centerInstruction').textContent,'画像の物体をクリック／タップしてください。近くの中心を検出します。');
+ const h=editorHarness();h.editor.select(1);h.editor.setBusy(false);assert.match(h.el('centerInstruction').textContent,/ヒント/);
  h.modes[1].onclick();assert.equal(h.el('centerInstruction').textContent,'画像をクリック／タップ、またはドラッグして位置を手動で決めます。');
  h.modes[2].onclick();assert.deepEqual(h.skipped,[6]);assert.equal(h.editor.mode,'none');h.editor.setBusy(false);assert.equal(h.el('centerInstruction').textContent,'このコマは検出しません。');
  h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointerup({clientX:60,clientY:45,pointerId:1});assert.equal(h.anchors.length,0);
@@ -63,6 +72,7 @@ test('wheel zoom anchors the source point and skips zoom while processing; frame
 
 test('selected-point mode preserves the tapped coordinate, disables center snapping and survives object switches',()=>{
  const h=editorHarness(),data={...h.data,trackingMode:'point',objectId:0};h.editor.setData(data);h.editor.select(1);h.editor.setBusy(false);
+ assert.equal(h.el('autoDetect').disabled,true);h.el('autoDetect').onclick();assert.deepEqual(h.automatic,[]);
  assert.equal(h.el('centerTrackingMode').value,'point');assert.equal(h.modes[0].hidden,true);assert.match(h.el('centerInstruction').textContent,/印や点/);
  h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointerup({clientX:60,clientY:45,pointerId:1});
  assert.equal(h.anchors[0].mode,'center');assert.equal(h.anchors[0].x,100);assert.equal(h.anchors[0].y,50);
@@ -98,6 +108,6 @@ test('result popup offers direct review, and closing it never cancels or edits p
 
 test('completed automatic tracking keeps an off-grid manual seed available for another run',()=>{
  const h=editorHarness(),data={...h.data,anchors:[{index:4,x:100,y:50,mode:'center',source:'manual'}],seedIndex:4};
- h.editor.setData(data);assert.equal(h.el('autoDetect').disabled,true);
+ h.editor.setData(data);assert.equal(h.el('autoDetect').disabled,false);
  h.editor.setData({...data,autoEnabled:true});assert.equal(h.el('autoDetect').disabled,false);h.el('autoDetect').onclick();assert.deepEqual(h.automatic,[4]);
 });

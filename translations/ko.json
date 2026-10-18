@@ -558,5 +558,8 @@
   "Detect at least two distinct positions.": "서로 다른 위치를 두 프레임 이상 검출하세요.",
   "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "시각, 프레임/초, 물체 위치를 각각 켜거나 끕니다. 프레임/초는 사진에 표시됩니다.",
   "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "움직임에 각도 맞추기는 선택한 물체의 위치를 일차함수로 피팅하여 가로축을 맞춥니다. 미검출, 확인 필요, 건너뛴 프레임은 제외합니다.",
-  "Object for angle alignment": "각도를 맞출 물체"
+  "Object for angle alignment": "각도를 맞출 물체",
+  "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "모든 프레임 자동 검출은 힌트 없이도 움직이는 물체를 찾습니다. 물체를 탭하면 추적 힌트가 됩니다.",
+  "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "힌트가 없으면 프레임 사이의 색, 크기, 움직임을 비교합니다. 추적할 물체를 탭하면 우선적으로 추적합니다.",
+  "Selecting a moving object": "움직이는 물체 선택 중"
 }

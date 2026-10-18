@@ -558,5 +558,8 @@
   "Detect at least two distinct positions.": "Ανιχνεύστε τουλάχιστον δύο διαφορετικές θέσεις.",
   "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Ενεργοποιήστε ή απενεργοποιήστε χωριστά τον χρόνο, τα καρέ/δευτ. και τις θέσεις αντικειμένων. Τα καρέ/δευτ. εμφανίζονται στη φωτογραφία.",
   "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Η Γωνία σύμφωνα με την κίνηση προσαρμόζει συνάρτηση πρώτου βαθμού στις θέσεις του επιλεγμένου αντικειμένου και ευθυγραμμίζει τον οριζόντιο άξονα. Εξαιρούνται μη ανιχνευμένα, αβέβαια και παραλειπόμενα καρέ.",
-  "Object for angle alignment": "Αντικείμενο για ευθυγράμμιση γωνίας"
+  "Object for angle alignment": "Αντικείμενο για ευθυγράμμιση γωνίας",
+  "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Η ανίχνευση όλων των καρέ μπορεί να βρει ένα κινούμενο αντικείμενο χωρίς υπόδειξη. Πατήστε ένα αντικείμενο για να καθοδηγήσετε την παρακολούθηση.",
+  "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Χωρίς υπόδειξη, συγκρίνονται το χρώμα, το μέγεθος και η κίνηση μεταξύ των καρέ. Πατήστε το αντικείμενο για να του δώσετε προτεραιότητα.",
+  "Selecting a moving object": "Επιλογή κινούμενου αντικειμένου"
 }

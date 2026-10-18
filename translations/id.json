@@ -558,5 +558,8 @@
   "Detect at least two distinct positions.": "Deteksi setidaknya dua posisi yang berbeda.",
   "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Aktifkan atau nonaktifkan Waktu, bingkai/detik, dan posisi objek secara terpisah. Bingkai/detik ditampilkan pada foto.",
   "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Sesuaikan sudut dengan gerak mencocokkan fungsi linear ke posisi objek yang dipilih dan menyelaraskan sumbu horizontal. Bingkai yang belum terdeteksi, meragukan, atau dilewati tidak digunakan.",
-  "Object for angle alignment": "Objek untuk penyesuaian sudut"
+  "Object for angle alignment": "Objek untuk penyesuaian sudut",
+  "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Deteksi semua bingkai dapat menemukan objek bergerak tanpa petunjuk. Ketuk objek untuk memandu pelacakan.",
+  "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Tanpa petunjuk, deteksi membandingkan warna, ukuran, dan gerakan antarbingkai. Ketuk objek untuk memprioritaskannya.",
+  "Selecting a moving object": "Memilih objek bergerak"
 }

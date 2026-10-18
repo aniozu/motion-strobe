@@ -84,6 +84,13 @@ test('real demux → exact frame selection → original/2x/3x/4x composition use
  // Re-extraction must work after compressed sample buffers are released.
  await send({type:'extract',first:2,last:20,reference:8,step:3,background:0,maxDimension:640,id:10});assert.equal(messages.at(-1).type,'extracted');
 });
+test('hint-free worker detection uses cached frames and returns real measured regions without manual seeds',async()=>{
+ const packets=decoded.length;
+ await send({type:'auto-detect',first:2,last:20,reference:8,step:3,sensitivity:30,anchors:[],seedIndex:null,id:1001});
+ const result=messages.at(-1);assert.equal(result.type,'auto-detected',JSON.stringify(result));assert.equal(result.marks.length,7);
+ for(const m of result.marks){assert.equal(m.mode,'center');assert.equal(m.source,'auto');assert.equal(m.x,54+m.index*2);assert.equal(m.y,34);}
+ assert.equal(decoded.length,packets);
+});
 test('manual center and source-frame preview reuse the extracted cache',async()=>{const packets=decoded.length;await send({type:'compose',first:2,last:20,reference:8,step:3,factor:1,sensitivity:30,labels:false,anchors:[{index:8,x:101.125,y:12.875,mode:'center'}],id:11});const photo=messages.at(-1);assert.equal(photo.type,'composed');const center=photo.centers.find(c=>c.index===8);assert.equal(center.confidence,'manual');assert.equal(center.x,101.125);assert.equal(center.y,12.875);await send({type:'tracking-preview',index:8,id:12});assert.equal(messages.at(-1).type,'tracking-preview');assert.equal(decoded.length,packets);});
 test('worker keeps frame marks fixed across sensitivity, thinning and explicit skip',async()=>{
  const settings={first:2,last:20,reference:8,step:3,factor:1,sensitivity:30,labels:false};

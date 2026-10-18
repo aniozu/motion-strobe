@@ -21,3 +21,9 @@ test('automatic replay eligibility follows the selected tracking method',()=>{
  switchTrackingMethod(object,'point');assert.equal(automaticReplayPlan([object],20).length,0);
  switchTrackingMethod(object,'center');assert.equal(automaticReplayPlan([object],20).length,1);
 });
+
+test('completed hint-free detection repeats after re-extraction without creating a manual anchor',()=>{
+ const skip={index:8,mode:'skip'},object={id:0,autoEnabled:true,trackingMode:'center',seedIndex:null,anchors:[skip,{index:6,x:30,y:40,mode:'center',source:'auto'}]};
+ assert.deepEqual(automaticReplayPlan([object],20),[{objectId:0,seedIndex:null,anchors:[skip]}]);
+ object.trackingMode='point';assert.deepEqual(automaticReplayPlan([object],20),[]);
+});

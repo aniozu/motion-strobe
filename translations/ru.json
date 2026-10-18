@@ -558,5 +558,8 @@
   "Detect at least two distinct positions.": "Определите не менее двух разных положений.",
   "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Включайте и выключайте время, кадры/с и положения объектов отдельно. Частота кадров показана на фото.",
   "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Направить ось вдоль движения аппроксимирует положения выбранного объекта функцией первой степени и выравнивает горизонтальную ось. Необнаруженные, сомнительные и пропущенные кадры исключаются.",
-  "Object for angle alignment": "Объект для настройки угла"
+  "Object for angle alignment": "Объект для настройки угла",
+  "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Обнаружение на всех кадрах может найти движущийся объект без подсказки. Нажмите на объект, чтобы направить отслеживание.",
+  "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Без подсказки сравниваются цвет, размер и движение между кадрами. Нажмите на нужный объект, чтобы отдать ему приоритет.",
+  "Selecting a moving object": "Выбор движущегося объекта"
 }

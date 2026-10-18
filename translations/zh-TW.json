@@ -558,5 +558,8 @@
   "Detect at least two distinct positions.": "請至少偵測兩個不同的位置。",
   "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "分別開啟或關閉時間、幀/秒及物體位置。幀/秒顯示在照片上。",
   "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "「依運動方向設定角度」會對所選物體的位置進行一次函數擬合並對齊橫軸。不使用未偵測、待核對或略過的畫面。",
-  "Object for angle alignment": "用於角度對齊的物體"
+  "Object for angle alignment": "用於角度對齊的物體",
+  "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "「自動偵測所有影格」可在未指定物體時尋找移動物體。點選物體可為追蹤提供提示。",
+  "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "未指定物體時，會比較各影格中的顏色、大小和移動情況。點選要追蹤的物體，可優先追蹤它。",
+  "Selecting a moving object": "正在選擇移動物體"
 }

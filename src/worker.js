@@ -8,7 +8,8 @@ import {exportVideo} from './video-export.js';
 import {framePlan,outputSize} from './sampling.js';
 import {backgroundIndices,estimateBackground} from './background.js';
 import {foregroundMask,mergeLayer,drawAnnotations,drawCornerBadge} from './annotations.js';
-import {pickObjectCenter,centersFromMarks,findCandidates,trackCandidates} from './tracking.js';
+import {pickObjectCenter,centersFromMarks,findDiscoveryCandidates,trackCandidates} from './tracking.js';
+import {discoverObject} from './automatic-target.js';
 import {trackSelectedPoint} from './point-tracking.js';
 import {registerFrames} from './stabilization.js';
 let media,cache=new Map(),background,size,job=0,activeDecoder,activeEncoder,photoBase=null,stabilization=null;
@@ -100,19 +101,23 @@ self.onmessage=async({data:m})=>{
    if(marks&&job===current)send('auto-detected',{marks:marks.filter(mark=>wanted.has(mark.index)),objectId:m.objectId??0});
    return;
   }
+  const manual=(m.anchors||[]).filter(a=>a.source!=='auto'&&a.mode==='center'&&[a.x,a.y].every(Number.isFinite)&&indices.includes(a.index));
+  const seed=manual.find(a=>a.index===m.seedIndex)||manual[0];
   const frames=[];
   for(let n=0;n<indices.length;n++){
    if(job!==current)return;const index=indices[n],frame=cache.get(index);
    if(!frame)throw Error('画像が不足しています。写真を作り直してください。');
    const mark=(m.anchors||[]).find(a=>a.index===index&&a.source!=='auto'&&a.mode==='center');
    const tap=mark?{x:mark.x*size.width/(mark.spaceWidth||size.width),y:mark.y*size.height/(mark.spaceHeight||size.height)}:null;
-   const candidates=findCandidates(foregroundMask(background,frame,m.sensitivity,size.width).pixels,frame,size.width,size.height,background,tap?{tap,all:true}:{all:true});
+   const pixels=foregroundMask(background,frame,m.sensitivity,size.width).pixels;
+   const candidates=findDiscoveryCandidates(pixels,frame,size.width,size.height,background,tap?{tap}:{});
    frames.push({index,candidates});send('progress',{stage:`物体を検出中 ${n+1}/${indices.length}`,value:.9*(n+1)/indices.length});await yieldTurn();
   }
   if(job!==current)return;
   send('progress',{stage:'コマ間の動きを照合中',value:.95});await yieldTurn();if(job!==current)return;
-  const marks=trackCandidates(frames,size.width,size.height,m.anchors||[],m.seedIndex);
-  if(job===current)send('auto-detected',{marks:marks.filter(mark=>wanted.has(mark.index)),objectId:m.objectId??0});
+  const exclude=(m.otherAnchors||[]).filter(a=>a.mode==='center'&&!a.uncertain&&[a.x,a.y].every(Number.isFinite)).map(a=>({...a,x:a.x*size.width/(a.spaceWidth||size.width),y:a.y*size.height/(a.spaceHeight||size.height)}));
+  const marks=seed?trackCandidates(frames,size.width,size.height,m.anchors||[],seed.index):await discoverObject(frames,size.width,size.height,m.anchors||[],{exclude,cancelled:()=>job!==current,yieldTurn,onProgress:value=>send('progress',{stage:'動く物体を選択中',value:.9+.09*value})});
+  if(marks&&job===current)send('auto-detected',{marks:marks.filter(mark=>wanted.has(mark.index)),objectId:m.objectId??0});
  }else if(m.type==='guide-preview'){
   if(!photoBase)throw Error('写真を作成してからグリッドを設定してください。');
   if(!photoBase.blob){

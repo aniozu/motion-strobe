@@ -26,6 +26,13 @@ function harness(objects){
 }
 const seed=index=>({index,x:40,y:30,mode:'center',source:'manual'});
 const auto=index=>({index,x:50,y:30,mode:'center',source:'auto'});
+test('a completed hint-free run replays on the new sampling grid before composing',async()=>{
+ const app=harness([{id:0,autoEnabled:true,seedIndex:null,anchors:[auto(5),auto(9)]},{id:1,anchors:[],seedIndex:null}]);
+ app.extraction();await app.receive({type:'extracted'});
+ assert.equal(app.posts.at(-1).type,'auto-detect');assert.equal(app.posts.at(-1).seedIndex,null);assert.deepEqual(app.posts.at(-1).anchors,[]);
+ await app.receive({type:'auto-detected',objectId:0,marks:[auto(2),auto(6),auto(10)]});
+ assert.equal(app.posts.at(-1).type,'compose');assert(app.getObjects()[0].autoEnabled);
+});
 test('photo rebuild waits for both opted-in objects before composing and shows one combined result',async()=>{
  const manual=seed(10),skip={index:14,mode:'skip'};
  const app=harness([{id:0,autoEnabled:true,seedIndex:8,anchors:[seed(8),manual,skip,auto(18)]},{id:1,autoEnabled:true,seedIndex:9,trackingMode:'point',anchors:[seed(9),auto(18)]}]);

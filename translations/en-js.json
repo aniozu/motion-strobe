@@ -436,5 +436,8 @@
   "検出した位置を直線フィットし、横軸の角度に合わせます。": "Fit a line to the detected positions and align the horizontal axis.",
   "動きのある2コマ以上の位置が必要です。": "Detect at least two distinct positions.",
   "時刻・コマ/秒・物体の位置を、それぞれオン・オフします。コマ/秒は写真に表示します。": "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.",
-  "「動きに角度を合わせる」は、選んだ物体の検出位置を1次関数でフィットして横軸を合わせます。未検出・要確認・なしのコマは使いません。": "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded."
+  "「動きに角度を合わせる」は、選んだ物体の検出位置を1次関数でフィットして横軸を合わせます。未検出・要確認・なしのコマは使いません。": "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.",
+  "「全コマを自動検出」で動く物体を探せます。タップすると追いかける物体のヒントになります。": "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.",
+  "指定なしでも、色・大きさとコマ間の動きから物体を探します。追いかけたい物体をタップすると、そのヒントを優先します。": "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.",
+  "動く物体を選択中": "Selecting a moving object"
 }

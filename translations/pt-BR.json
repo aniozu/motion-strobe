@@ -558,5 +558,8 @@
   "Detect at least two distinct positions.": "Detecte pelo menos duas posições distintas.",
   "Turn Time, frames/s and object positions on or off. frames/s appears on the photo.": "Ative ou desative Tempo, quadros/s e posições dos objetos. Os quadros/s aparecem na foto.",
   "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.": "Alinhar ângulo ao movimento ajusta uma função de primeiro grau às posições do objeto selecionado e alinha o eixo horizontal. Quadros não detectados, incertos ou ignorados são excluídos.",
-  "Object for angle alignment": "Objeto para alinhar o ângulo"
+  "Object for angle alignment": "Objeto para alinhar o ângulo",
+  "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Detectar todos os quadros encontra um objeto em movimento sem indicação. Toque em um objeto para orientar o rastreamento.",
+  "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Sem indicação, a detecção compara cor, tamanho e movimento entre quadros. Toque no objeto para dar prioridade a ele.",
+  "Selecting a moving object": "Selecionando um objeto em movimento"
 }

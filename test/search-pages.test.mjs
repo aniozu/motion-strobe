@@ -10,6 +10,25 @@ const attr=(s,name)=>s.match(new RegExp(`\\b${name}="([^"]*)"`))?.[1];
 const unescape=s=>s.replaceAll('&amp;','&').replaceAll('&quot;','"').replaceAll('&lt;','<').replaceAll('&gt;','>');
 const documentUrl=page=>searchOrigin+page.path;
 
+test('every searchable page uses the same stable square PNG favicon',async()=>{
+ const icon=await readFile('dist/motion-strobe-icon.png');
+ assert.equal(icon.subarray(1,4).toString(),'PNG');
+ const width=icon.readUInt32BE(16),height=icon.readUInt32BE(20);
+ assert.equal(width,height);assert(width>=48);
+ const expected=new URL('motion-strobe-icon.png',searchOrigin+'/').href;
+ for(const page of searchPages){
+  const html=await readFile(page.file,'utf8'),url=documentUrl(page);
+  const base=new URL(html.match(/<base href="([^"]+)"/)?.[1]||url,url);
+  for(const rel of ['icon','apple-touch-icon']){
+   const tags=[...html.matchAll(/<link\b[^>]*>/g)].map(m=>m[0]).filter(tag=>attr(tag,'rel')===rel);
+   assert.equal(tags.length,1,`${page.path}: ${rel}`);
+   assert.equal(attr(tags[0],'type'),'image/png');
+   assert.equal(attr(tags[0],'sizes'),`${width}x${height}`);
+   assert.equal(new URL(attr(tags[0],'href'),base).href,expected,`${page.path}: ${rel}`);
+  }
+ }
+});
+
 test('every search entry has one unique canonical, localized metadata and truthful structured data',async()=>{
  assert.equal(searchPages.length,18);assert.equal(new Set(searchPages.map(p=>p.path)).size,18);
  const titles=new Set();

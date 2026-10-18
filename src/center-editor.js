@@ -15,7 +15,7 @@ export class CenterEditor{
    if(!result)return;this.resultDialog.close();onReviewObject(result.objectId);this.jumpToMissing(true);
   };
   $('centerTrackingMode').onchange=()=>{if(this.pending)return;this.trackingMode=$('centerTrackingMode').value==='point'?'point':'center';this.mode=this.trackingMode==='point'?'center':'target';onTrackingMode(this.trackingMode);this.update();};this.onCancel=onCancel;this.automatic=false;this.viewport=new ImageViewport();this.pointers=new Map();this.panMode=false;this.panPointer=null;
-  $('autoDetect').onclick=()=>{const seed=this.seed();if(!this.pending&&seed){this.automatic=true;this.progress({stage:'自動検出を準備中',value:0});this.setBusy(true);onAuto(seed.index);}};
+  $('autoDetect').onclick=()=>{const seed=this.seed();if(!this.pending&&(seed||this.trackingMode!=='point')){this.automatic=true;this.progress({stage:'自動検出を準備中',value:0});this.setBusy(true);onAuto(seed?.index??null);}};
   $('cancelDetection').onclick=()=>onCancel?.();
   this.dialog.addEventListener('cancel',e=>{if(this.automatic){e.preventDefault();onCancel?.();}});
   for(const button of this.dialog.querySelectorAll('[data-center-mode]'))button.onclick=()=>{this.mode=button.dataset.centerMode;this.update();};
@@ -84,10 +84,10 @@ export class CenterEditor{
  update(){
   if(this.trackingMode==='point'&&this.mode==='target')this.mode='center';
   const $=this.$;for(const b of this.dialog.querySelectorAll('[data-center-mode]')){b.hidden=this.trackingMode==='point'&&b.dataset.centerMode==='target';b.disabled=this.pending;b.classList.toggle('active',b.dataset.centerMode===this.mode);b.setAttribute('aria-pressed',String(b.dataset.centerMode===this.mode));}
-  $('autoDetect').disabled=this.pending||!this.seed();$('autoDetect').textContent=this.automatic?'自動検出中…':'全コマを自動検出';
+  $('autoDetect').disabled=this.pending||!this.indices.length||this.trackingMode==='point'&&!this.seed();$('autoDetect').textContent=this.automatic?'自動検出中…':'全コマを自動検出';
   $('centerTrackingMode').disabled=this.pending;
   $('centerNextMissing').disabled=this.pending||!reviewFramePositions(this.indices,this.centers).length;
-  $('centerInstruction').textContent=this.mode==='none'?'このコマは検出しません。':this.trackingMode==='point'?'追いかける印や点をクリック／タップして指定します。':this.mode==='target'?'画像の物体をクリック／タップしてください。近くの中心を検出します。':'画像をクリック／タップ、またはドラッグして位置を手動で決めます。';
+  $('centerInstruction').textContent=this.mode==='none'?'このコマは検出しません。':this.trackingMode==='point'?'追いかける印や点をクリック／タップして指定します。':this.mode==='target'?this.seed()?'画像の物体をクリック／タップしてください。近くの中心を検出します。':'「全コマを自動検出」で動く物体を探せます。タップすると追いかける物体のヒントになります。':'画像をクリック／タップ、またはドラッグして位置を手動で決めます。';
   $('centerFrame').max=Math.max(0,this.indices.length-1);$('centerFrame').value=this.position||0;
   const center=this.centers.find(p=>p.index===this.index);
   $('centerTime').textContent=`${Number.isInteger(this.index)?formatSeconds(center?.time??(this.index-this.first)*this.period):'—'} s`;
@@ -98,7 +98,7 @@ export class CenterEditor{
   $('centerPrevious').disabled=this.pending||this.position===0;$('centerNext').disabled=this.pending||this.position===this.indices.length-1;
  }
  draw(){if(!this.image)return;const ctx=this.canvas.getContext('2d'),v=this.viewport;ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.save();ctx.translate(this.canvas.width/2,this.canvas.height/2);ctx.scale(v.scale,v.scale);ctx.translate(-v.x,-v.y);ctx.drawImage(this.image,0,0,this.canvas.width,this.canvas.height);const center=this.drag||this.centers.find(p=>p.index===this.index);if(center&&Number.isFinite(center.x)){
-  ctx.strokeStyle=center.confidence==='uncertain'?'#ef9e35':this.objectId===1?'#ffad45':'#52f0c9';ctx.lineWidth=Math.max(1.5,this.canvas.width/500)/v.scale;ctx.setLineDash(center.confidence==='uncertain'?[6/v.scale,4/v.scale]:[]);ctx.beginPath();ctx.moveTo(center.x,0);ctx.lineTo(center.x,this.canvas.height);ctx.moveTo(0,center.y);ctx.lineTo(this.canvas.width,center.y);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(center.x,center.y,5/v.scale,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.stroke();
+  ctx.strokeStyle=center.confidence==='uncertain'?'#ef9e35':this.objectId===1?'#ffad45':'#52f0c9';ctx.lineWidth=Math.max(1.5,this.canvas.width/500)/v.scale;ctx.setLineDash(center.confidence==='uncertain'?[6/v.scale,4/v.scale]:[]);const b=center.bounds;if(b&&this.trackingMode!=='point')ctx.strokeRect(b.x,b.y,b.w,b.h);ctx.beginPath();ctx.moveTo(center.x,0);ctx.lineTo(center.x,this.canvas.height);ctx.moveTo(0,center.y);ctx.lineTo(this.canvas.width,center.y);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(center.x,center.y,5/v.scale,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.stroke();
   }
   for(const other of this.otherCenters||[]){if(other.index!==this.index||!['manual','auto'].includes(other.confidence)||![other.x,other.y].every(Number.isFinite))continue;ctx.strokeStyle=other.objectId===1?'#ffad45':'#52f0c9';ctx.lineWidth=2/v.scale;ctx.beginPath();ctx.arc(other.x,other.y,7/v.scale,0,Math.PI*2);ctx.stroke();}
   ctx.restore();
