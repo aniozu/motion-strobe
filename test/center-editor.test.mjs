@@ -2,20 +2,21 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {CenterEditor} from '../src/center-editor.js';
 function editorHarness(){
  const elements=new Map(),modes=['target','center','none'].map(mode=>({dataset:{centerMode:mode},classList:{toggle(){}},setAttribute(k,v){this[k]=v;}}));
- const rectangles=[],context={save(){},restore(){},translate(){},scale(){},clearRect(){},drawImage(){},setLineDash(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},strokeRect(...args){rectangles.push({args,color:this.strokeStyle});},arc(){},fill(){}};
+ const rectangles=[],fills=[];let path=[];const context={save(){},restore(){},translate(){},scale(){},clearRect(){},drawImage(){},setLineDash(){},beginPath(){path=[];},moveTo(x,y){path.push(['M',x,y]);},lineTo(x,y){path.push(['L',x,y]);},closePath(){path.push(['Z']);},stroke(){},strokeRect(...args){rectangles.push({args,color:this.strokeStyle});},arc(){},fill(rule){fills.push({path:structuredClone(path),rule,color:this.fillStyle,alpha:this.globalAlpha});}};
  const el=id=>{if(['centerZoomIn','centerZoomOut','centerZoomReset','centerZoomLevel','centerPan'].includes(id))throw Error('Removed viewport control: '+id);if(!elements.has(id))elements.set(id,{classList:{toggle(){}},setAttribute(key,value){this[key]=value;},addEventListener(){},querySelectorAll(){return modes;},showModal(){this.open=true;},close(){this.open=false;},focus(){this.focused=true;},getContext(){return context;},getBoundingClientRect(){return {left:10,top:20,width:200,height:100};},setPointerCapture(){},width:400,height:200});return elements.get(id);};
  elements.set('skipCenter',modes[2]);globalThis.document={getElementById:el};const preview=[],anchors=[],skipped=[],reset=[],automatic=[],cancelled=[];
  const editor=new CenterEditor({preview:i=>preview.push(i),onAnchor:a=>anchors.push(a),onSkip:i=>skipped.push(i),onReset:i=>reset.push(i),onAuto:i=>automatic.push(i),onCancel:()=>cancelled.push(true)});
  const data={indices:[3,6,9],centers:[{index:3,confidence:'unset'},{index:6,x:100,y:50,confidence:'manual',source:'object'},{index:9,confidence:'skipped'}],size:{width:400,height:200},period:1/60,first:3,anchors:[]};editor.setData(data);editor.image={};
- return {editor,data,el,modes,preview,anchors,skipped,reset,automatic,cancelled,rectangles};
+ return {editor,data,el,modes,preview,anchors,skipped,reset,automatic,cancelled,rectangles,fills};
 }
-test('the inspection frame shows the measured object bounds, with uncertainty color and no box for a manual point',()=>{
- const h=editorHarness(),mark={index:6,x:100,y:50,confidence:'auto',bounds:{x:80,y:30,w:40,h:35}};
+test('the inspection frame outlines and lightly fills the measured shape, including its concavity and holes',()=>{
+ const contours=[[80,30,120,30,120,40,100,40,100,65,80,65],[85,45,85,50,90,50,90,45]],h=editorHarness(),mark={index:6,x:100,y:50,confidence:'auto',bounds:{x:80,y:30,w:40,h:35},contours};
  h.editor.index=6;h.editor.setData({...h.data,centers:[mark]});
- assert.deepEqual(h.rectangles.at(-1),{args:[80,30,40,35],color:'#52f0c9'});
- h.editor.setData({...h.data,centers:[{...mark,confidence:'uncertain'}]});assert.equal(h.rectangles.at(-1).color,'#ef9e35');
- h.rectangles.length=0;h.editor.setData({...h.data,centers:[{index:6,x:100,y:50,confidence:'manual',source:'manual'}]});assert.equal(h.rectangles.length,0);
- h.editor.setData({...h.data,trackingMode:'point',centers:[mark]});assert.equal(h.rectangles.length,0);
+ const fill=h.fills.find(f=>f.rule==='evenodd');assert(fill);assert.equal(fill.color,'#52f0c9');assert.equal(fill.alpha,.12);
+ assert.deepEqual(fill.path,[['M',80,30],['L',120,30],['L',120,40],['L',100,40],['L',100,65],['L',80,65],['Z'],['M',85,45],['L',85,50],['L',90,50],['L',90,45],['Z']]);assert.equal(h.rectangles.length,0);
+ h.fills.length=0;h.editor.setData({...h.data,centers:[{...mark,confidence:'uncertain'}]});assert.equal(h.fills.find(f=>f.rule==='evenodd').color,'#ef9e35');
+ h.fills.length=0;h.editor.setData({...h.data,centers:[{index:6,x:100,y:50,confidence:'manual',source:'manual'}]});assert(!h.fills.some(f=>f.rule==='evenodd'));
+ h.fills.length=0;h.editor.setData({...h.data,trackingMode:'point',centers:[mark]});assert(!h.fills.some(f=>f.rule==='evenodd'));
 });
 test('tap selection and center drag carry only the displayed frame and its coordinate space',()=>{const h=editorHarness();h.editor.select(1);assert.deepEqual(h.preview,[6]);h.editor.setBusy(false);h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointerup({clientX:60,clientY:45,pointerId:1});assert.deepEqual(h.anchors[0],{index:6,x:100,y:50,mode:'target',source:'manual',spaceWidth:400,spaceHeight:200});
  h.editor.setData(h.data);h.modes[1].onclick();h.el('centerCanvas').onpointerdown({clientX:60,clientY:45,pointerId:1});h.el('centerCanvas').onpointermove({clientX:70,clientY:55,pointerId:1});h.el('centerCanvas').onpointerup({clientX:70,clientY:55,pointerId:1});assert.equal(h.anchors[1].mode,'center');assert.equal(h.anchors[1].index,6);assert.equal(h.anchors[1].x,120);assert.equal(h.anchors[1].y,70);assert.equal(h.data.centers[1].x,100);

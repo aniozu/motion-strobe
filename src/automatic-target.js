@@ -60,7 +60,7 @@ export async function discoverObject(frames,width,height,marks=[],{cancelled=()=
   if(cancelled())return null;
   const {position,c}=proposals[n],index=filtered[position].index;
   const local=filtered.map((f,i)=>i===position?{...f,candidates:[c]}:f);
-  const anchor={index,mode:'center',x:c.x,y:c.y,source:'auto',bounds:c.bounds,spaceWidth:width,spaceHeight:height};
+  const anchor={index,mode:'center',x:c.x,y:c.y,source:'auto',bounds:c.bounds,...(c.contours?{contours:c.contours}:{}),spaceWidth:width,spaceHeight:height};
   const constraints=new Map(fixed);constraints.set(index,anchor);
   const forward=trackDirection(local.slice(position),width,height,constraints,c,{beamWidth:12});
   const backward=trackDirection(local.slice(0,position+1).reverse(),width,height,constraints,c,{beamWidth:12}).reverse();

@@ -1,4 +1,5 @@
 import {foregroundMask} from './annotations.js';
+import {regionContours} from './region-contours.js';
 // Manual marks stay fixed. Automatic tracking runs only on explicit request.
 export function findCandidates(pixels,frame,width,height,background,options={}){
  const count=width*height,mask=new Uint8Array(count),core=new Uint8Array(count),opened=new Uint8Array(count);
@@ -63,8 +64,8 @@ function trimWeakAttachment(parent,frame,width,height,background,options){
  const selected=parts.indexOf(main)+1;
  for(let p=0;p<labels.length;p++)if(labels[p]!==selected)local[p*4+3]=0;
  const tap=options.tap?{x:options.tap.x-left,y:options.tap.y-top}:undefined;
- const found=findCandidates(local,image,w,h,back,{all:true,tap}).sort((a,b)=>b.area-a.area)[0];
- return found?{...found,x:found.x+left,y:found.y+top,bounds:{...found.bounds,x:found.bounds.x+left,y:found.bounds.y+top},attachmentTrimmed:true}:parent;
+ const found=findCandidates(local,image,w,h,back,{all:true,tap,keepPixels:true}).sort((a,b)=>b.area-a.area)[0];
+ return found?{...found,pixels:found.pixels.map(p=>(Math.floor(p/w)+top)*width+p%w+left),x:found.x+left,y:found.y+top,bounds:{...found.bounds,x:found.bounds.x+left,y:found.bounds.y+top},attachmentTrimmed:true}:parent;
 }
 
 // A color patch can identify a body, but is never a competing object center.
@@ -82,9 +83,9 @@ function separateMergedBody(seed,pixels,frame,width,height,background,options){
   if(pixels[p+3]&&(tone===null||color===null||hueDistance(color,tone)<.75))local.set(frame.subarray(p,p+4),q);
  }
  const tap=options.tap?{x:options.tap.x-left,y:options.tap.y-top}:undefined;
- const candidates=findCandidates(local,image,w,h,background?back:null,{all:true,tap,openingRadius:Math.max(1,Math.min(3,Math.round(Math.min(b.w,b.h)*.1)))});
+ const candidates=findCandidates(local,image,w,h,background?back:null,{all:true,tap,keepPixels:true,openingRadius:Math.max(1,Math.min(3,Math.round(Math.min(b.w,b.h)*.1)))});
  const found=candidates.filter(c=>overlap({x:c.bounds.x+left,y:c.bounds.y+top,w:c.bounds.w,h:c.bounds.h},b)>b.w*b.h*.35).sort((a,b)=>b.area-a.area)[0];
- return found?{...found,x:found.x+left,y:found.y+top,bounds:{...found.bounds,x:found.bounds.x+left,y:found.bounds.y+top},separated:true}:null;
+ return found?{...found,pixels:found.pixels.map(p=>(Math.floor(p/w)+top)*width+p%w+left),x:found.x+left,y:found.y+top,bounds:{...found.bounds,x:found.bounds.x+left,y:found.bounds.y+top},separated:true}:null;
 }
 export function findDiscoveryCandidates(pixels,frame,width,height,background,options={}){
  const whole=findCandidates(pixels,frame,width,height,background,{all:true,...options,keepPixels:true});
@@ -104,7 +105,7 @@ export function findDiscoveryCandidates(pixels,frame,width,height,background,opt
   for(const body of bodies)if(!unique.some(c=>overlap(c.bounds,body.bounds)/Math.min(c.bounds.w*c.bounds.h,body.bounds.w*body.bounds.h)>.8))unique.push(body);
   result.push(...unique);
  }
- return result.map(({pixels:regionPixels,...candidate})=>candidate).sort(options.tap?(a,b)=>a.distanceToTap-b.distanceToTap:(a,b)=>b.quality-a.quality);
+ return result.map(({pixels:regionPixels,...candidate})=>({...candidate,contours:regionContours(regionPixels,width,candidate.bounds)})).sort(options.tap?(a,b)=>a.distanceToTap-b.distanceToTap:(a,b)=>b.quality-a.quality);
 }
 
 export function pickObjectCenter(background,frame,width,height,x,y,sensitivity=30){
@@ -113,7 +114,7 @@ export function pickObjectCenter(background,frame,width,height,x,y,sensitivity=3
  const candidate=findDiscoveryCandidates(mask.pixels,frame,width,height,background,{tap:{x,y}})[0];
  const tolerance=Math.max(3,Math.min(12,Math.max(width,height)/80));
  return candidate&&candidate.distanceToTap<=tolerance
-  ?{x:candidate.x,y:candidate.y,source:'object',bounds:candidate.bounds}
+  ?{x:candidate.x,y:candidate.y,source:'object',bounds:candidate.bounds,contours:candidate.contours}
   :{x,y,source:'tap'};
 }
 export function replaceFrameMark(marks,mark){
@@ -130,7 +131,8 @@ export function centersFromMarks(indices,marks,width,height){
   const sx=Number.isFinite(mark.spaceWidth)&&mark.spaceWidth>0?width/mark.spaceWidth:1;
   const sy=Number.isFinite(mark.spaceHeight)&&mark.spaceHeight>0?height/mark.spaceHeight:1;
   const bounds=mark.bounds&&[mark.bounds.x,mark.bounds.y,mark.bounds.w,mark.bounds.h].every(Number.isFinite)&&mark.bounds.w>0&&mark.bounds.h>0?{x:mark.bounds.x*sx,y:mark.bounds.y*sy,w:mark.bounds.w*sx,h:mark.bounds.h*sy}:undefined;
-  return {index,x:Math.max(0,Math.min(width-1,mark.x*sx)),y:Math.max(0,Math.min(height-1,mark.y*sy)),confidence:mark.source==='auto'?(mark.uncertain?'uncertain':'auto'):'manual',source:mark.source||'manual',...(bounds?{bounds}:{})};
+  const contours=Array.isArray(mark.contours)?mark.contours.filter(loop=>Array.isArray(loop)&&loop.length>=6&&loop.length%2===0&&loop.every(Number.isFinite)).map(loop=>loop.map((value,i)=>value*(i%2?sy:sx))):[];
+  return {index,x:Math.max(0,Math.min(width-1,mark.x*sx)),y:Math.max(0,Math.min(height-1,mark.y*sy)),confidence:mark.source==='auto'?(mark.uncertain?'uncertain':'auto'):'manual',source:mark.source||'manual',...(bounds?{bounds}:{}),...(contours.length?{contours}:{})};
  });
 }
 
@@ -197,7 +199,7 @@ export function trackDirection(frames,width,height,manual,identity,{beamWidth=32
   if(mark)return {...mark};
   if(!c)return {index,mode:'missing',source:'auto'};
   const uncertain=beam.some(s=>best.score-s.score<.6&&s.path[n]&&distance(c,s.path[n])>Math.max(12,Math.sqrt(c.area)*1.5));
-  return {index,mode:'center',x:c.x,y:c.y,source:'auto',uncertain,bounds:c.bounds,spaceWidth:width,spaceHeight:height};
+  return {index,mode:'center',x:c.x,y:c.y,source:'auto',uncertain,bounds:c.bounds,...(c.contours?{contours:c.contours}:{}),spaceWidth:width,spaceHeight:height};
  });
 }
 export function trackCandidates(frames,width,height,marks,seedIndex){

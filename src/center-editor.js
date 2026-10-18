@@ -98,7 +98,12 @@ export class CenterEditor{
   $('centerPrevious').disabled=this.pending||this.position===0;$('centerNext').disabled=this.pending||this.position===this.indices.length-1;
  }
  draw(){if(!this.image)return;const ctx=this.canvas.getContext('2d'),v=this.viewport;ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.save();ctx.translate(this.canvas.width/2,this.canvas.height/2);ctx.scale(v.scale,v.scale);ctx.translate(-v.x,-v.y);ctx.drawImage(this.image,0,0,this.canvas.width,this.canvas.height);const center=this.drag||this.centers.find(p=>p.index===this.index);if(center&&Number.isFinite(center.x)){
-  ctx.strokeStyle=center.confidence==='uncertain'?'#ef9e35':this.objectId===1?'#ffad45':'#52f0c9';ctx.lineWidth=Math.max(1.5,this.canvas.width/500)/v.scale;ctx.setLineDash(center.confidence==='uncertain'?[6/v.scale,4/v.scale]:[]);const b=center.bounds;if(b&&this.trackingMode!=='point')ctx.strokeRect(b.x,b.y,b.w,b.h);ctx.beginPath();ctx.moveTo(center.x,0);ctx.lineTo(center.x,this.canvas.height);ctx.moveTo(0,center.y);ctx.lineTo(this.canvas.width,center.y);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(center.x,center.y,5/v.scale,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.stroke();
+  ctx.strokeStyle=center.confidence==='uncertain'?'#ef9e35':this.objectId===1?'#ffad45':'#52f0c9';ctx.lineWidth=Math.max(1.5,this.canvas.width/500)/v.scale;ctx.setLineDash(center.confidence==='uncertain'?[6/v.scale,4/v.scale]:[]);
+  if(center.contours?.length&&this.trackingMode!=='point'){
+   ctx.beginPath();for(const loop of center.contours){ctx.moveTo(loop[0],loop[1]);for(let i=2;i<loop.length;i+=2)ctx.lineTo(loop[i],loop[i+1]);ctx.closePath();}
+   ctx.fillStyle=ctx.strokeStyle;ctx.globalAlpha=.12;ctx.fill('evenodd');ctx.globalAlpha=1;const color=ctx.strokeStyle,lineWidth=ctx.lineWidth;ctx.strokeStyle='rgba(8,24,32,.75)';ctx.lineWidth=lineWidth+2/v.scale;ctx.stroke();ctx.strokeStyle=color;ctx.lineWidth=lineWidth;ctx.stroke();
+  }
+  ctx.beginPath();ctx.moveTo(center.x,0);ctx.lineTo(center.x,this.canvas.height);ctx.moveTo(0,center.y);ctx.lineTo(this.canvas.width,center.y);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(center.x,center.y,5/v.scale,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.stroke();
   }
   for(const other of this.otherCenters||[]){if(other.index!==this.index||!['manual','auto'].includes(other.confidence)||![other.x,other.y].every(Number.isFinite))continue;ctx.strokeStyle=other.objectId===1?'#ffad45':'#52f0c9';ctx.lineWidth=2/v.scale;ctx.beginPath();ctx.arc(other.x,other.y,7/v.scale,0,Math.PI*2);ctx.stroke();}
   ctx.restore();

@@ -196,16 +196,16 @@ body.is-editing{--editor-header-height:44px;min-height:100dvh}.is-editing header
 /* Translated labels need room beside step badges and help actions. */
 html:not([lang=ja]) .workspace .steps>button{gap:7px;white-space:normal;line-height:1.3}
 html:not([lang=ja]) .workspace .steps>button .step-number{flex:0 0 20px;width:20px;min-width:20px;margin-right:0}
-html:not([lang=ja]) .workspace .steps>button .step-name{min-width:0;white-space:normal;overflow-wrap:anywhere}
+html:not([lang=ja]) .workspace .steps>button .step-name{min-width:0;white-space:normal;overflow-wrap:normal;word-break:normal}
 html:not([lang=ja]) .help-small{flex-shrink:0;min-width:24px;display:inline-grid;place-items:center;line-height:1}
 html:not([lang=ja]) .workspace .time-fields .time-point{grid-template-columns:minmax(0,7.5rem) minmax(0,1fr);gap:8px}
 html:not([lang=ja]) .workspace .point-label{min-width:0;white-space:normal;gap:6px}
 html:not([lang=ja]) .workspace .point-label label{min-width:0;white-space:normal;overflow-wrap:anywhere}
 html:not([lang=ja]) .workspace .panel-heading,html:not([lang=ja]) .workspace .section-heading{flex-wrap:wrap;gap:6px 8px}
-html:not([lang=ja]) .workspace .panel-heading h2,html:not([lang=ja]) .workspace .section-heading h3,html:not([lang=ja]) .workspace .section-heading>label{min-width:0;max-width:calc(100% - 32px);white-space:normal;overflow-wrap:anywhere}
+html:not([lang=ja]) .workspace .panel-heading h2,html:not([lang=ja]) .workspace .section-heading h3,html:not([lang=ja]) .workspace .section-heading>label{min-width:0;max-width:none;white-space:normal;overflow-wrap:break-word;word-break:normal}
 html:not([lang=ja]) .dialog-heading{gap:10px}
 html:not([lang=ja]) .dialog-heading>h2{min-width:0;overflow-wrap:anywhere}
-html:not([lang=ja]) .heading-tools{flex-shrink:0}
+html:not([lang=ja]) .heading-tools{flex:0 1 auto;min-width:0;max-width:100%}
 html:not([lang=ja]) .coordinate-tools,html:not([lang=ja]) .center-controls{flex-wrap:wrap}
 html:not([lang=ja]) .auto-detect-action{min-width:0;max-width:100%;flex-shrink:1}
 html:not([lang=ja]) .auto-detect-action #autoDetect{min-width:0;white-space:normal}
@@ -471,7 +471,7 @@ html:not([lang=ja]) .workspace .steps>button{min-width:0;white-space:normal}
 .workspace #rangePanel .range-points .point-label{display:flex;align-items:center;width:var(--time-label-width);min-width:0}
 .workspace #rangePanel .range-point-label,.workspace #samplingPanel .range-point-label{width:100%;min-height:44px;padding:2px 0;border-radius:5px;font-weight:600;font-size:14px;line-height:1.3;text-align:left;white-space:nowrap}
 .workspace #rangePanel .range-point-label.active,.workspace #samplingPanel .range-point-label.active{background:#edf1f7;box-shadow:inset 0 0 0 1px #d7e0ec}
-.workspace #rangePanel .time-value,.workspace #samplingPanel .reference-field .time-value{--time-number-width:calc(5.6ch + 10px);--time-nudge-size:clamp(14px,calc((100cqi - 52px - var(--time-label-width,28px) - var(--time-label-width,28px) - var(--time-number-width) - var(--time-number-width)) / 4),44px);display:grid;width:max-content;min-width:0;grid-template-columns:var(--time-nudge-size) var(--time-number-width) 7px var(--time-nudge-size);align-items:center;gap:1px;font-size:16px}
+.workspace #rangePanel .time-value,.workspace #samplingPanel .reference-field .time-value{--time-number-width:calc(5.6ch + 10px);--time-nudge-size:clamp(22px,calc((100cqi - 52px - var(--time-label-width,28px) - var(--time-label-width,28px) - var(--time-number-width) - var(--time-number-width)) / 4),44px);display:grid;width:max-content;min-width:0;grid-template-columns:var(--time-nudge-size) var(--time-number-width) 7px var(--time-nudge-size);align-items:center;gap:1px;font-size:16px}
 .workspace #rangePanel .range-points .time-value{max-width:none}
 .workspace #rangePanel .time-value input,.workspace #samplingPanel .reference-field .time-value input{width:100%;min-width:0;padding:5px 4px;min-height:44px;font-size:16px}
 .workspace #rangePanel .time-value>span,.workspace #samplingPanel .reference-field .time-value>span{font-size:12px}
@@ -493,8 +493,8 @@ html:not([lang=ja]) .workspace #rangePanel .time-fields,html:not([lang=ja]) .wor
 html:not([lang=ja]) .workspace #rangePanel .range-point-label,html:not([lang=ja]) .workspace #samplingPanel .range-point-label{font-size:12px}
 @media(max-width:379px) and (orientation:portrait){.workspace[data-editor-stage=range]{padding-left:6px;padding-right:6px}.workspace[data-editor-stage=range] .side-panel{padding-left:6px;padding-right:6px}}
 html:not([lang=ja]) .workspace #rangePanel .range-points{grid-template-columns:repeat(2,minmax(max-content,1fr))}
-@media(max-width:599px){html:not([lang=ja]) .workspace #rangePanel .range-points{grid-template-columns:1fr}html:not([lang=ja]) .workspace #rangePanel .time-value{--time-nudge-size:44px}}
-@container time-panel (max-width:322px){.workspace #rangePanel .range-points{grid-template-columns:1fr;row-gap:16px}.workspace #rangePanel .time-value,.workspace #samplingPanel .reference-field .time-value{--time-nudge-size:44px}}
+@media(max-width:599px){html:not([lang=ja]):not([lang=en]) .workspace #rangePanel .range-points{grid-template-columns:1fr}html:not([lang=ja]):not([lang=en]) .workspace #rangePanel .time-value{--time-nudge-size:44px}}
+@container time-panel (max-width:333px){.workspace #rangePanel .range-points{grid-template-columns:1fr;row-gap:16px}.workspace #rangePanel .time-value{--time-nudge-size:44px}}
 /* Compact timeline, equal metric columns, and an always-visible reference row. */
 .workspace #samplingPanel .panel-heading{margin-bottom:0}
 .workspace #samplingTimeline{margin:-8px 0 4px}
@@ -574,4 +574,77 @@ html:not([lang=ja]) .workspace #rangePanel .range-points{grid-template-columns:r
 .guide-fit-controls .guide-fit-objects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;min-width:0;margin:0}
 .guide-fit-controls .guide-fit-objects button{width:100%;min-width:0;min-height:40px;padding:6px 3px;font-size:12px;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
 .guide-fit #guideFitStatus{font-size:12px;line-height:1.5;color:var(--muted)}
-@container time-panel (max-width:410px){html:not([lang=ja]) .workspace #rangePanel .range-points{grid-template-columns:1fr;row-gap:16px}html:not([lang=ja]) .workspace #rangePanel .range-points .time-point:last-child{justify-self:start}html:not([lang=ja]) .workspace #rangePanel .time-value{--time-nudge-size:44px}}
+@container time-panel (max-width:413px){html:not([lang=ja]):not([lang=en]) .workspace #rangePanel .range-points{grid-template-columns:1fr;row-gap:16px}html:not([lang=ja]):not([lang=en]) .workspace #rangePanel .range-points .time-point:last-child{justify-self:start}html:not([lang=ja]):not([lang=en]) .workspace #rangePanel .time-value{--time-nudge-size:44px}}
+
+/* Whole labels get their own space; time controls share one desktop row. */
+.workspace #rangePanel .range-heading .heading-tools{flex:0 0 auto;max-width:100%}
+.workspace #rangePanel .range-heading h2,.workspace #samplingPanel .sampling-heading h2{max-width:none;overflow-wrap:break-word;word-break:normal}
+html:is([lang=ja],[lang=en]) .workspace #rangePanel .range-heading h2,
+html:is([lang=ja],[lang=en]) .workspace #samplingPanel .sampling-heading h2{white-space:nowrap;flex:none}
+.workspace #samplingPanel .sampling-heading{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.workspace #samplingPanel .sampling-heading .heading-tools{flex:0 0 auto;max-width:100%}
+.workspace #samplingPanel .sampling-heading .video-frame-rate{flex:none;margin-left:auto}
+html[lang=en] .workspace #rangePanel .time-fields{--time-label-width:42px}
+html[lang=en] .workspace #rangePanel .range-point-label{font-size:14px}
+html[lang=en] .workspace #rangePanel .range-points{grid-template-columns:repeat(2,minmax(0,1fr))}
+.workspace #rangePanel .background-point{grid-template-columns:max-content max-content minmax(0,1fr);row-gap:6px}
+.workspace #rangePanel .background-point>label{width:auto;min-width:0}
+html:not([lang=ja]) .workspace #rangePanel .background-mode-picker{grid-column:1/-1}
+.workspace #rangePanel .background-mode-picker .background-auto{min-height:36px}
+.workspace #samplingPanel .reference-field .time-value{--time-nudge-size:clamp(24px,calc((100cqi - var(--time-label-width) - var(--time-number-width) - 49px) / 2),40px)}
+.workspace #samplingPanel .interval-input{width:100%;max-width:100%;min-width:0}
+.workspace #samplingPanel .interval-input input{flex:0 1 var(--interval-width,2.8ch);width:var(--interval-width,2.8ch);max-width:calc(100% - 2ch - 4px);min-width:0}
+.workspace #samplingPanel .interval-input>span{flex:none}
+.workspace #samplingPanel .sample-count{flex-wrap:wrap;gap:0 3px;line-height:1.3}
+.workspace #resultPanel .section-heading{flex-wrap:wrap}
+.workspace #resultPanel .section-heading h3,.workspace #resultPanel .section-heading>label{min-width:0;overflow-wrap:break-word;word-break:normal}
+.workspace #resultPanel .position-tools button{min-width:0;white-space:normal;overflow-wrap:break-word}
+.workspace #resultPanel .display-options .check{min-width:0;max-width:100%;overflow-wrap:break-word}
+.workspace #resultPanel .display-options .check input{flex:none}
+@media(min-width:760px){
+ html:is([lang=ja],[lang=en]) .workspace .steps{grid-template-columns:repeat(4,max-content)}
+ html:is([lang=ja],[lang=en]) .workspace .steps>button,
+ html:is([lang=ja],[lang=en]) .workspace .steps>button .step-name{white-space:nowrap;overflow-wrap:normal}
+}
+@container time-panel (max-width:333px){
+ html[lang=en] .workspace #rangePanel .range-points{grid-template-columns:1fr}
+ .workspace #rangePanel .range-points .time-point:last-child{justify-self:start}
+ .workspace #rangePanel .background-point{grid-template-columns:max-content minmax(0,1fr)}
+ .workspace #rangePanel .background-mode-picker{grid-column:1/-1}
+}
+@container time-panel (max-width:345px){
+ html[lang=en] .workspace #rangePanel .range-points{grid-template-columns:1fr}
+ html[lang=en] .workspace #rangePanel .range-points .time-point:last-child{justify-self:start}
+ html[lang=en] .workspace #rangePanel .time-value{--time-nudge-size:44px}
+}
+
+/* Detection modes use the full control column, rather than shrinking beside a label. */
+.center-dialog{container-type:inline-size;container-name:detection-panel}
+.center-dialog .center-method{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.center-dialog .center-method .center-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;min-width:0;max-width:100%;gap:3px}
+.center-dialog .center-modes button{width:100%;min-width:0;min-height:40px;padding:8px 6px;line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+html:is([lang=ja],[lang=en]) .center-dialog .center-modes button{white-space:nowrap;overflow-wrap:normal}
+.center-dialog .center-targets .object-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;min-width:0}
+.center-dialog .object-tabs button{width:100%;min-width:0;overflow-wrap:break-word}
+.center-dialog .center-secondary-actions{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;gap:6px}
+.center-dialog .center-secondary-actions button{width:100%;min-width:0;white-space:normal;overflow-wrap:break-word}
+.center-dialog .center-control-label,.center-dialog .tracking-mode-field>span,
+.center-dialog #centerInstruction,.center-dialog .center-gesture-hint,.center-dialog #detectionTitle{min-width:0;max-width:100%;overflow-wrap:break-word}
+@container detection-panel (max-width:360px){.center-dialog .center-targets{grid-template-columns:minmax(0,1fr)}}
+
+/* Dialogs keep close/help actions visible and give long options a full label area. */
+dialog .dialog-heading{gap:10px;min-width:0}
+dialog .dialog-heading .heading-tools{flex:1 1 auto;min-width:0;max-width:100%}
+dialog .dialog-heading h2{min-width:0;overflow-wrap:break-word;word-break:normal}
+dialog .dialog-heading .help-small,dialog .dialog-heading .close-dialog{flex:none}
+dialog .segmented{min-width:0}
+dialog .segmented button{min-width:0;overflow-wrap:anywhere}
+html:not([lang=ja]) .guide-controls #guideLineModes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}
+.guide-controls #guideLineModes button{white-space:normal;min-height:38px;line-height:1.35;padding:7px 5px}
+.guide-fit-controls{grid-template-columns:minmax(0,1fr) minmax(144px,.8fr)}
+.guide-fit-controls .guide-fit-objects button{min-width:0;white-space:normal;overflow-wrap:break-word}
+.guide-controls .setting,.calibration-controls .setting{min-width:0;overflow-wrap:break-word}
+.coordinate-actions,.calibration-actions,.video-options-actions,.return-home-actions{flex-wrap:wrap;gap:8px}
+.coordinate-actions button,.calibration-actions button,.video-options-actions button,.return-home-actions button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:break-word}
+.home-buttons{flex-wrap:wrap}
+.home-buttons button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:break-word}

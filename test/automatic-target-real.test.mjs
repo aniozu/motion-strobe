@@ -13,6 +13,11 @@ import {findDiscoveryCandidates,pickObjectCenter,trackCandidates} from '../src/t
 import {discoverObject} from '../src/automatic-target.js';
 
 const truth=JSON.parse(await readFile(new URL('./fixtures/automatic-target-samples.json',import.meta.url)));
+function moments(contours){
+ let area2=0,x=0,y=0;
+ for(const loop of contours)for(let i=0;i<loop.length;i+=2){const j=(i+2)%loop.length,cross=loop[i]*loop[j+1]-loop[j]*loop[i+1];area2+=cross;x+=(loop[i]+loop[j])*cross;y+=(loop[i+1]+loop[j+1])*cross;}
+ return {area:area2/2,x:x/(3*area2)-.5,y:y/(3*area2)-.5};
+}
 for(const sample of samples)test(`hint-free selection: ${sample.id}, default range and sampling`,async t=>{
  const file='dist/'+sample.video,media=await parseVideo(new Blob([await readFile(file)]));
  const clock=media.clock,first=indexAtTime(clock,sample.range.start),last=indexAtTime(clock,sample.range.end);
@@ -29,6 +34,11 @@ for(const sample of samples)test(`hint-free selection: ${sample.id}, default ran
   const frame=cache.get(index),pixels=foregroundMask(background,frame,30,width).pixels;
   return {index,candidates:findDiscoveryCandidates(pixels,frame,width,height,background)};
  });
+ for(const frame of frames)for(const candidate of frame.candidates){
+  const shape=moments(candidate.contours);
+  assert.equal(shape.area,candidate.area,`outline differs from the measured mask at frame ${frame.index}`);
+  assert(Math.abs(shape.x-candidate.x)<1e-7&&Math.abs(shape.y-candidate.y)<1e-7,`outline and measured center disagree at frame ${frame.index}`);
+ }
  const marks=await discoverObject(frames,width,height),expected=truth.samples[sample.id];
  assert.equal(marks.length,expected.positions.length);let confirmed=0;
  for(let i=0;i<marks.length;i++){
@@ -40,6 +50,7 @@ for(const sample of samples)test(`hint-free selection: ${sample.id}, default ran
   assert.equal(tapped.x,mark.x,`tap and automatic x differ at frame ${mark.index}`);
   assert.equal(tapped.y,mark.y,`tap and automatic y differ at frame ${mark.index}`);
   assert.deepEqual(tapped.bounds,mark.bounds);
+  assert(mark.contours.length>0);assert.deepEqual(tapped.contours,mark.contours);
   if(expected.maximumHeight)assert(mark.bounds.h<=expected.maximumHeight,`frame ${mark.index} includes the table reflection`);
  }
  const paths=[expected.positions,...(expected.alternatives||[])];
@@ -52,7 +63,7 @@ for(const sample of samples)test(`hint-free selection: ${sample.id}, default ran
  for(const mark of seeded){
   if(mark.source!=='auto'||mark.mode!=='center'||mark.uncertain)continue;
   const tapped=pickObjectCenter(background,cache.get(mark.index),width,height,mark.x,mark.y,30);
-  assert.equal(tapped.source,'object');assert.equal(tapped.x,mark.x);assert.equal(tapped.y,mark.y);assert.deepEqual(tapped.bounds,mark.bounds);
+  assert.equal(tapped.source,'object');assert.equal(tapped.x,mark.x);assert.equal(tapped.y,mark.y);assert.deepEqual(tapped.bounds,mark.bounds);assert.deepEqual(tapped.contours,mark.contours);
  }
  t.diagnostic(`${confirmed}/${marks.length} confirmed in checked target regions; tap/automatic/seeded centers agree; ${Math.round(performance.now()-began)} ms at ${width}×${height}.`);
 });

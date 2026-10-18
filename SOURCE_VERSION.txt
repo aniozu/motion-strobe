@@ -1,5 +1,5 @@
-Motion Strobe 1.23.33
-Source commit: 152f563d4fddb01f12a3fc514d6bd8d16d43717b
+Motion Strobe 1.23.35
+Source commit: bccbd993084e4089505994241797402764ccf697
 Production: https://aniozu.github.io/motion-strobe/
 Test: https://motion-strobe-lab.workspace-552571.chatgpt.site
 Graph behavior: retained from 1.23.29
