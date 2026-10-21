@@ -561,5 +561,12 @@
   "Object for angle alignment": "用于角度对齐的物体",
   "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "“自动检测所有帧”可在未指定物体时查找运动物体。点击物体可为跟踪提供提示。",
   "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "未指定物体时，会比较各帧中的颜色、大小和运动。点击要跟踪的物体，可优先跟踪它。",
-  "Selecting a moving object": "正在选择运动物体"
+  "Selecting a moving object": "正在选择运动物体",
+  "Use the two-point direction": "恢复两点方向",
+  "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.": "在运动图表或坐标数据中，通过“校准长度和坐标轴”更改轴的方向。",
+  "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.": "在运动图表或坐标数据中使用“校准长度和坐标轴”，将距离换算为米并设置轴的方向。",
+  "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "选择物体1或物体2，点击“按运动方向调整角度”，使x轴与运动方向对齐。测量长度的两点保持不动。“恢复两点方向”可恢复标尺方向。",
+  "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "勾选“按运动方向调整角度”，使x轴与所选物体的运动方向对齐。取消勾选后，使用A、B两点确定的轴方向。测量长度的两点保持不动。",
+  "Unit: ": "单位: ",
+  "Turn on camera correction if you filmed without fixing the camera in place.": "如果拍摄时没有固定相机，请开启相机运动校正。"
 }

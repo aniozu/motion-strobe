@@ -561,5 +561,12 @@
   "Object for angle alignment": "Объект для настройки угла",
   "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Обнаружение на всех кадрах может найти движущийся объект без подсказки. Нажмите на объект, чтобы направить отслеживание.",
   "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Без подсказки сравниваются цвет, размер и движение между кадрами. Нажмите на нужный объект, чтобы отдать ему приоритет.",
-  "Selecting a moving object": "Выбор движущегося объекта"
+  "Selecting a moving object": "Выбор движущегося объекта",
+  "Use the two-point direction": "Направление по двум точкам",
+  "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.": "Измените направление осей через калибровку длины и осей в графиках движения или данных координат.",
+  "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.": "Калибровка длины и осей в графиках движения или данных координат позволяет перевести расстояния в метры и задать направление осей.",
+  "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "Выберите объект 1 или 2 и выровняйте угол по движению, чтобы направить ось x вдоль движения. Метки длины остаются на месте. Направление по двум точкам возвращает направление линейки.",
+  "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "Установите флажок выравнивания угла по движению, чтобы направить ось x вдоль движения выбранного объекта. Снимите флажок, чтобы использовать ось, заданную точками A и B. Две метки длины остаются на месте.",
+  "Unit: ": "Единица: ",
+  "Turn on camera correction if you filmed without fixing the camera in place.": "Включите коррекцию движения камеры, если при съёмке камера не была закреплена."
 }

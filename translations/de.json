@@ -565,5 +565,12 @@
   "Object for angle alignment": "Objekt für die Winkelausrichtung",
   "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Alle Bilder erkennen findet ein bewegtes Objekt auch ohne Hinweis. Tippe auf ein Objekt, um die Verfolgung zu steuern.",
   "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Ohne Hinweis vergleicht die Erkennung Farbe, Größe und Bewegung über mehrere Bilder. Tippe auf das gewünschte Objekt, um es zu bevorzugen.",
-  "Selecting a moving object": "Bewegtes Objekt wird ausgewählt"
+  "Selecting a moving object": "Bewegtes Objekt wird ausgewählt",
+  "Use the two-point direction": "Richtung der zwei Punkte verwenden",
+  "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.": "Ändere die Achsenrichtung mit Länge und Achsen kalibrieren in den Bewegungsdiagrammen oder Koordinatendaten.",
+  "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.": "Mit Länge und Achsen kalibrieren in den Bewegungsdiagrammen oder Koordinatendaten rechnest du Abstände in Meter um und legst die Achsenrichtung fest.",
+  "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "Wähle Objekt 1 oder Objekt 2 und richte den Winkel an der Bewegung aus, um die x-Achse anzupassen. Die Längenmarkierungen bleiben unverändert. Mit Richtung der zwei Punkte verwenden kehrst du zur Linealrichtung zurück.",
+  "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "Aktiviere Winkel an Bewegung ausrichten, um die x-Achse an der Bewegung des ausgewählten Objekts auszurichten. Deaktiviere die Option, um die von A und B bestimmte Achse zu verwenden. Die beiden Längenmarkierungen bleiben unverändert.",
+  "Unit: ": "Einheit: ",
+  "Turn on camera correction if you filmed without fixing the camera in place.": "Aktiviere die Kamerakorrektur, wenn du ohne fest aufgestellte Kamera gefilmt hast."
 }

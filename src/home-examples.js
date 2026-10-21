@@ -1,8 +1,8 @@
 import {openingAnimationEnabled} from './opening-preference.js';
 export const homeExamples=[
- {id:'soccer',playbackRate:4,video:'opening-soccer.mp4?v=1.23.35',poster:'opening-soccer-poster.webp?v=1.23.35',caption:'解析例：サッカーボールの放物運動'},
- {id:'bouncing-ball',video:'opening-bouncing-ball.mp4?v=1.23.35',poster:'opening-bouncing-ball-poster.webp?v=1.23.35',caption:'解析例：スーパーボールのバウンド'},
- {id:'hammer',video:'opening-hammer.mp4?v=1.23.35',poster:'opening-hammer-poster.webp?v=1.23.35',caption:'解析例：ハンマーの放物運動'}
+ {id:'soccer',playbackRate:4,video:'opening-soccer.mp4?v=1.23.39',poster:'opening-soccer-poster.webp?v=1.23.39',caption:'解析例：サッカーボールの放物運動'},
+ {id:'bouncing-ball',video:'opening-bouncing-ball.mp4?v=1.23.39',poster:'opening-bouncing-ball-poster.webp?v=1.23.39',caption:'解析例：スーパーボールのバウンド'},
+ {id:'hammer',video:'opening-hammer.mp4?v=1.23.39',poster:'opening-hammer-poster.webp?v=1.23.39',caption:'解析例：ハンマーの放物運動'}
 ];
 const installed=new WeakMap();
 export function installHomeExample(home,example=homeExamples[0]){

@@ -561,5 +561,12 @@
   "Object for angle alignment": "Objek untuk penyesuaian sudut",
   "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Deteksi semua bingkai dapat menemukan objek bergerak tanpa petunjuk. Ketuk objek untuk memandu pelacakan.",
   "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Tanpa petunjuk, deteksi membandingkan warna, ukuran, dan gerakan antarbingkai. Ketuk objek untuk memprioritaskannya.",
-  "Selecting a moving object": "Memilih objek bergerak"
+  "Selecting a moving object": "Memilih objek bergerak",
+  "Use the two-point direction": "Gunakan arah dua titik",
+  "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.": "Ubah arah sumbu dengan Kalibrasi panjang dan sumbu pada grafik gerak atau data koordinat.",
+  "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.": "Gunakan Kalibrasi panjang dan sumbu pada grafik gerak atau data koordinat untuk mengubah jarak ke meter dan mengatur arah sumbu.",
+  "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "Pilih Objek 1 atau Objek 2 dan selaraskan sudut dengan gerak untuk mengarahkan sumbu x. Penanda panjang tetap di tempat. Gunakan arah dua titik untuk memulihkan arah penggaris.",
+  "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "Centang Selaraskan sudut dengan gerak untuk menyelaraskan sumbu x dengan gerak objek yang dipilih. Hapus centang untuk memakai sumbu yang ditentukan A dan B. Kedua penanda panjang tetap di tempat.",
+  "Unit: ": "Satuan: ",
+  "Turn on camera correction if you filmed without fixing the camera in place.": "Aktifkan koreksi gerakan kamera jika Anda merekam tanpa menempatkan kamera pada posisi tetap."
 }

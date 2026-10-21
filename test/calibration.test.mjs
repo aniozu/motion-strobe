@@ -29,3 +29,12 @@ test('calibration rulers and meter labels never leak into the exported photo or 
  const texts=[],paths=[],ctx={save(){},restore(){},beginPath(){},moveTo(x,y){paths.push([x,y]);},lineTo(x,y){paths.push([x,y]);},stroke(){},strokeText(text){texts.push(text);},fillText(text){texts.push(text);}};
  drawAnnotations(ctx,[origin],400,200,{calibration:{...c,axes:true,origin:{...origin,width:400,height:200}},grid:{enabled:true,points:false},labels:false});assert.equal(paths.length,4);assert.deepEqual(texts,[]);
 });
+
+test('independent motion axes preserve scale, share graph/data coordinates and scale with image resolution',()=>{
+ const fitted={...c,axis:'y',axisAngle:-45},basis=calibrationBasis(fitted,size);
+ near(basis.metersPerPixel,.0025);near(basis.x.x,Math.SQRT1_2);near(basis.x.y,-Math.SQRT1_2);near(basis.x.x*basis.y.x+basis.x.y*basis.y.y,0);
+ const position={x:120,y:60,confidence:'auto',time:0},p=physicalCoordinates(position,origin,basis);near(p.y,0);near(p.x,Math.SQRT2*.1);
+ const small=calibrationBasis(fitted,{width:200,height:100});near(small.angle,basis.angle);near(small.metersPerPixel,.005);
+ const stretched=calibrationBasis(fitted,{width:800,height:200});near(stretched.x.y/stretched.x.x,-.5);
+ const rows=coordinateRows({size,calibration:fitted,originCenter:origin,centers:[position]});assert.equal(rows[0][5],'0.0000');
+});

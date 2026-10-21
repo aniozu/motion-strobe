@@ -648,3 +648,14 @@ html:not([lang=ja]) .guide-controls #guideLineModes{display:grid;grid-template-c
 .coordinate-actions button,.calibration-actions button,.video-options-actions button,.return-home-actions button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:break-word}
 .home-buttons{flex-wrap:wrap}
 .home-buttons button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:break-word}
+
+.calibration-fit{margin:10px 0;padding:10px 0;border-block:1px solid var(--line);min-width:0}
+.calibration-fit-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(144px,.8fr);gap:6px;align-items:stretch}
+.calibration-fit-controls .segmented button{min-width:0;min-height:40px;padding:7px 6px;font-size:13px;line-height:1.35;white-space:normal;overflow-wrap:break-word;text-wrap:balance}
+.calibration-fit-controls .segmented{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0;margin:0;gap:2px}
+.calibration-fit #calibrationFitStatus{font-size:12px;margin-bottom:0}
+@media(max-width:679px) and (orientation:portrait){.calibration-controls>.calibration-fit{grid-column:1/-1}}
+
+.calibration-fit-controls>.check{display:flex;align-items:center;gap:7px;min-width:0;margin:0;font-size:13px;line-height:1.4;cursor:pointer}
+.calibration-fit-controls>.check input{flex:0 0 18px;width:18px;height:18px;margin:0}
+.calibration-fit-controls>.check span{min-width:0;overflow-wrap:break-word}

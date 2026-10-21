@@ -565,5 +565,12 @@
   "Object for angle alignment": "Objet pour l’alignement de l’angle",
   "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Détecter toutes les images peut trouver un objet en mouvement sans indication. Touchez un objet pour guider le suivi.",
   "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Sans indication, la détection compare la couleur, la taille et le mouvement entre les images. Touchez l’objet pour lui donner la priorité.",
-  "Selecting a moving object": "Sélection d’un objet en mouvement"
+  "Selecting a moving object": "Sélection d’un objet en mouvement",
+  "Use the two-point direction": "Utiliser la direction des deux points",
+  "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.": "Modifiez la direction des axes avec Étalonner la longueur et les axes dans les graphiques de mouvement ou les coordonnées.",
+  "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.": "Utilisez Étalonner la longueur et les axes dans les graphiques de mouvement ou les coordonnées pour convertir les distances en mètres et définir les axes.",
+  "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "Choisissez Objet 1 ou Objet 2 et alignez l’angle sur le mouvement pour orienter l’axe x. Les repères de longueur restent en place. Utiliser la direction des deux points rétablit la direction de la règle.",
+  "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "Cochez Aligner l’angle sur le mouvement pour orienter l’axe x selon le mouvement de l’objet choisi. Décochez pour utiliser l’axe défini par A et B. Les deux repères de longueur restent en place.",
+  "Unit: ": "Unité : ",
+  "Turn on camera correction if you filmed without fixing the camera in place.": "Activez la correction du mouvement de la caméra si vous avez filmé sans fixer la caméra."
 }

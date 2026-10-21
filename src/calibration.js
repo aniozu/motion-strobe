@@ -7,6 +7,11 @@ export function calibrationBasis(calibration,size){
  const dx=q.x-p.x,dy=q.y-p.y,distance=Math.hypot(dx,dy);if(distance<1)return null;
  // The segment sets an axis line, regardless of which endpoint was chosen first.
  let x=axis==='y'?{x:-dy/distance,y:dx/distance}:{x:dx/distance,y:dy/distance};
+ // A motion-aligned axis is independent of the two-point length ruler.
+ if(Number.isFinite(calibration.axisAngle)){
+  const radians=calibration.axisAngle*Math.PI/180,dx=Math.cos(radians)*size.width/width,dy=Math.sin(radians)*size.height/height,norm=Math.hypot(dx,dy);
+  x={x:dx/norm,y:dy/norm};
+ }
  if(x.x< -1e-10||(Math.abs(x.x)<1e-10&&x.y>0))x={x:-x.x,y:-x.y};
  const y={x:x.y,y:-x.x};
  return {a:p,b:q,x,y,distance,metersPerPixel:length/distance,angle:Math.atan2(x.y,x.x)*180/Math.PI,length};

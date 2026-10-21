@@ -19,7 +19,7 @@ export class GuideEditor{
   for(const button of this.fitButtons)button.onclick=()=>{if(this.calibration)return;this.fitObject=Number(button.dataset.guideFitObject);this.updateFit();};
   this.$('fitGuideAngle').onclick=()=>{
    if(this.calibration)return;const fit=fitMotionAngle(this.centers,this.fitObject);if(!fit)return;
-   this.setAngle(fit.angle);this.$('guideFitStatus').hidden=false;this.$('guideFitStatus').textContent=`${fit.count}コマの位置から角度を設定しました。`;
+   this.setAngle(fit.angle);this.updateFit();
   };
   for(const id of ['guidePoints','guideObject1','guideObject2','guideColor','guideThickness','guideOpacity'])this.$(id).oninput=()=>{
    this.draft=gridOptions({...this.draft,object1:this.$('guideObject1').checked,object2:this.$('guideObject2').checked,points:this.$('guidePoints').checked,color:this.$('guideColor').value,thickness:Number(this.$('guideThickness').value),opacity:Number(this.$('guideOpacity').value)/100});this.update();

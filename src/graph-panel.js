@@ -95,9 +95,8 @@ export class GraphPanel{
 
   const empty=document.getElementById('graphEmpty'),available=this.data.points.length>0;
   empty.hidden=available;document.getElementById('graphCards').hidden=!available;document.getElementById('graphTabs').hidden=!available;
-  document.getElementById('graphEmptyMessage').textContent='物体の位置がまだ検出されていません。「位置を検出」で中心を指定してください。';
-  document.getElementById('graphNote').textContent=available?`${this.data.points.length}点 · ${this.data.unit==='m'?'校正した軸・m単位':'未校正・px単位'} · 原点は物体1で最初に検出した位置（未検出なら物体2）で、2物体共通です。時刻0は時間範囲の開始です。${this.data.excluded?` 未指定・未検出・要確認・「なし」の${this.data.excluded}コマは除いています。`:''}`:'';
-  document.getElementById('graphPrecisionNote').hidden=!available;
+  document.getElementById('graphEmptyMessage').textContent='未検出';
+  const note=document.getElementById('graphNote');note.hidden=!available;note.textContent=available?`単位: ${this.data.unit}`:'';
   for(const card of this.cards){
    this.fitCard(card);
   }

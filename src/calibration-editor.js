@@ -1,19 +1,27 @@
 import {ImageViewport} from './image-viewport.js';
 import {calibrationBasis,coordinateOrigin} from './calibration.js';
+import {fitMotionAngle} from './motion-angle.js';
+import {allObjectCenters} from './object-data.js';
 export class CalibrationEditor{
  constructor({onApply,onClear}){
   this.$=id=>document.getElementById(id);this.dialog=this.$('calibrationDialog');this.canvas=this.$('calibrationCanvas');this.viewport=new ImageViewport();this.pointers=new Map();this.active='a';this.pan=false;this.token=0;this.image=null;
   for(const b of this.dialog.querySelectorAll('[data-calibration-point]'))b.onclick=()=>{this.active=b.dataset.calibrationPoint;this.pan=false;this.update();};
-  this.$('calibrationAxis').onchange=()=>{this.draft.axis=this.$('calibrationAxis').value;this.update();};
+  this.$('calibrationAxis').onchange=()=>{if(this.motionEnabled)return;this.draft.axis=this.$('calibrationAxis').value;this.update();};
+  this.fitButtons=[...this.dialog.querySelectorAll('[data-calibration-fit-object]')];
+  for(const button of this.fitButtons)button.onclick=()=>{
+   const objectId=Number(button.dataset.calibrationFitObject);if(!this.motionEnabled||!fitMotionAngle(this.centers,objectId))return;
+   this.fitObject=objectId;this.syncMotion();this.update();
+  };
+  this.$('fitCalibrationAngle').onchange=()=>{this.motionEnabled=this.$('fitCalibrationAngle').checked&&!!this.image;this.syncMotion();this.update();};
   this.$('calibrationLength').oninput=()=>{this.draft.length=Number(this.$('calibrationLength').value);this.update(false);};
-  this.$('calibrationAngle').oninput=()=>this.geometry(Number(this.$('calibrationAngle').value),this.distance());
+  this.$('calibrationAngle').oninput=()=>this.setAngle(Number(this.$('calibrationAngle').value));
   this.$('calibrationAngleNumber').oninput=()=>{
    const value=this.$('calibrationAngleNumber').value,angle=Number(value);
    if(value.trim()===''||!Number.isFinite(angle)||angle< -90||angle>90){this.update(false);return;}
-   this.geometry(angle,this.distance(),false);
+   this.setAngle(angle,false);
   };
   this.$('calibrationAngleNumber').onblur=()=>this.update();
-  this.$('calibrationSpan').oninput=()=>this.geometry(this.angle(),Number(this.$('calibrationSpan').value));
+  this.$('calibrationSpan').oninput=()=>this.geometry(this.rulerAngle(),Number(this.$('calibrationSpan').value));
   this.$('calibrationZoomIn').onclick=()=>this.zoom(1.5);this.$('calibrationZoomOut').onclick=()=>this.zoom(1/1.5);this.$('calibrationZoomReset').onclick=()=>{this.viewport.reset();this.update();};
   this.$('calibrationPan').onclick=()=>{this.pan=!this.pan;this.update();};
   this.$('applyCalibration').onclick=()=>{if(!this.basis())return;const result=structuredClone(this.draft);this.dialog.close();onApply(result);};
@@ -38,21 +46,40 @@ export class CalibrationEditor{
   this.canvas.onkeydown=e=>{if(!this.image||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();const p=this.draft[this.active],d=e.shiftKey?5:1;p.x=Math.max(0,Math.min(this.canvas.width,p.x+(e.key==='ArrowLeft'?-d:e.key==='ArrowRight'?d:0)));p.y=Math.max(0,Math.min(this.canvas.height,p.y+(e.key==='ArrowUp'?-d:e.key==='ArrowDown'?d:0)));this.update();};
   this.dialog.addEventListener('close',()=>{this.token++;this.image=null;this.pointers.clear();this.drag=null;});
  }
- open({calibration,data}){
+ open({calibration,data,objectId=0}){
   this.token++;this.image=null;this.data=data;this.size=data.size;this.origin=coordinateOrigin(data);this.active='a';this.pan=false;this.viewport.reset(data.size.width,data.size.height);this.pointers.clear();
   const existing=calibrationBasis(calibration,this.size),w=this.size.width,h=this.size.height;
-  this.draft=existing?{a:existing.a,b:existing.b,length:existing.length,axis:calibration.axis,width:w,height:h}:{a:{x:w*.35,y:h*.6},b:{x:w*.65,y:h*.6},length:0,axis:'x',width:w,height:h};
-  this.$('calibrationStatus').textContent='画像を準備中…';this.$('calibrationCanvas').setAttribute('aria-busy','true');this.$('calibrationLength').value=existing?String(existing.length):'';this.$('clearCalibration').disabled=!calibration;this.dialog.showModal();this.update();
+  this.draft=existing?{a:existing.a,b:existing.b,length:existing.length,axis:calibration.axis,width:w,height:h,...(Number.isFinite(calibration.axisAngle)?{axisAngle:existing.angle}:{})}:{a:{x:w*.35,y:h*.6},b:{x:w*.65,y:h*.6},length:0,axis:'x',width:w,height:h};
+  this.centers=allObjectCenters(data);const preferred=[0,1].includes(calibration?.motionObject)?calibration.motionObject:objectId;
+  this.fitObject=fitMotionAngle(this.centers,preferred)?preferred:fitMotionAngle(this.centers,1-preferred)?1-preferred:preferred;
+  this.motionEnabled=Number.isFinite(calibration?.axisAngle);this.syncMotion();
+  this.$('calibrationStatus').hidden=false;this.$('calibrationStatus').textContent='画像を準備中…';this.$('calibrationCanvas').setAttribute('aria-busy','true');this.$('calibrationLength').value=existing?String(existing.length):'';this.$('clearCalibration').disabled=!calibration;this.dialog.showModal();this.update();
  }
  accept({blob,size}){
   if(!this.dialog.open)return;const token=this.token,url=URL.createObjectURL(blob),image=new Image();
   image.onload=()=>{URL.revokeObjectURL(url);if(token!==this.token||!this.dialog.open)return;this.image=image;this.canvas.width=size.width;this.canvas.height=size.height;this.canvas.setAttribute('aria-busy','false');this.update();};
   image.onerror=()=>{URL.revokeObjectURL(url);if(token===this.token)this.error('画像を表示できませんでした。');};image.src=url;
  }
- error(message){this.$('calibrationStatus').textContent=message;this.canvas.setAttribute('aria-busy','false');}
+ error(message){this.$('calibrationStatus').hidden=false;this.$('calibrationStatus').textContent=message;this.canvas.setAttribute('aria-busy','false');}
  basis(){return calibrationBasis(this.draft,this.size);}
  distance(){return Math.hypot(this.draft.b.x-this.draft.a.x,this.draft.b.y-this.draft.a.y);}
  angle(){const b=calibrationBasis({...this.draft,length:1},this.size);return b?-b.angle:0;}
+ rulerAngle(){const b=calibrationBasis({...this.draft,length:1,axisAngle:undefined},this.size);return b?-b.angle:0;}
+ setAngle(angle,syncAngle=true){
+  if(this.motionEnabled)return;this.geometry(angle,this.distance(),syncAngle);
+ }
+ syncMotion(){
+  const fit=fitMotionAngle(this.centers,this.fitObject);this.motionEnabled=!!this.motionEnabled&&!!fit;
+  if(this.motionEnabled){this.draft.axisAngle=fit.angle;this.draft.motionObject=this.fitObject;}
+  else{delete this.draft.axisAngle;delete this.draft.motionObject;}
+ }
+ updateFit(){
+  const fit=fitMotionAngle(this.centers,this.fitObject);
+  for(const button of this.fitButtons){const objectId=Number(button.dataset.calibrationFitObject),selected=objectId===this.fitObject;button.disabled=!this.motionEnabled||!fitMotionAngle(this.centers,objectId);button.classList.toggle('active',selected);button.setAttribute('aria-pressed',String(selected));}
+  this.$('fitCalibrationAngle').checked=this.motionEnabled;this.$('fitCalibrationAngle').disabled=!fit||!this.image;this.$('calibrationFitStatus').hidden=!!fit;
+  this.$('calibrationFitStatus').textContent=fit?'':'動きのある2コマ以上の位置が必要です。';
+  for(const id of ['calibrationAxis','calibrationAngle','calibrationAngleNumber'])this.$(id).disabled=this.motionEnabled;
+ }
  geometry(angle,distance,syncAngle=true){
   const radians=angle*Math.PI/180,x={x:Math.cos(radians),y:-Math.sin(radians)},d=this.draft.axis==='y'?{x:x.y,y:-x.x}:x,center={x:(this.draft.a.x+this.draft.b.x)/2,y:(this.draft.a.y+this.draft.b.y)/2};
   const limit=Math.min(Math.abs(d.x)>1e-9?2*Math.min(center.x,this.size.width-center.x)/Math.abs(d.x):Infinity,Math.abs(d.y)>1e-9?2*Math.min(center.y,this.size.height-center.y)/Math.abs(d.y):Infinity);distance=Math.min(distance,limit);
@@ -64,11 +91,12 @@ export class CalibrationEditor{
  zoom(factor,p){if(!this.image)return;this.viewport.zoom(factor,p?.x,p?.y);this.update();}
  update(syncAngle=true){
   if(!this.draft)return;const $=this.$,basis=this.basis();$('calibrationAxis').value=this.draft.axis;$('applyCalibration').disabled=!basis||!this.image;$('calibrationZoomLevel').textContent=`${Math.round(this.viewport.scale*100)}%`;$('calibrationZoomOut').disabled=this.viewport.scale<=1;$('calibrationZoomIn').disabled=this.viewport.scale>=8;$('calibrationPan').classList.toggle('active',this.pan);$('calibrationPan').setAttribute('aria-pressed',String(this.pan));
+  this.updateFit();
   for(const b of this.dialog.querySelectorAll('[data-calibration-point]')){b.classList.toggle('active',b.dataset.calibrationPoint===this.active);b.setAttribute('aria-pressed',String(b.dataset.calibrationPoint===this.active));}
   const angleNumber=$('calibrationAngleNumber');if(syncAngle)angleNumber.value=String(Number(this.angle().toFixed(4)));
   const inputAngle=Number(angleNumber.value);if(angleNumber.value.trim()===''||!Number.isFinite(inputAngle)||inputAngle< -90||inputAngle>90)$('applyCalibration').disabled=true;
   $('calibrationAngle').value=this.angle();$('calibrationSpan').max=Math.ceil(Math.hypot(this.size.width,this.size.height));$('calibrationSpan').value=this.distance();
-  if(this.image)$('calibrationStatus').textContent=basis?`2点間 ${basis.distance.toFixed(1)} px = ${basis.length} m${this.origin?'':' · 物体の位置を検出すると原点が決まります。'}`:'2点を合わせ、実際の距離をmで入力してください。';
+  if(this.image){$('calibrationStatus').hidden=!!basis;$('calibrationStatus').textContent=basis?'':'2点を合わせ、実際の距離をmで入力してください。';}
   this.draw();
  }
  draw(){

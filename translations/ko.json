@@ -561,5 +561,12 @@
   "Object for angle alignment": "각도를 맞출 물체",
   "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "모든 프레임 자동 검출은 힌트 없이도 움직이는 물체를 찾습니다. 물체를 탭하면 추적 힌트가 됩니다.",
   "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "힌트가 없으면 프레임 사이의 색, 크기, 움직임을 비교합니다. 추적할 물체를 탭하면 우선적으로 추적합니다.",
-  "Selecting a moving object": "움직이는 물체 선택 중"
+  "Selecting a moving object": "움직이는 물체 선택 중",
+  "Use the two-point direction": "두 점의 방향으로 되돌리기",
+  "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.": "운동 그래프 또는 좌표 데이터의 길이와 축 보정에서 축 방향을 변경합니다.",
+  "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.": "운동 그래프 또는 좌표 데이터의 길이와 축 보정에서 거리를 미터로 변환하고 축 방향을 설정합니다.",
+  "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "물체 1 또는 물체 2를 선택하고 운동에 각도를 맞추면 x축이 운동 방향에 맞춰집니다. 길이를 측정하는 두 점은 움직이지 않습니다. 두 점의 방향으로 되돌리기를 누르면 자의 방향으로 돌아갑니다.",
+  "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "운동에 각도 맞추기를 선택하면 x축이 선택한 물체의 운동 방향에 맞춰집니다. 선택을 해제하면 A와 B로 정한 축 방향으로 돌아갑니다. 길이를 측정하는 두 점은 움직이지 않습니다.",
+  "Unit: ": "단위: ",
+  "Turn on camera correction if you filmed without fixing the camera in place.": "카메라를 고정하지 않고 촬영했다면 카메라 움직임 보정을 켜세요."
 }

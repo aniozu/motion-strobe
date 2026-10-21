@@ -439,5 +439,13 @@
   "「動きに角度を合わせる」は、選んだ物体の検出位置を1次関数でフィットして横軸を合わせます。未検出・要確認・なしのコマは使いません。": "Align angle with motion fits a first-degree function to the selected object’s positions and aligns the horizontal axis. Undetected, uncertain and skipped frames are excluded.",
   "「全コマを自動検出」で動く物体を探せます。タップすると追いかける物体のヒントになります。": "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.",
   "指定なしでも、色・大きさとコマ間の動きから物体を探します。追いかけたい物体をタップすると、そのヒントを優先します。": "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.",
-  "動く物体を選択中": "Selecting a moving object"
+  "動く物体を選択中": "Selecting a moving object",
+  "軸と長さを校正": "Calibrate length and axes",
+  "2点の向きに戻す": "Use the two-point direction",
+  "軸の向きはグラフ・座標データの「軸と長さを校正」で変更します。": "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.",
+  "グラフ・座標データの「軸と長さを校正」で、距離のm換算と軸の向きを設定します。": "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.",
+  "物体1・物体2を選び「動きに角度を合わせる」でx軸を運動に合わせます。長さを測る2点は動きません。「2点の向きに戻す」で元の向きに戻します。": "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.",
+  "「動きに角度を合わせる」をチェックすると、選んだ物体の運動にx軸を合わせます。チェックを外すとA・Bで決めた軸の向きに戻ります。長さを測る2点は動きません。": "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.",
+  "単位: ": "Unit: ",
+  "カメラを固定せずに撮影した場合は、補正をONにしてください。": "Turn on camera correction if you filmed without fixing the camera in place."
 }

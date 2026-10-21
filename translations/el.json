@@ -561,5 +561,12 @@
   "Object for angle alignment": "Αντικείμενο για ευθυγράμμιση γωνίας",
   "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Η ανίχνευση όλων των καρέ μπορεί να βρει ένα κινούμενο αντικείμενο χωρίς υπόδειξη. Πατήστε ένα αντικείμενο για να καθοδηγήσετε την παρακολούθηση.",
   "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Χωρίς υπόδειξη, συγκρίνονται το χρώμα, το μέγεθος και η κίνηση μεταξύ των καρέ. Πατήστε το αντικείμενο για να του δώσετε προτεραιότητα.",
-  "Selecting a moving object": "Επιλογή κινούμενου αντικειμένου"
+  "Selecting a moving object": "Επιλογή κινούμενου αντικειμένου",
+  "Use the two-point direction": "Χρήση κατεύθυνσης των δύο σημείων",
+  "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.": "Αλλάξτε την κατεύθυνση των αξόνων από τη βαθμονόμηση μήκους και αξόνων στα γραφήματα κίνησης ή στα δεδομένα συντεταγμένων.",
+  "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.": "Χρησιμοποιήστε τη βαθμονόμηση μήκους και αξόνων στα γραφήματα κίνησης ή στα δεδομένα συντεταγμένων για μετατροπή αποστάσεων σε μέτρα και ορισμό της κατεύθυνσης των αξόνων.",
+  "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "Επιλέξτε Αντικείμενο 1 ή 2 και ευθυγράμμιση γωνίας με την κίνηση για να ευθυγραμμίσετε τον άξονα x. Τα σημεία μέτρησης μήκους δεν μετακινούνται. Η κατεύθυνση των δύο σημείων επαναφέρει τη διεύθυνση του χάρακα.",
+  "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "Ενεργοποιήστε την ευθυγράμμιση γωνίας με την κίνηση για να ευθυγραμμίσετε τον άξονα x με την κίνηση του επιλεγμένου αντικειμένου. Απενεργοποιήστε την για χρήση του άξονα που ορίζουν τα A και B. Τα δύο σημεία μέτρησης μήκους δεν μετακινούνται.",
+  "Unit: ": "Μονάδα: ",
+  "Turn on camera correction if you filmed without fixing the camera in place.": "Ενεργοποιήστε τη διόρθωση κίνησης κάμερας αν τραβήξατε το βίντεο χωρίς σταθερή κάμερα."
 }

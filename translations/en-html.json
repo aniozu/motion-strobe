@@ -255,5 +255,10 @@
   "物体の位置の説明": "About object positions",
   "直線フィット": "Linear fit",
   "動きに角度を合わせる": "Align angle with motion",
-  "角度を合わせる物体": "Object for angle alignment"
+  "角度を合わせる物体": "Object for angle alignment",
+  "軸と長さを校正": "Calibrate length and axes",
+  "2点の向きに戻す": "Use the two-point direction",
+  "軸の向きはグラフ・座標データの「軸と長さを校正」で変更します。": "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.",
+  "グラフ・座標データの「軸と長さを校正」で、距離のm換算と軸の向きを設定します。": "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.",
+  "物体1・物体2を選び「動きに角度を合わせる」でx軸を運動に合わせます。長さを測る2点は動きません。「2点の向きに戻す」で元の向きに戻します。": "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction."
 }

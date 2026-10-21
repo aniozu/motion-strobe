@@ -561,5 +561,12 @@
   "Object for angle alignment": "Objeto para alinhar o ângulo",
   "Detect all frames can find a moving object without a hint. Tap an object to guide tracking.": "Detectar todos os quadros encontra um objeto em movimento sem indicação. Toque em um objeto para orientar o rastreamento.",
   "Without a hint, detection compares color, size and motion across frames. Tap the object to give it priority.": "Sem indicação, a detecção compara cor, tamanho e movimento entre quadros. Toque no objeto para dar prioridade a ele.",
-  "Selecting a moving object": "Selecionando um objeto em movimento"
+  "Selecting a moving object": "Selecionando um objeto em movimento",
+  "Use the two-point direction": "Usar a direção dos dois pontos",
+  "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.": "Altere a direção dos eixos com Calibrar comprimento e eixos nos gráficos de movimento ou nos dados de coordenadas.",
+  "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.": "Use Calibrar comprimento e eixos nos gráficos de movimento ou nos dados de coordenadas para converter distâncias em metros e definir os eixos.",
+  "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "Escolha Objeto 1 ou Objeto 2 e alinhe o ângulo com o movimento para orientar o eixo x. Os marcadores de comprimento permanecem no lugar. Usar a direção dos dois pontos restaura a direção da régua.",
+  "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "Marque Alinhar ângulo ao movimento para orientar o eixo x conforme o movimento do objeto selecionado. Desmarque para usar o eixo definido por A e B. Os dois marcadores de comprimento permanecem no lugar.",
+  "Unit: ": "Unidade: ",
+  "Turn on camera correction if you filmed without fixing the camera in place.": "Ative a correção de movimento da câmera se você gravou sem manter a câmera fixa."
 }
