@@ -3,7 +3,7 @@ const size={width:400,height:200},origin={index:3,x:80,y:100,confidence:'manual'
 test('two-point calibration gives meters with first-object origin, right positive and up positive',()=>{
  const basis=calibrationBasis(c,size);near(basis.metersPerPixel,.0025);const p=physicalCoordinates({x:120,y:80,confidence:'auto'},origin,basis);near(p.x,.1);near(p.y,.05);assert.deepEqual(physicalCoordinates(origin,origin,basis),{x:0,y:0});
  const data={size,calibration:c,originCenter:origin,centers:[{...origin,time:0},{x:120,y:80,confidence:'auto',time:.1},{x:150,y:90,confidence:'uncertain',time:.2}]};const rows=coordinateRows(data);assert.deepEqual(rows[1].slice(1,7),['0.10','40.0000','20.0000','0.1000','0.0500','自動']);assert.deepEqual(coordinateRows({...data,calibration:null})[1].slice(2,4),rows[1].slice(2,4));assert.deepEqual(rows[2].slice(2,6),['','','','']);
- for(const separator of [',','\t']){const lines=coordinateText(data,separator).split('\r\n');assert(lines[0].includes('x(m)'));assert(!lines[0].includes('校正長さ(m)'));assert.equal(lines[0].split(separator).length,rows[0].length);assert.deepEqual(lines[2].split(separator),rows[1]);}
+ for(const separator of [',','\t']){const lines=coordinateText(data,separator).split('\r\n');assert(lines[0].includes('x(m)'));assert(!lines[0].includes('校正長さ(m)'));assert.equal(lines[0].split(separator).length,rows[0].length);assert.deepEqual(lines[2].split(separator),separator===','?coordinateRows(data,{timeDecimals:6,coordinateDecimals:6})[1]:rows[1]);}
 });
 test('axis endpoint order is immaterial; y-axis ruler and rotated x-axis define the same right/up basis',()=>{
  const original=calibrationBasis(c,size),reverse=calibrationBasis({...c,a:c.b,b:c.a},size);near(original.x.x,reverse.x.x);near(original.y.y,reverse.y.y);

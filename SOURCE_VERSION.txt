@@ -1,4 +1,4 @@
-Motion Strobe 1.23.39
+Motion Strobe 1.23.40
 Source commit: 79e3a4907ef250b12217fd5d7693291f502130dd
 Production: https://aniozu.github.io/motion-strobe/
 Test: https://motion-strobe-lab.workspace-552571.chatgpt.site
