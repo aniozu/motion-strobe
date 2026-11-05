@@ -568,5 +568,6 @@
   "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "Выберите объект 1 или 2 и выровняйте угол по движению, чтобы направить ось x вдоль движения. Метки длины остаются на месте. Направление по двум точкам возвращает направление линейки.",
   "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "Установите флажок выравнивания угла по движению, чтобы направить ось x вдоль движения выбранного объекта. Снимите флажок, чтобы использовать ось, заданную точками A и B. Две метки длины остаются на месте.",
   "Unit: ": "Единица: ",
-  "Turn on camera correction if you filmed without fixing the camera in place.": "Включите коррекцию движения камеры, если при съёмке камера не была закреплена."
+  "Turn on camera correction if you filmed without fixing the camera in place.": "Включите коррекцию движения камеры, если при съёмке камера не была закреплена.",
+  "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "В CSV время и координаты всегда сохраняются с шестью знаками после запятой. Эта настройка управляет отображением времени на экране и в видео."
 }

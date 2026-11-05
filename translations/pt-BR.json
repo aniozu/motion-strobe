@@ -568,5 +568,6 @@
   "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.": "Escolha Objeto 1 ou Objeto 2 e alinhe o ângulo com o movimento para orientar o eixo x. Os marcadores de comprimento permanecem no lugar. Usar a direção dos dois pontos restaura a direção da régua.",
   "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "Marque Alinhar ângulo ao movimento para orientar o eixo x conforme o movimento do objeto selecionado. Desmarque para usar o eixo definido por A e B. Os dois marcadores de comprimento permanecem no lugar.",
   "Unit: ": "Unidade: ",
-  "Turn on camera correction if you filmed without fixing the camera in place.": "Ative a correção de movimento da câmera se você gravou sem manter a câmera fixa."
+  "Turn on camera correction if you filmed without fixing the camera in place.": "Ative a correção de movimento da câmera se você gravou sem manter a câmera fixa.",
+  "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "O CSV sempre salva os tempos e as coordenadas com seis casas decimais. Esta configuração controla a exibição do tempo na tela e nos vídeos."
 }
