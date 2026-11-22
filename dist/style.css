@@ -691,3 +691,28 @@ html:not([lang=ja]) .guide-dialog .guide-section-grid #guideLineModes{grid-templ
 @media(max-height:600px) and (orientation:landscape){.guide-dialog .guide-controls{gap:8px}.guide-dialog .guide-section{padding:8px 10px}.guide-dialog .guide-section-angle .guide-angle-number input{font-size:15px;min-height:29px}}
 /* Keep Apply reachable without hiding the reordered settings. */
 .guide-dialog .guide-actions{position:sticky;bottom:0;z-index:2;margin-top:10px;padding:9px 0 3px;background:#fff;border-top:1px solid var(--line)}
+
+/* Match the calibration controls to the object-position settings. */
+.calibration-dialog .calibration-layout{grid-template-columns:minmax(0,1fr) 300px;gap:18px}
+.calibration-dialog .calibration-controls{display:flex;flex-direction:column;gap:12px;min-width:0}
+.calibration-dialog .calibration-controls>.calibration-hint{margin:0;color:var(--ink);font-size:14px;line-height:1.6}
+.calibration-dialog .calibration-section{min-width:0;padding:12px 13px;border:1px solid var(--line);border-radius:11px;background:#f8fafc}
+.calibration-dialog .calibration-section>.setting{display:flex;flex-direction:column;gap:7px;margin:0;font-size:14px;font-weight:650}
+.calibration-dialog .calibration-measurement>.segmented{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;margin:0 0 12px}
+.calibration-dialog .calibration-section .segmented button{min-width:0;min-height:36px;padding:7px 8px;font-size:14px;line-height:1.35;white-space:normal}
+.calibration-dialog #calibrationLength,.calibration-dialog #calibrationAxis{width:100%;min-height:40px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:7px 10px;font-size:16px;font-weight:400}
+.calibration-dialog #calibrationLength[aria-invalid=true]{border-color:#c95648}
+.calibration-dialog .calibration-unit-hint{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+.calibration-dialog .calibration-range-label{gap:8px;margin-top:14px;font-size:14px;font-weight:650}
+.calibration-dialog .calibration-angle-number{flex-shrink:0;font-weight:400}
+.calibration-dialog .calibration-angle-number input{width:68px;min-height:32px;padding:4px 5px;font-size:16px}
+.calibration-dialog #calibrationAngle{display:block;margin:10px 0 0}
+.calibration-dialog .calibration-fit{border:0;border-top:1px solid var(--line);margin:14px 0 0;padding:12px 0 0}
+.calibration-dialog .calibration-fit-controls{grid-template-columns:minmax(0,1fr);gap:10px}
+.calibration-dialog .calibration-fit-controls>.check{font-size:14px;line-height:1.5}
+.calibration-dialog .calibration-fit #calibrationFitStatus{font-size:13px;margin:8px 0 0}
+.calibration-dialog .calibration-status{margin:0;min-height:0;font-size:14px;line-height:1.5}
+.calibration-dialog .calibration-actions{position:sticky;bottom:0;z-index:2;gap:10px;margin-top:12px;padding:10px 0 3px;border-top:1px solid var(--line);background:#fff}
+.calibration-dialog .calibration-actions button{min-height:40px;font-size:14px}
+@media(max-width:679px) and (orientation:portrait){.calibration-dialog .calibration-layout{grid-template-columns:minmax(0,1fr);gap:12px}.calibration-dialog .calibration-controls{gap:10px}.calibration-dialog .calibration-section{padding:10px}.calibration-dialog .calibration-image canvas{max-height:34dvh}}
+@media(max-height:600px) and (orientation:landscape){.calibration-dialog .calibration-layout{grid-template-columns:minmax(0,1fr) 280px;gap:12px}.calibration-dialog .calibration-controls{gap:9px}.calibration-dialog .calibration-section{padding:9px 10px}}
