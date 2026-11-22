@@ -27,7 +27,12 @@ test('native canvas pipeline preserves the stabilized motion, background, tracki
  await send({type:'load',file:new Blob([readFileSync('dist/stabilization-test-projectile.mp4')]),id:1});assert.equal(messages.at(-1).type,'loaded');
  const settings={first:16,last:88,reference:16,step:6,background:0,backgroundMode:'auto',maxDimension:640,sensitivity:30,factor:1,labels:false};
  const decodePng=async blob=>{const c=createCanvas(w,h);c.getContext('2d').drawImage(await loadImage(Buffer.from(await blob.arrayBuffer())),0,0);return c.getContext('2d').getImageData(0,0,w,h).data;};
- await send({type:'extract',...settings,stabilize:false,id:2});assert.equal(messages.at(-1).type,'extracted');await send({type:'compose',...settings,id:3});const uncorrected=await decodePng(messages.at(-1).blob);
+ await send({type:'extract',...settings,stabilize:false,id:2});assert.equal(messages.at(-1).type,'extracted');
+ // Check every selected source image against the actual FFmpeg-decoded frame.
+ const selected=messages.at(-1).indices;
+ for(const index of selected){await send({type:'tracking-preview',index,id:2000+index});const frame=await decodePng(messages.at(-1).blob);assert.equal(hash(frame),hash(raw.subarray(index*bytes,(index+1)*bytes)),`Source frame ${index} was shifted`);}
+ t.diagnostic(`${selected.length} extracted source frames match their FFmpeg-decoded frame pixels exactly`);
+ await send({type:'compose',...settings,id:3});const uncorrected=await decodePng(messages.at(-1).blob);
  await send({type:'extract',...settings,stabilize:true,id:4});const extraction=messages.at(-1);assert.equal(extraction.type,'extracted',JSON.stringify(extraction));assert(extraction.stabilization);assert.equal(extraction.size.width,w);
  await send({type:'compose',...settings,id:5});const photo=messages.at(-1);assert.equal(photo.type,'composed');assert.equal(photo.count,13);const corrected=await decodePng(photo.blob),reference=raw.subarray(16*bytes,17*bytes);
  const edgeError=pixels=>{let sum=0,n=0;for(let y=15;y<h-15;y++)for(let x=12;x<w-12;x++){if(x>45&&x<w-50)continue;const p=(y*w+x)*4;for(let c=0;c<3;c++){sum+=(pixels[p+c]-reference[p+c])**2;n++;}}return sum/n;};

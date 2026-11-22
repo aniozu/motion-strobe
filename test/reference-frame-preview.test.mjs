@@ -13,7 +13,7 @@ const implementation=app.slice(from,to);
 function harness(){
  const pending=[];
  const frames=[];
- const state={stage:'sampling',samplingPreviewMode:'reference',reference:1};
+ const state={stage:'sampling',samplingPreviewMode:'reference',reference:1,start:2,end:20,background:0,backgroundMode:'manual'};const timeline={active:'reference'};
  const video={readyState:4,duration:1,getAttribute:()=> 'blob:test'};
  const samplingSurface={
   frame:null,active:false,
@@ -26,13 +26,13 @@ function harness(){
  let displayedPreviewInfo=null;
  const calls=[];
  const syncPreviewFrame=()=>calls.push(samplingSurface.frame?.index??null);
- const fn=new Function('state','samplingSurface','previewFrameTarget','$','syncPreviewFrame','getDisplayed','setDisplayed',
+ const fn=new Function('state','samplingSurface','previewFrameTarget','$','syncPreviewFrame','getDisplayed','setDisplayed','timeline',
   'let displayedPreviewInfo=getDisplayed();'+implementation+';return {renderReferencePreview,cancelReferencePreview,get pending(){return referencePreviewAbort!==null;}}');
- const api=fn(state,samplingSurface,previewFrameTarget,()=>video,syncPreviewFrame,()=>displayedPreviewInfo,x=>displayedPreviewInfo=x);
+ const api=fn(state,samplingSurface,previewFrameTarget,()=>video,syncPreviewFrame,()=>displayedPreviewInfo,x=>displayedPreviewInfo=x,timeline);
  function complete(req){
   req.resolve({present:()=>{samplingSurface.frame={index:req.index};samplingSurface.active=true;frames.push(req.index);},dispose(){}});
  }
- return {state,pending,frames,calls,api,complete,samplingSurface};
+ return {state,timeline,video,pending,frames,calls,api,complete,samplingSurface};
 }
 
 test('rapid reference nudges keep only newest image, not stale response',async()=>{
@@ -69,4 +69,23 @@ test('single reference change uses an intra-frame timestamp',async()=>{
  t.complete(t.pending[0]);
  await run;
  assert.deepEqual(t.frames,[1]);
+});
+
+for(const point of ['start','end','background'])test(`${point} selection presents the exact requested frame inside its timestamp interval`,async()=>{
+ const t=harness();t.state.stage='range';t.timeline.active=point;
+ const run=t.api.renderReferencePreview(point),request=t.pending[0];assert.equal(request.index,t.state[point]);
+ assert(request.target.time>request.target.start&&request.target.time<request.target.end);t.complete(request);await run;
+ assert.deepEqual(t.frames,[t.state[point]]);
+});
+test('rapid changes across start, end and background cannot restore an older point image',async()=>{
+ const t=harness();t.state.stage='range';const runs=[];
+ for(const point of ['start','end','background']){t.timeline.active=point;runs.push(t.api.renderReferencePreview(point));}
+ t.complete(t.pending[2]);await runs[2];t.complete(t.pending[0]);t.complete(t.pending[1]);await Promise.all(runs);
+ assert.deepEqual(t.frames,[t.state.background]);assert.equal(t.api.pending,false);
+});
+test('switching stage or background mode discards an in-flight range image',async()=>{
+ for(const change of [t=>t.state.stage='sampling',t=>t.state.backgroundMode='auto']){
+  const t=harness();t.state.stage='range';t.timeline.active='background';const run=t.api.renderReferencePreview('background');change(t);t.complete(t.pending[0]);await run;assert.deepEqual(t.frames,[]);
+ }
+ const t=harness();t.state.stage='range';t.state.backgroundMode='auto';t.timeline.active='background';await t.api.renderReferencePreview('background');assert.equal(t.pending.length,0);
 });

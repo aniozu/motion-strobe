@@ -43,7 +43,7 @@ export function bindFrameNudges({buttons,getState,onChange,canChange=()=>true}){
  return {update(){const s=getState();for(const b of controls){const [low,high]=pointBounds(s,b.dataset.timePoint),v=s[b.dataset.timePoint];b.disabled=!canChange(b.dataset.timePoint,s)||(Number(b.dataset.nudge)<0?v<=low:v>=high);}}};
 }
 
-export function applyTimePoint(state,point,value,autoBackground,video){
+export function applyTimePoint(state,point,value,autoBackground,video,{seek=true}={}){
  value=Math.max(0,Math.min(state.count-1,Math.round(value)));
  if(point==='start'){
   state.start=Math.min(value,state.end-1);
@@ -53,6 +53,6 @@ export function applyTimePoint(state,point,value,autoBackground,video){
   state.end=Math.max(value,state.start+1);state.reference=Math.max(state.start,Math.min(state.end,state.reference));
  }else if(point==='reference')state.reference=Math.max(state.start,Math.min(state.end,value));
  else {state.background=value;autoBackground=false;}
- video.pause();video.currentTime=frameTime(state,state[point],true);
+ video.pause();if(seek)video.currentTime=frameTime(state,state[point],true);
  return autoBackground;
 }

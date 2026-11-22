@@ -17,7 +17,7 @@ import {frameTime,indexAtTime,analysisClock} from './frame-clock.js';
 import {GraphPanel} from './graph-panel.js';
 import {CalibrationEditor} from './calibration-editor.js';import {coordinateOrigin} from './calibration.js';import {installSamples} from './samples.js';import {framePlan} from './sampling.js';import {formatSeconds as fmt,setTimeDecimals} from './format.js';import {Timeline} from './timeline.js';import {bindFrameNudges,bindFrameInput,samplingLimits,applyTimePoint} from './time-controls.js';import {installContextHelp} from './context-help.js';import {CenterEditor} from './center-editor.js';import {gridOptions} from './annotations.js';import {GuideEditor} from './guide-editor.js';import {replaceFrameMark} from './tracking.js';import {coordinateTable,coordinateText} from './coordinates.js';
 installLanguagePicker();
-const $=id=>document.getElementById(id);const workerUrl=new URL('worker.js?v=1.23.44',import.meta.url);let worker=new Worker(workerUrl,{type:'module'});
+const $=id=>document.getElementById(id);const workerUrl=new URL('worker.js?v=1.23.45',import.meta.url);let worker=new Worker(workerUrl,{type:'module'});
 let preferences={interval:.1,resolution:960,timeDecimals:2,openingAnimation:true};try{preferences={...preferences,...JSON.parse(localStorage.getItem('motion-strobe-preferences')||'{}')};}catch{}
 if(!Number.isFinite(preferences.interval)||preferences.interval<=0)preferences.interval=.1;if(![720,960,1280].includes(preferences.resolution))preferences.resolution=960;
 preferences.timeDecimals=setTimeDecimals(preferences.timeDecimals);preferences.openingAnimation=preferences.openingAnimation!==false;
@@ -76,46 +76,51 @@ const syncVideoSpeed=()=>{$('videoSpeedValue').textContent=`×${$('videoSpeed').
 const setActions=enabled=>{for(const id of ['saveImage','createResultVideo','recreateResultVideo','shareImage','viewVideo','editCenters','showCoordinates','showGraphs','guideSettings'])$(id).disabled=!enabled;for(const id of ['saveVideo','shareVideo'])$(id).disabled=!enabled||!exportBlob;syncVideoSpeed();syncObjects();};
 const samplingSurface=new SamplingPreviewSurface($('video'));
 
-// A manual reference frame must use the same verified, intra-frame seek as the
-// extraction preview. Seeking directly to a timestamp boundary may present the
-// preceding frame even while the visible time field has already advanced.
+// Every manually selected point uses a verified image from inside its frame
+// interval. The selected point, frame index and stage identify the request.
 let referencePreviewAbort=null,referencePreviewSequence=0;
+let referencePreviewSelection=null;
 function cancelReferencePreview(){
  referencePreviewSequence++;
  referencePreviewAbort?.abort();
- referencePreviewAbort=null;
+ referencePreviewAbort=null;referencePreviewSelection=null;
 }
-async function renderReferencePreview(){
+async function renderReferencePreview(point='reference'){
  cancelReferencePreview();
- if(state.stage!=='sampling'||state.samplingPreviewMode!=='reference')return;
+ const stage=state.stage;
+ const selected=stage==='range'?(['start','end'].includes(point)||point==='background'&&state.backgroundMode==='manual'):stage==='sampling'&&point==='reference'&&state.samplingPreviewMode==='reference';
+ if(!selected)return;
+ const index=state[point],sequence=referencePreviewSequence,selection={point,index,stage};
+ referencePreviewSelection=selection;
  const video=$('video');
  if(!video.getAttribute('src')||video.readyState===0)return;
- const index=state.reference,sequence=referencePreviewSequence,controller=new AbortController();
+ const controller=new AbortController();
  referencePreviewAbort=controller;displayedPreviewInfo=null;syncPreviewFrame();
  let prepared=null;
+ const current=()=>state.stage===stage&&state[point]===index&&(stage==='range'?timeline.active===point&&(point!=='background'||state.backgroundMode==='manual'):state.samplingPreviewMode==='reference');
  try{
   prepared=await samplingSurface.prepare(index,previewFrameTarget(state,index,video.duration),{signal:controller.signal});
-  if(prepared&&!controller.signal.aborted&&sequence===referencePreviewSequence&&state.stage==='sampling'&&state.samplingPreviewMode==='reference'&&state.reference===index){prepared.present();}
+  if(prepared&&!controller.signal.aborted&&sequence===referencePreviewSequence&&current())prepared.present();
  }catch{}
  finally{
   prepared?.dispose?.();
   if(sequence===referencePreviewSequence){
    referencePreviewAbort=null;
-   if(samplingSurface.frame?.index!==index)samplingSurface.hide();
+   if(!current()||samplingSurface.frame?.index!==index){samplingSurface.hide();referencePreviewSelection=null;}
    syncPreviewFrame();
   }
  }
 }
 
 const samplingPreview=new SamplingPreview({prepare:(index,options)=>samplingSurface.prepare(index,previewFrameTarget(state,index,$('video').duration),options),onPresent:()=>{syncPreviewFrame();sourcePlayer.update();},onChange:running=>{if(running){cancelReferencePreview();state.samplingPreviewMode='extract';samplingSurface.hold();}$('samplingPreviewAction').textContent=running?'❚❚':'▶';$('toggleSamplingPreview').setAttribute('aria-label',running?'抽出プレビューを停止':'抽出プレビューを再開');$('toggleSamplingPreview').setAttribute('aria-pressed',String(running));syncPreviewFrame();}});
-const timeline=new Timeline($('timeline'),{getState:()=>({...state,indices:framePlan(state.start,state.end,state.reference,state.step,1,{...state,variable:state.variableTiming})}),onChange:setPoint,onActive:point=>{document.querySelectorAll('[data-point]').forEach(b=>{b.classList.toggle('active',b.dataset.point===point);b.setAttribute('aria-pressed',String(b.dataset.point===point));});if(state.stage!=='result')seekTo(state[point]);}});
+const timeline=new Timeline($('timeline'),{getState:()=>({...state,indices:framePlan(state.start,state.end,state.reference,state.step,1,{...state,variable:state.variableTiming})}),onChange:setPoint,onActive:point=>{document.querySelectorAll('[data-point]').forEach(b=>{b.classList.toggle('active',b.dataset.point===point);b.setAttribute('aria-pressed',String(b.dataset.point===point));});if(state.stage!=='result')seekTo(state[point],point);}});
 const frameNudges=bindFrameNudges({buttons:document.querySelectorAll('[data-time-point]'),getState:()=>state,canChange:(point,s)=>point!=='background'||s.backgroundMode==='manual',onChange:(point,value)=>{timeline.setActive(point);setPoint(point,value);}});
 function clearExport(){if(state.stage==='result')showResultView('photo');exportBlob=null;exportSettings=null;if(exportUrl){$('exportPreview').pause();$('exportPreview').removeAttribute('src');$('exportPreview').load();URL.revokeObjectURL(exportUrl);exportUrl=null;}activeView='photo';$('saveVideo').disabled=true;$('shareVideo').disabled=true;}
 function showResultView(view){activeView=view;$('photoSaveActions').hidden=view!=='photo';$('videoSaveActions').hidden=view!=='video';$('video').hidden=true;$('resultImage').hidden=view!=='photo';$('exportPreview').hidden=view!=='video';$('viewPhoto').classList.toggle('active',view==='photo');$('viewVideo').classList.toggle('active',view==='video');syncVideoSpeed();if(view==='photo')$('exportPreview').pause();}
 function videoSettingsKey(){return JSON.stringify([state.start,state.end,state.reference,state.step,state.factor,Number($('sensitivity').value),$('resultLabels').checked,guide,(stashObject(),objectTracks.map(o=>o.anchors)),calibration,preferences.timeDecimals,Number($('videoSpeed').value),$('shutterSound').checked]);}
 function createVideo({force=false}={}){if(!resultBlob||task)return;if(!force&&exportBlob&&exportSettings===videoSettingsKey()){showResultView('video');return;}hideError();$('exportPreview').pause();suspendPreview();busy('動画を準備中','export-video');setActions(false);post({type:'export-video',first:state.start,last:state.end,reference:state.reference,step:state.step,factor:state.factor,sensitivity:Number($('sensitivity').value),labels:$('resultLabels').checked,playbackSpeed:Number($('videoSpeed').value),shutterSound:$('shutterSound').checked,...annotationSettings()});}
 function invalidateResult(){clearDetectionRun();clearExport();clearTimeout(debounce);requestId++;if(task==='quick-compose'){worker.postMessage({type:'cancel',id:-1});task=null;}resultBlob=null;setActions(false);document.querySelector('.steps [data-stage="result"]').disabled=true;}
-function setPoint(point,value){cancelReferencePreview();samplingPreview.stop();samplingSurface.hide();if(state.stage==='sampling'&&point==='reference')state.samplingPreviewMode='reference';if(point==='background')state.backgroundMode='manual';invalidateResult();backgroundAuto=applyTimePoint(state,point,value,backgroundAuto,$('video'));extracted=false;updateFields();if(state.stage==='range')timeline.ensurePointsVisible();timeline.draw();if(state.stage==='sampling'&&point==='reference')void renderReferencePreview();}
+function setPoint(point,value){cancelReferencePreview();samplingPreview.stop();samplingSurface.hide();if(state.stage==='sampling'&&point==='reference')state.samplingPreviewMode='reference';if(point==='background')state.backgroundMode='manual';invalidateResult();backgroundAuto=applyTimePoint(state,point,value,backgroundAuto,$('video'),{seek:false});extracted=false;updateFields();if(state.stage==='range')timeline.ensurePointsVisible();timeline.draw();void renderReferencePreview(point);}
 function syncBackgroundMode(){
  const auto=state.backgroundMode==='auto';$('backgroundMode').checked=auto;$('manualBackgroundControls').hidden=false;$('manualBackgroundControls').setAttribute('aria-disabled',String(auto));$('backgroundTime').disabled=auto;
  for(const button of document.querySelectorAll('[data-point="background"]'))button.hidden=auto||state.stage==='sampling';
@@ -128,7 +133,8 @@ function setBackgroundMode(mode){
 }
 function syncPreviewFrame(){
  const video=$('video'),area=video.closest('.view-area'),position=samplingPreview.indices.indexOf(samplingSurface.frame?.index);
- const info=state.stage==='sampling'&&state.samplingPreviewMode==='reference'?(referencePreviewAbort===null&&samplingSurface.active&&samplingSurface.frame?.index===state.reference?{role:'reference'}:null):state.stage==='sampling'&&state.samplingPreviewMode==='extract'&&samplingSurface.active?(position>=0?{role:'extract',position:position+1,total:samplingPreview.indices.length}:displayedPreviewInfo):stablePreviewFrameInfo(state,timeline.active,video,samplingPreview.indices,displayedPreviewInfo),role=info?.role;
+ const selected=referencePreviewSelection,point=state.stage==='range'?timeline.active:'reference';
+ const info=state.stage==='range'||state.stage==='sampling'&&state.samplingPreviewMode==='reference'?(referencePreviewAbort===null&&selected?.stage===state.stage&&selected.point===point&&selected.index===state[point]&&samplingSurface.active&&samplingSurface.frame?.index===selected.index?{role:point}:null):state.stage==='sampling'&&state.samplingPreviewMode==='extract'&&samplingSurface.active?(position>=0?{role:'extract',position:position+1,total:samplingPreview.indices.length}:displayedPreviewInfo):stablePreviewFrameInfo(state,timeline.active,video,samplingPreview.indices,displayedPreviewInfo),role=info?.role;
  displayedPreviewInfo=info;area.dataset.previewFrame=role||'';$('previewFrameLabel').hidden=!role;
  $('previewFrameTitle').textContent=role==='start'?'開始コマ':role==='end'?'終了コマ':role==='reference'?'基準コマ':role==='background'?'背景コマ':role==='extract'?'抽出するコマ':'';
  $('previewFrameCount').hidden=role!=='extract';$('previewFrameCount').textContent=role==='extract'?`${info.position}/${info.total}`:'';
@@ -145,7 +151,8 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pagehide',()=>samplingPreview.stop());
 
 $('helpButton').onclick=()=>window.open(guideSectionUrl(document,state.stage,$('home').hidden), '_blank', 'noopener');
-function seekTo(index){cancelReferencePreview();samplingPreview.stop();samplingSurface.hide();if(state.stage==='sampling')state.samplingPreviewMode='reference';restorePreview();$('video').pause();$('video').currentTime=frameTime(state,index,true);syncPreviewFrame();if(state.stage==='sampling'&&index===state.reference)void renderReferencePreview();}
+function seekTo(index,point=state.stage==='sampling'?'reference':timeline.active){cancelReferencePreview();samplingPreview.stop();samplingSurface.hide();if(state.stage==='sampling')state.samplingPreviewMode='reference';restorePreview();$('video').pause();syncPreviewFrame();void renderReferencePreview(point);}
+$('video').addEventListener('loadeddata',()=>{const selection=referencePreviewSelection;if(selection&&referencePreviewAbort===null&&!samplingSurface.active)void renderReferencePreview(selection.point);});
 function updateFields(){syncBackgroundMode();$('stabilizeCamera').checked=!!state.stabilize;state.step=Math.max(1,Math.min(samplingLimits(state).frames,state.step));for(const [id,key] of [['startTime','start'],['endTime','end'],['backgroundTime','background'],['referenceTime','reference']]){$(id).value=fmt(frameTime(state,state[key]));$(id).max=String(frameTime(state,state.count-1));}
  referenceInput.update();timeInputFits.forEach(binding=>binding.update());$('intervalSeconds').max=String(samplingLimits(state).seconds);$('intervalSeconds').min=String(state.period);$('intervalSeconds').value=fmt(state.step*state.period);$('samplingPanel').style.setProperty('--interval-width',`${Math.max(2.8,$('intervalSeconds').value.length+.4)}ch`);$('samplingPanel').style.setProperty('--sampling-value-size',`${Math.max(16,Math.min(22,160/($('intervalSeconds').value.length+1)))}px`);$('samplingRate').value=(1/(state.step*state.period)).toFixed(1);$('frameStep').max=samplingLimits(state).frames;$('frameStep').value=state.step;$('actualInterval').textContent=`${state.step}コマごと`;$('fpsBadge').textContent=`動画: ${Number(state.fps.toFixed(3))} fps`;
  $('actualInterval').textContent+=state.variableTiming?' · 実際の時刻を使用':'';
@@ -177,7 +184,7 @@ async function handleWorkerMessage({data:m}){
  if(m.type==='diagnostic')return;
  if(m.type==='progress'){if(task==='load')armLoadStall();if(task==='auto-detect'&&$('centerDialog').open)centerEditor.progress(m);else if(task!=='quick-compose'){setProgress(m.stage,task==='load'&&sampleProgress ? .75+m.value*.25 : m.value);}}
  if(m.type==='loaded'){
-  clearDetectionRun();samplingPreview.stop();samplingRangeKey=null;displayedPreviewInfo=null;trackUsage('video_load',{input_source:inputSource});clearExport();previewDetached=false;anchors=[];centerData=null;seedIndex=null;calibration=null;activeObject=0;objectTracks=[{id:0,anchors,seedIndex:null,summary:null},{id:1,anchors:[],seedIndex:null,summary:null}];resultData=null;$('resultLabels').checked=false;$('photoRate').checked=false;$('shutterSound').checked=false;const x=m.metadata;sourceClock={...x,variable:x.variableTiming};state={stage:'range',...x,start:0,end:x.count-1,background:0,backgroundMode:'auto',stabilize:!!sampleSelection?.stabilize,stabilizationSummary:null,reference:0,step:Math.max(1,Math.round((sampleSelection?.interval||preferences.interval)/x.period)),factor:1};if(sampleSelection){state.start=Math.min(x.count-2,indexAtTime(state,sampleSelection.start));state.end=Math.min(x.count-1,Math.max(state.start+1,indexAtTime(state,sampleSelection.end)));state.background=Math.min(state.start,indexAtTime(state,sampleSelection.background));state.reference=state.start;backgroundAuto=false;if(sampleSelection.stabilize)$('videoSpeed').value='0.25';}else backgroundAuto=true;extracted=false;resultBlob=null;setActions(false);if(videoUrl)URL.revokeObjectURL(videoUrl);videoUrl=URL.createObjectURL(sourceFile);$('video').onloadedmetadata=()=>{if(state.stage==='range')seekTo(state.start);else if(state.stage==='sampling'){if(samplingPreview.running){samplingPreview.stop();samplingPreview.start();}else if(state.samplingPreviewMode==='reference')seekTo(state.reference);}};$('video').src=videoUrl;$('home').hidden=true;$('editor').hidden=false;document.body.classList.add('is-editing');finishBusy();stage('range');timeline.reset();$('goSampling').focus();
+  clearDetectionRun();samplingPreview.stop();samplingRangeKey=null;displayedPreviewInfo=null;trackUsage('video_load',{input_source:inputSource});clearExport();previewDetached=false;anchors=[];centerData=null;seedIndex=null;calibration=null;activeObject=0;objectTracks=[{id:0,anchors,seedIndex:null,summary:null},{id:1,anchors:[],seedIndex:null,summary:null}];resultData=null;$('resultLabels').checked=false;$('photoRate').checked=false;$('shutterSound').checked=false;const x=m.metadata;sourceClock={...x,variable:x.variableTiming};state={stage:'range',...x,start:0,end:x.count-1,background:0,backgroundMode:'auto',stabilize:!!sampleSelection?.stabilize,stabilizationSummary:null,reference:0,step:Math.max(1,Math.round((sampleSelection?.interval||preferences.interval)/x.period)),factor:1};if(sampleSelection){state.start=Math.min(x.count-2,indexAtTime(state,sampleSelection.start));state.end=Math.min(x.count-1,Math.max(state.start+1,indexAtTime(state,sampleSelection.end)));state.background=Math.min(state.start,indexAtTime(state,sampleSelection.background));state.reference=state.start;backgroundAuto=false;if(sampleSelection.stabilize)$('videoSpeed').value='0.25';}else backgroundAuto=true;extracted=false;resultBlob=null;setActions(false);if(videoUrl)URL.revokeObjectURL(videoUrl);videoUrl=URL.createObjectURL(sourceFile);$('video').onloadedmetadata=()=>{if(state.stage==='range')seekTo(state[timeline.active],timeline.active);else if(state.stage==='sampling'){if(samplingPreview.running){samplingPreview.stop();samplingPreview.start();}else if(state.samplingPreviewMode==='reference')seekTo(state.reference);}};$('video').src=videoUrl;$('home').hidden=true;$('editor').hidden=false;document.body.classList.add('is-editing');finishBusy();stage('range');timeline.reset();$('goSampling').focus();
  }else if(m.type==='extracted'){showStabilization(m.stabilization);extracted=true;if(replayActive)runNextReplay();else compose(true);
  }else if(m.type==='composed'){
   if(task==='compose')trackUsage('photo_create');
@@ -203,7 +210,7 @@ function resetWorker(){try{worker.terminate();}catch{}worker=new Worker(workerUr
 function armLoadStall(){clearTimeout(loadStallTimer);loadStallTimer=setTimeout(()=>{if(task!=='load')return;resetWorker();finishBusy();$('home').hidden=false;$('editor').hidden=true;document.body.classList.remove('is-editing');showError('動画の読み込みが停止しました。もう一度選び直してください。iPadでは写真・ファイル選択後の一時ファイルを安全なBlobに変換して再試行できます。');},20000);}
 bindWorker();
 $('chooseVideo').onclick=()=>$('fileInput').click();$('captureVideo').onclick=()=>$('cameraInput').click();for(const id of ['fileInput','cameraInput'])$(id).onchange=e=>{if(e.target.files[0]){inputSource=id==='cameraInput'?'camera':'file';load(e.target.files[0]);}e.target.value='';};
-installSamples({initialSampleId:new URLSearchParams(location.search).get('sample'),onChoose:async sample=>{trackUsage('sample_select',{sample_id:sample.id});inputSource='sample';try{busy('サンプルを読み込み中','demo');demoAbort=new AbortController();const blob=await downloadSample(sample.video+'?v=1.23.44',{signal:demoAbort.signal,expectedSize:sample.bytes,onProgress:p=>{if(task==='demo')setProgress('サンプルを読み込み中',p.value===null?null:p.value*.7);}});if(task!=='demo'||demoAbort.signal.aborted)return;await load(new File([blob],`${sample.title}.mp4`,{type:'video/mp4'}),sample.range,true);}catch(e){finishBusy();if(e.name!=='AbortError')showError('サンプルを読み込めませんでした。');}}});
+installSamples({initialSampleId:new URLSearchParams(location.search).get('sample'),onChoose:async sample=>{trackUsage('sample_select',{sample_id:sample.id});inputSource='sample';try{busy('サンプルを読み込み中','demo');demoAbort=new AbortController();const blob=await downloadSample(sample.video+'?v=1.23.45',{signal:demoAbort.signal,expectedSize:sample.bytes,onProgress:p=>{if(task==='demo')setProgress('サンプルを読み込み中',p.value===null?null:p.value*.7);}});if(task!=='demo'||demoAbort.signal.aborted)return;await load(new File([blob],`${sample.title}.mp4`,{type:'video/mp4'}),sample.range,true);}catch(e){finishBusy();if(e.name!=='AbortError')showError('サンプルを読み込めませんでした。');}}});
 
 $('cancelProcessing').onclick=()=>{if(task==='demo'){demoAbort?.abort();finishBusy();toast('処理をキャンセルしました。');}else post({type:'cancel'});};
 $('goSampling').onclick=()=>stage('sampling');$('backRange').onclick=()=>stage('range');document.querySelector('.steps [data-stage="range"]').onclick=()=>stage('range');document.querySelector('.steps [data-stage="sampling"]').onclick=()=>stage('sampling');document.querySelector('.steps [data-stage="result"]').onclick=()=>{if(resultBlob)stage('result');};
