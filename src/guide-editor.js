@@ -28,17 +28,21 @@ export class GuideEditor{
   this.$('guidePointScaleNumber').oninput=()=>{const input=this.$('guidePointScaleNumber');if(input.value!==''&&Number.isFinite(input.valueAsNumber))this.setPointScale(input.valueAsNumber,true);};
   this.$('guidePointScaleNumber').onchange=()=>this.update();
   this.$('guidePointScaleNumber').onblur=()=>this.update();
-  this.$('applyGuides').onclick=()=>{const settings={...this.draft};this.dialog.close();this.onApply(settings);};
+  this.$('applyGuides').onclick=()=>this.dialog.close();
   this.canvas.onpointerdown=e=>{if(!this.image||this.calibration||e.isPrimary===false)return;this.canvas.setPointerCapture(e.pointerId);this.drag={start:this.point(e),end:this.point(e),pointerId:e.pointerId};this.schedule();};
   this.canvas.onpointermove=e=>{if(this.drag?.pointerId!==e.pointerId)return;this.drag.end=this.point(e);const angle=angleFromStroke(this.drag.start,this.drag.end);if(angle!==null)this.setAngle(angle);};
   this.canvas.onpointerup=e=>{if(this.drag?.pointerId!==e.pointerId)return;const angle=angleFromStroke(this.drag.start,this.point(e));this.drag=null;if(angle!==null)this.setAngle(angle);else this.schedule();};
   this.canvas.onpointercancel=()=>{this.drag=null;this.schedule();};
   this.canvas.onlostpointercapture=()=>{this.drag=null;this.schedule();};
   this.canvas.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','Home'].includes(e.key))return;e.preventDefault();this.setAngle(e.key==='Home'?0:this.draft.angle+(e.key==='ArrowLeft'?-1:1)*(e.shiftKey?5:1));};
-  this.dialog.addEventListener('close',()=>{this.token++;this.drag=null;this.image=null;if(this.frame!==null)cancelAnimationFrame(this.frame);this.frame=null;});
+  this.dialog.addEventListener('close',()=>{
+   const settings=this.pendingApply?{...this.draft}:null;this.pendingApply=false;
+   this.token++;this.drag=null;this.image=null;if(this.frame!==null)cancelAnimationFrame(this.frame);this.frame=null;
+   if(settings)this.onApply(settings);
+  });
  }
  open({guide,centers,labels,calibration=null,objectId=0}){
-  this.token++;this.image=null;this.centers=centers;this.labels=labels;this.drag=null;
+  this.token++;this.image=null;this.centers=centers;this.labels=labels;this.drag=null;this.pendingApply=true;
   this.calibration=calibration;this.draft=gridOptions({...guide,enabled:true,angle:calibrationBasis(calibration,{width:calibration?.width,height:calibration?.height})?.angle??guide.angle});
   this.fitObject=fitMotionAngle(centers,objectId)?objectId:fitMotionAngle(centers,1-objectId)?1-objectId:objectId;this.updateFit();
   for(const id of ['guideAngle','guideAngleNumber','resetGuideAngle'])this.$(id).disabled=!!calibration;this.$('guideCalibrationNote').hidden=!calibration;this.$('guidePreviewStatus').textContent='画像を準備中…';this.$('guidePreviewStatus').hidden=false;this.canvas.setAttribute('aria-busy','true');

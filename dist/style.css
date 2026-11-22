@@ -659,3 +659,35 @@ html:not([lang=ja]) .guide-controls #guideLineModes{display:grid;grid-template-c
 .calibration-fit-controls>.check{display:flex;align-items:center;gap:7px;min-width:0;margin:0;font-size:13px;line-height:1.4;cursor:pointer}
 .calibration-fit-controls>.check input{flex:0 0 18px;width:18px;height:18px;margin:0}
 .calibration-fit-controls>.check span{min-width:0;overflow-wrap:break-word}
+
+
+/* Motion Strobe: object-position settings, grouped in the intended order. */
+.guide-dialog .guide-controls{display:flex;flex-direction:column;gap:12px;min-width:0}
+.guide-dialog .guide-section{min-width:0;padding:12px 13px;border:1px solid var(--line);border-radius:11px;background:#f8fafc}
+.guide-dialog .guide-section-grid .guide-objects{border:0;border-radius:0;padding:0;margin:0 0 12px;display:flex;flex-wrap:wrap;gap:8px 16px;min-width:0}
+.guide-dialog .guide-section-grid .guide-objects legend{font-size:14px;font-weight:650;padding:0;margin:0 0 5px;color:var(--ink)}
+.guide-dialog .guide-section-grid .guide-line-heading{font-size:14px;font-weight:650;margin:0 0 8px;color:var(--ink)}
+.guide-dialog .guide-section-grid #guideLineModes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;min-width:0}
+.guide-dialog .guide-section-grid #guideLineModes button{min-width:0;min-height:34px;padding:6px 3px;font-size:13px;line-height:1.35;white-space:normal;overflow-wrap:break-word}
+html:not([lang=ja]) .guide-dialog .guide-section-grid #guideLineModes{grid-template-columns:repeat(2,minmax(0,1fr))}
+.guide-dialog .guide-section-angle .guide-angle-heading{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;min-width:0;font-weight:650}
+.guide-dialog .guide-section-angle .guide-angle-number{margin-left:auto;font-weight:400;flex-shrink:0;gap:4px}
+.guide-dialog .guide-section-angle .guide-angle-number input{width:68px;max-width:100%;min-height:31px;padding:4px 5px;font-size:16px;line-height:1.25}
+.guide-dialog .guide-section-angle .guide-angle-heading .small-tool{padding:5px 8px;min-height:31px;font-size:12px;white-space:normal}
+.guide-dialog .guide-section-angle #guideAngle{display:block;width:100%;margin:8px 0 9px}
+.guide-dialog .guide-section-angle .guide-fit{padding:10px 0 0;margin:10px 0 0;border:0;border-top:1px solid var(--line)}
+.guide-dialog .guide-section-points .guide-points{display:inline-flex;align-items:center;gap:7px;margin:0;font-weight:650;font-size:14px}
+.guide-dialog .guide-section-points .guide-point-size{margin:12px 0 0;gap:6px 12px}
+.guide-dialog .guide-section-points .guide-point-size-value input{font-size:14px}
+.guide-dialog .guide-section-appearance .guide-style{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.guide-dialog .guide-section-appearance .setting{margin:2px 0 10px}
+.guide-dialog .guide-section-appearance .guide-opacity{margin:4px 0 0}
+.guide-dialog .guide-section-appearance .guide-opacity input{width:100%}
+/* Keep the calibration help icon beside the button without clipping. */
+.graphs-dialog .coordinate-tools,.coordinates-dialog .coordinate-tools{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-width:0;max-width:100%;width:100%}
+.graphs-dialog .coordinate-tools>button:not(.help-small),.coordinates-dialog .coordinate-tools>button:not(.help-small){flex:0 1 auto;min-width:0;max-width:calc(100% - 30px);white-space:normal;overflow-wrap:break-word;line-height:1.35}
+.graphs-dialog .coordinate-tools>.help-small,.coordinates-dialog .coordinate-tools>.help-small{flex:0 0 24px;display:grid;place-items:center;width:24px;min-width:24px;max-width:24px;height:24px;min-height:24px;margin:0;padding:0;line-height:1}
+@media(max-width:679px) and (orientation:portrait){.guide-dialog .guide-controls{gap:9px}.guide-dialog .guide-section{padding:10px}.guide-dialog .guide-section-points .guide-point-size{margin-top:9px}}
+@media(max-height:600px) and (orientation:landscape){.guide-dialog .guide-controls{gap:8px}.guide-dialog .guide-section{padding:8px 10px}.guide-dialog .guide-section-angle .guide-angle-number input{font-size:15px;min-height:29px}}
+/* Keep Apply reachable without hiding the reordered settings. */
+.guide-dialog .guide-actions{position:sticky;bottom:0;z-index:2;margin-top:10px;padding:9px 0 3px;background:#fff;border-top:1px solid var(--line)}

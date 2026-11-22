@@ -43,25 +43,27 @@ function harness(){
  const applied=[],editor=new GuideEditor({onApply:x=>applied.push(x)}),guide=gridOptions({angle:0,points:false});editor.open({guide,centers:[{x:100,y:50,confidence:'manual'}],labels:false});
  return {editor,el,buttons,fitButtons,images,applied,guide,flush(){for(const [id,fn]of frames){frames.delete(id);fn();}}};
 }
-test('photo drag uses image coordinates, previews a draft, and applies only on request',()=>{
+test('photo drag uses image coordinates and closing applies the preview exactly once',()=>{
  const h=harness();h.editor.accept({blob:new Blob(['png']),size:{width:400,height:200}});h.images[0].onload();h.flush();
  const e=(x,y)=>({clientX:x,clientY:y,pointerId:1});h.el('guideCanvas').onpointerdown(e(30,30));h.el('guideCanvas').onpointermove(e(80,80));h.el('guideCanvas').onpointerup(e(80,80));assert.equal(h.editor.draft.angle,45);assert.equal(h.el('guideAngle').value,45);
  h.buttons[1].onclick();assert.equal(h.editor.draft.vertical,true);assert.equal(h.editor.draft.horizontal,false);assert.equal(h.buttons[1]['aria-pressed'],'true');assert.equal(h.guide.angle,0);assert.equal(h.applied.length,0);
  h.el('applyGuides').onclick();assert.equal(h.applied.length,1);assert.equal(h.applied[0].angle,45);assert.equal(h.applied[0].horizontal,false);assert.equal(h.applied[0].enabled,true);
+ h.el('guideDialog').close();assert.equal(h.applied.length,1);
 });
-test('slider, numeric input, reset and keyboard stay synchronized; closing discards changes',()=>{
+test('slider, numeric input, reset and keyboard stay synchronized; closing commits and ignores late images',()=>{
  const h=harness();h.el('guideAngle').value=-12.3;h.el('guideAngle').oninput();assert.equal(h.el('guideAngleNumber').value,-12.3);
  h.el('guideAngleNumber').value='8.5';h.el('guideAngleNumber').valueAsNumber=8.5;h.el('guideAngleNumber').oninput();assert.equal(h.editor.draft.angle,8.5);assert.equal(h.el('guideAngle').value,8.5);
  h.el('guideCanvas').onkeydown({key:'ArrowRight',shiftKey:true,preventDefault(){}});assert.equal(h.editor.draft.angle,13.5);h.el('resetGuideAngle').onclick();assert.equal(h.editor.draft.angle,0);
- h.editor.accept({blob:new Blob(['png']),size:{width:400,height:200}});h.el('guideDialog').close();h.images[0].onload();assert.equal(h.editor.image,null);assert.equal(h.applied.length,0);assert.equal(h.guide.angle,0);
+ h.el('guideAngleNumber').value='8.5';h.el('guideAngleNumber').valueAsNumber=8.5;h.el('guideAngleNumber').oninput();
+ h.editor.accept({blob:new Blob(['png']),size:{width:400,height:200}});h.el('guideDialog').close();h.images[0].onload();assert.equal(h.editor.image,null);assert.equal(h.applied.length,1);assert.equal(h.applied[0].angle,8.5);assert.equal(h.guide.angle,0);
 });
-test('object checkboxes remain a draft until applied and are restored when reopened',()=>{
+test('closing saves object checkboxes and reopening restores the saved settings',()=>{
  const h=harness();assert.equal(h.el('guideObject1').checked,true);assert.equal(h.el('guideObject2').checked,true);
  h.el('guideObject1').checked=false;h.el('guideObject1').oninput();assert.equal(h.editor.draft.object1,false);
- h.el('guideDialog').close();assert.equal(h.guide.object1,true);assert.equal(h.applied.length,0);
- h.editor.open({guide:h.guide,centers:[],labels:false});assert.equal(h.el('guideObject1').checked,true);
+ h.el('guideDialog').close();assert.equal(h.guide.object1,true);assert.equal(h.applied.length,1);assert.equal(h.applied[0].object1,false);
+ h.editor.open({guide:h.applied[0],centers:[],labels:false});assert.equal(h.el('guideObject1').checked,false);
  h.el('guideObject2').checked=false;h.el('guideObject2').oninput();h.el('applyGuides').onclick();
- assert.equal(h.applied[0].object1,true);assert.equal(h.applied[0].object2,false);
+ assert.equal(h.applied.length,2);assert.equal(h.applied[1].object1,false);assert.equal(h.applied[1].object2,false);
 });
 
 test('center size changes the dot and outline together while retaining measured coordinates and object filtering',()=>{
@@ -81,26 +83,26 @@ test('grid opacity applies to center fill and outline while time labels stay opa
   assert.deepEqual(painted,[['stroke',opacity],['fill',opacity],['stroke',opacity],['text-outline',1],['text',1]]);
  }
 });
-test('center-size slider and numeric draft synchronize, validate limits, cancel and apply independently of coordinates',()=>{
+test('center-size controls synchronize, validate limits and commit on close without changing coordinates',()=>{
  const h=harness(),centers=structuredClone(h.editor.centers);
  h.el('guidePoints').checked=true;h.el('guidePoints').oninput();assert.equal(h.el('guidePointScale').disabled,false);
  h.el('guidePointScale').value=5;h.el('guidePointScale').oninput();assert.equal(h.editor.draft.pointScale,5);assert.equal(h.el('guidePointScaleNumber').value,5);
  h.el('guidePointScaleNumber').value='2.7';h.el('guidePointScaleNumber').valueAsNumber=2.7;h.el('guidePointScaleNumber').oninput();assert.equal(h.editor.draft.pointScale,2.7);assert.equal(h.el('guidePointScale').value,2.7);
  h.el('guidePointScaleNumber').value='';h.el('guidePointScaleNumber').valueAsNumber=NaN;h.el('guidePointScaleNumber').oninput();assert.equal(h.editor.draft.pointScale,2.7);h.el('guidePointScaleNumber').onblur();assert.equal(h.el('guidePointScaleNumber').value,2.7);
  h.el('guidePointScaleNumber').value='99';h.el('guidePointScaleNumber').valueAsNumber=99;h.el('guidePointScaleNumber').oninput();h.el('guidePointScaleNumber').onchange();assert.equal(h.editor.draft.pointScale,5);assert.equal(h.el('guidePointScaleNumber').value,5);
- assert.deepEqual(h.editor.centers,centers);h.el('guideDialog').close();assert.equal(h.guide.pointScale,1);assert.equal(h.applied.length,0);
- h.editor.open({guide:h.guide,centers,labels:false});assert.equal(h.el('guidePointScale').value,1);
- h.el('guidePoints').checked=true;h.el('guidePoints').oninput();h.el('guidePointScale').value=5;h.el('guidePointScale').oninput();h.el('applyGuides').onclick();assert.equal(h.applied[0].pointScale,5);
+ assert.deepEqual(h.editor.centers,centers);h.el('guideDialog').close();assert.equal(h.guide.pointScale,1);assert.equal(h.applied.length,1);assert.equal(h.applied[0].pointScale,5);
+ h.editor.open({guide:h.applied[0],centers,labels:false});assert.equal(h.el('guidePointScale').value,5);
+ h.el('guidePoints').checked=true;h.el('guidePoints').oninput();h.el('guidePointScale').value=5;h.el('guidePointScale').oninput();h.el('applyGuides').onclick();assert.equal(h.applied.length,2);assert.equal(h.applied[1].pointScale,5);
  h.editor.open({guide:h.applied[0],centers,labels:false});assert.equal(h.el('guidePointScaleNumber').value,5);
 });
 
-test('motion-fit controls use one selected object and change only the angle draft until Apply',()=>{
+test('motion-fit controls use one selected object and commit its angle when closed',()=>{
  const h=harness(),centers=[{x:10,y:10,confidence:'manual',objectId:0},{x:40,y:40,confidence:'auto',objectId:0},{x:10,y:50,confidence:'manual',objectId:1},{x:40,y:35,confidence:'auto',objectId:1},{x:40,y:160,confidence:'uncertain',objectId:1}],original=structuredClone(centers);
  h.editor.open({guide:h.guide,centers,labels:false,objectId:1});assert.equal(h.editor.fitObject,1);assert.equal(h.fitButtons[1]['aria-pressed'],'true');assert.equal(h.fitButtons[0]['aria-pressed'],'false');assert.equal(h.el('fitGuideAngle').disabled,false);assert.equal(h.el('guideFitStatus').hidden,true);
  h.el('fitGuideAngle').onclick();assert.equal(h.editor.draft.angle,-26.6);assert.equal(h.el('guideAngleNumber').value,-26.6);assert.equal(h.el('guideFitStatus').hidden,true);assert.equal(h.guide.angle,0);assert.equal(h.applied.length,0);assert.deepEqual(centers,original);
  h.fitButtons[0].onclick();assert.equal(h.fitButtons[0]['aria-pressed'],'true');assert.equal(h.fitButtons[1]['aria-pressed'],'false');h.el('fitGuideAngle').onclick();assert.equal(h.editor.draft.angle,45);
- h.el('guideDialog').close();assert.equal(h.applied.length,0);h.editor.open({guide:h.guide,centers,labels:false});assert.equal(h.editor.draft.angle,0);
- h.el('fitGuideAngle').onclick();h.el('applyGuides').onclick();assert.equal(h.applied[0].angle,45);
+ h.el('guideDialog').close();assert.equal(h.applied.length,1);assert.equal(h.applied[0].angle,45);h.editor.open({guide:h.applied[0],centers,labels:false});assert.equal(h.editor.draft.angle,45);
+ h.el('fitGuideAngle').onclick();h.el('applyGuides').onclick();assert.equal(h.applied.length,2);assert.equal(h.applied[1].angle,45);
 });
 test('motion fit selects an available object, disables unmeasured or stationary paths and respects calibrated axes',()=>{
  const h=harness(),centers=[{x:10,y:10,confidence:'manual',objectId:1},{x:30,y:20,confidence:'auto',objectId:1}];

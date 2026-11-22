@@ -324,7 +324,6 @@
   "Existing marks and skipped frames are kept. Review uncertain or undetected frames afterward. The count below shows detected frames / total frames.": "會保留已有標記與略過的影格。完成後請檢查不確定或未偵測到的影格。下方顯示偵測影格數／總影格數。",
   "Choose object 1, object 2 or both, then set lines, center points, color, line thickness and opacity. Center point size can be adjusted from 0.2× to 5×.": "選擇物體 1、物體 2 或兩個物體，再設定線條、中心點、顏色、線寬與不透明度。中心點大小可設為 0.2× 到 5×。",
   "Set the angle by drawing on the image, entering a value or moving the slider. 0° is horizontal. If calibrated, change the axis direction in the calibration dialog.": "可在影像上畫線、輸入數值或移動滑桿來設定角度。0° 表示水平。已校正時，請在校正對話框中變更座標軸方向。",
-  "Apply updates the photo and video. Closing the dialog discards changes.": "「套用」會更新照片與影片。關閉對話框會捨棄變更。",
   "Convert pixel distances to meters and set the coordinate axes. Select Calibrate length and axes to open the controls.": "將像素距離換算為公尺，並設定座標軸。點選「校正長度與座標軸」開啟設定。",
   "Place A and B on two points in the image and enter their actual distance in meters. Choose whether the line defines the x- or y-axis.": "把 A、B 放在影像的兩個點上，輸入實際距離（公尺），並選擇這條線定義 x 軸還是 y 軸。",
   "Zoom or pan the image. Adjust the x-axis angle with a value, the slider or the image markers. Both objects share the origin: Object 1 in the first extracted frame.": "可縮放或平移影像，用數值、滑桿或影像標記調整 x 軸角度。兩個物體共用第一個擷取影格中的物體 1 作為原點。",
@@ -569,5 +568,6 @@
   "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "勾選「依運動方向調整角度」，使x軸與所選物體的運動方向對齊。取消勾選後，使用A、B兩點決定的軸方向。測量長度的兩點保持不動。",
   "Unit: ": "單位: ",
   "Turn on camera correction if you filmed without fixing the camera in place.": "如果拍攝時沒有固定相機，請開啟相機移動校正。",
-  "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "CSV 一律以小數點後六位儲存時間和座標。此設定控制畫面和影片中的時間顯示。"
+  "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "CSV 一律以小數點後六位儲存時間和座標。此設定控制畫面和影片中的時間顯示。",
+  "Closing this dialog automatically applies the settings to photos and videos.": "關閉此對話框時，設定會自動套用至照片和影片。"
 }

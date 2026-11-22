@@ -324,7 +324,6 @@
   "Existing marks and skipped frames are kept. Review uncertain or undetected frames afterward. The count below shows detected frames / total frames.": "会保留已有标记和跳过的帧。完成后请检查不确定或未检测到的帧。下方显示检测帧数／总帧数。",
   "Choose object 1, object 2 or both, then set lines, center points, color, line thickness and opacity. Center point size can be adjusted from 0.2× to 5×.": "选择物体 1、物体 2 或两个物体，再设置线条、中心点、颜色、线宽和不透明度。中心点大小可设为 0.2× 到 5×。",
   "Set the angle by drawing on the image, entering a value or moving the slider. 0° is horizontal. If calibrated, change the axis direction in the calibration dialog.": "可在图像上画线、输入数值或移动滑块来设置角度。0° 表示水平。已标定时，请在标定对话框中更改坐标轴方向。",
-  "Apply updates the photo and video. Closing the dialog discards changes.": "“应用”会更新照片和视频。关闭对话框会放弃更改。",
   "Convert pixel distances to meters and set the coordinate axes. Select Calibrate length and axes to open the controls.": "将像素距离换算为米，并设置坐标轴。点击“标定长度和坐标轴”打开设置。",
   "Place A and B on two points in the image and enter their actual distance in meters. Choose whether the line defines the x- or y-axis.": "把 A、B 放在图像的两个点上，输入实际距离（米），并选择这条线定义 x 轴还是 y 轴。",
   "Zoom or pan the image. Adjust the x-axis angle with a value, the slider or the image markers. Both objects share the origin: Object 1 in the first extracted frame.": "可缩放或平移图像，用数值、滑块或图像标记调整 x 轴角度。两个物体共用第一个提取帧中的物体 1 作为原点。",
@@ -569,5 +568,6 @@
   "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.": "勾选“按运动方向调整角度”，使x轴与所选物体的运动方向对齐。取消勾选后，使用A、B两点确定的轴方向。测量长度的两点保持不动。",
   "Unit: ": "单位: ",
   "Turn on camera correction if you filmed without fixing the camera in place.": "如果拍摄时没有固定相机，请开启相机运动校正。",
-  "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "CSV 始终以小数点后六位保存时间和坐标。此设置控制屏幕和视频中的时间显示。"
+  "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "CSV 始终以小数点后六位保存时间和坐标。此设置控制屏幕和视频中的时间显示。",
+  "Closing this dialog automatically applies the settings to photos and videos.": "关闭此对话框时，设置会自动应用到照片和视频。"
 }

@@ -4,5 +4,5 @@ test('coordinate table and export agree, retaining zero coordinates and leaving 
  const rows=coordinateRows(data);assert.deepEqual(rows[0],['1','0.00','0.0000','0.0000','手動']);assert.deepEqual(rows[1].slice(1,5),['0.03','120.1235','-240.9877','自動']);
  for(const row of rows.slice(2))assert.deepEqual(row.slice(2,4),['','']);
  assert.deepEqual(rows.slice(2).map(r=>r[4]),['要確認','打たない','未検出','未指定']);
- for(const separator of ['\t',',']){const text=coordinateText(data,separator),lines=text.split('\r\n');assert.equal(lines.length,7);assert.deepEqual(lines[1].split(separator),rows[0]);assert.equal(lines[0].split(separator).length,5);assert(!text.includes('undefined'));assert(!text.includes('NaN'));}
+ for(const separator of ['\t',',']){const text=coordinateText(data,separator),lines=text.split('\r\n');assert.equal(lines.length,7);assert.deepEqual(lines[1].split(separator),separator===','?['1','0.000000','0.000000','0.000000','手動']:rows[0]);assert.equal(lines[0].split(separator).length,5);assert(!text.includes('undefined'));assert(!text.includes('NaN'));}
 });

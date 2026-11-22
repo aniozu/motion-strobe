@@ -332,7 +332,6 @@
   "指定済みの位置と「なし」は保持します。「要確認」や未検出のコマは、検出後に修正してください。下の数値は検出済み枚数／総枚数です。": "Existing marks and skipped frames are kept. Review uncertain or undetected frames afterward. The count below shows detected frames / total frames.",
   "物体1・物体2を選び、線・中心点の表示と色・太さ・不透明度を設定します。": "Choose Object 1 and/or Object 2, then set the lines, center dots, color, thickness and opacity.",
   "角度は画像をなぞるか、数値・スライダーで指定します。0°は水平です。校正済みの場合は、校正画面で軸の向きを変更します。": "Set the angle by drawing on the image, entering a value or moving the slider. 0° is horizontal. If calibrated, change the axis direction in the calibration dialog.",
-  "「適用」で写真と動画に反映します。閉じると変更を破棄します。": "Apply updates the photo and video. Closing the dialog discards changes.",
   "画像上の距離をmに換算し、座標軸の向きを設定します。「長さ・軸を校正」で設定画面を開きます。": "Convert pixel distances to meters and set the coordinate axes. Select Calibrate length and axes to open the controls.",
   "点A・点Bを画像上の2点に合わせ、実際の距離をmで入力します。2点で決める軸をx軸・y軸から選びます。": "Place A and B on two points in the image and enter their actual distance in meters. Choose whether the line defines the x- or y-axis.",
   "画像は拡大・移動できます。x軸の角度は数値・スライダー・画像上の点で調整します。原点は物体1の最初の抽出コマの中心で、2物体共通です。": "Zoom or pan the image. Adjust the x-axis angle with a value, the slider or the image markers. Both objects share the origin: Object 1 in the first extracted frame.",
@@ -447,5 +446,6 @@
   "物体1・物体2を選び「動きに角度を合わせる」でx軸を運動に合わせます。長さを測る2点は動きません。「2点の向きに戻す」で元の向きに戻します。": "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.",
   "「動きに角度を合わせる」をチェックすると、選んだ物体の運動にx軸を合わせます。チェックを外すとA・Bで決めた軸の向きに戻ります。長さを測る2点は動きません。": "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.",
   "単位: ": "Unit: ",
-  "カメラを固定せずに撮影した場合は、補正をONにしてください。": "Turn on camera correction if you filmed without fixing the camera in place."
+  "カメラを固定せずに撮影した場合は、補正をONにしてください。": "Turn on camera correction if you filmed without fixing the camera in place.",
+  "閉じると、設定が写真と動画に自動で反映されます。": "Closing this dialog automatically applies the settings to photos and videos."
 }
