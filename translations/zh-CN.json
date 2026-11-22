@@ -569,5 +569,9 @@
   "Unit: ": "单位: ",
   "Turn on camera correction if you filmed without fixing the camera in place.": "如果拍摄时没有固定相机，请开启相机运动校正。",
   "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "CSV 始终以小数点后六位保存时间和坐标。此设置控制屏幕和视频中的时间显示。",
-  "Closing this dialog automatically applies the settings to photos and videos.": "关闭此对话框时，设置会自动应用到照片和视频。"
+  "Closing this dialog automatically applies the settings to photos and videos.": "关闭此对话框时，设置会自动应用到照片和视频。",
+  "Align two points to set the axes. Enter a distance only if needed.": "对齐两点以确定坐标轴方向。仅在需要时输入距离。",
+  "Distance between points (m, optional)": "两点间距离（m，选填）",
+  "Leave blank to keep pixel (px) units.": "留空时使用像素（px）单位。",
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "通过点A和点B设置坐标轴方向。输入距离时使用米，留空时使用像素。"
 }

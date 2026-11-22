@@ -12,7 +12,7 @@ export const graphTypes=[
 export function graphData(data={}){
  const basis=calibrationBasis(data.calibration,data.size),origin=coordinateOrigin(data);
  const measured=(data.centers||[]).filter(p=>['manual','auto'].includes(p.confidence)&&[p.x,p.y,p.time].every(Number.isFinite));
- const unit=basis?'m':'px';
+ const unit=basis?.unit||'px';
  if(!measured.length)return {points:[],unit,reason:'undetected',excluded:(data.centers||[]).length};
  if(!origin)return {points:[],unit,reason:'origin-missing',excluded:(data.centers||[]).length};
  const points=[];

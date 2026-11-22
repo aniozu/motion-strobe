@@ -569,5 +569,9 @@
   "Unit: ": "Unidade: ",
   "Turn on camera correction if you filmed without fixing the camera in place.": "Ative a correção de movimento da câmera se você gravou sem manter a câmera fixa.",
   "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "O CSV sempre salva os tempos e as coordenadas com seis casas decimais. Esta configuração controla a exibição do tempo na tela e nos vídeos.",
-  "Closing this dialog automatically applies the settings to photos and videos.": "Ao fechar esta janela, as configurações são aplicadas automaticamente às fotos e aos vídeos."
+  "Closing this dialog automatically applies the settings to photos and videos.": "Ao fechar esta janela, as configurações são aplicadas automaticamente às fotos e aos vídeos.",
+  "Align two points to set the axes. Enter a distance only if needed.": "Alinhe dois pontos para definir os eixos. Insira uma distância apenas se necessário.",
+  "Distance between points (m, optional)": "Distância entre os pontos (m, opcional)",
+  "Leave blank to keep pixel (px) units.": "Deixe em branco para manter a unidade em pixels (px).",
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Os pontos A e B definem os eixos. Insira uma distância para usar metros ou deixe em branco para usar pixels."
 }

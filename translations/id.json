@@ -569,5 +569,9 @@
   "Unit: ": "Satuan: ",
   "Turn on camera correction if you filmed without fixing the camera in place.": "Aktifkan koreksi gerakan kamera jika Anda merekam tanpa menempatkan kamera pada posisi tetap.",
   "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "CSV selalu menyimpan waktu dan koordinat dengan enam angka desimal. Pengaturan ini mengontrol tampilan waktu di layar dan dalam video.",
-  "Closing this dialog automatically applies the settings to photos and videos.": "Saat dialog ini ditutup, pengaturan otomatis diterapkan pada foto dan video."
+  "Closing this dialog automatically applies the settings to photos and videos.": "Saat dialog ini ditutup, pengaturan otomatis diterapkan pada foto dan video.",
+  "Align two points to set the axes. Enter a distance only if needed.": "Selaraskan dua titik untuk menentukan sumbu. Masukkan jarak hanya jika diperlukan.",
+  "Distance between points (m, optional)": "Jarak antara dua titik (m, opsional)",
+  "Leave blank to keep pixel (px) units.": "Kosongkan untuk tetap menggunakan satuan piksel (px).",
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Titik A dan B menentukan sumbu. Masukkan jarak untuk meter, atau kosongkan untuk piksel."
 }

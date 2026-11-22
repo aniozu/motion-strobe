@@ -447,5 +447,6 @@
   "「動きに角度を合わせる」をチェックすると、選んだ物体の運動にx軸を合わせます。チェックを外すとA・Bで決めた軸の向きに戻ります。長さを測る2点は動きません。": "Check Align angle with motion to align the x-axis with the selected object's motion. Uncheck it to use the axis defined by A and B. The two length markers stay in place.",
   "単位: ": "Unit: ",
   "カメラを固定せずに撮影した場合は、補正をONにしてください。": "Turn on camera correction if you filmed without fixing the camera in place.",
-  "閉じると、設定が写真と動画に自動で反映されます。": "Closing this dialog automatically applies the settings to photos and videos."
+  "閉じると、設定が写真と動画に自動で反映されます。": "Closing this dialog automatically applies the settings to photos and videos.",
+  "点A・点Bで軸の向きを設定します。距離を入力するとm単位、空欄ならpx単位で表示します。": "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels."
 }

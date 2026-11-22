@@ -569,5 +569,9 @@
   "Unit: ": "Единица: ",
   "Turn on camera correction if you filmed without fixing the camera in place.": "Включите коррекцию движения камеры, если при съёмке камера не была закреплена.",
   "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "В CSV время и координаты всегда сохраняются с шестью знаками после запятой. Эта настройка управляет отображением времени на экране и в видео.",
-  "Closing this dialog automatically applies the settings to photos and videos.": "При закрытии этого окна настройки автоматически применяются к фотографиям и видео."
+  "Closing this dialog automatically applies the settings to photos and videos.": "При закрытии этого окна настройки автоматически применяются к фотографиям и видео.",
+  "Align two points to set the axes. Enter a distance only if needed.": "Совместите две точки, чтобы задать оси. Вводите расстояние только при необходимости.",
+  "Distance between points (m, optional)": "Расстояние между точками (м, необязательно)",
+  "Leave blank to keep pixel (px) units.": "Оставьте поле пустым, чтобы сохранить пиксели (px).",
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Точки A и B задают оси. Введите расстояние для метров или оставьте поле пустым для пикселей."
 }

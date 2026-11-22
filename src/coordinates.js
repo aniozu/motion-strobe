@@ -11,17 +11,17 @@ export function coordinateRows(data={},options={}){
  const digits=options.coordinateDecimals??4,timeDigits=options.timeDecimals;
  const fixed=value=>(Math.abs(value)<.5*10**-digits?0:value).toFixed(digits);
  return centers.map((p,n)=>{
-  const pixels=physicalCoordinates(p,origin,null),meters=basis?physicalCoordinates(p,origin,basis):null;
+  const pixels=physicalCoordinates(p,origin,basis?.unit==='px'?basis:null),meters=basis?.unit==='m'?physicalCoordinates(p,origin,basis):null;
   const time=timeDigits===undefined?formatSeconds(p.time):formatSeconds(p.time,timeDigits);
   const row=[String(n+1),time,pixels?fixed(pixels.x):'',pixels?fixed(pixels.y):''];
-  if(basis)row.push(meters?fixed(meters.x):'',meters?fixed(meters.y):'');
+  if(basis?.unit==='m')row.push(meters?fixed(meters.x):'',meters?fixed(meters.y):'');
   row.push(coordinateStatus(p));
   return row;
  });
 }
 
 export function coordinateTable(data={},options={}){
- const calibrated=!!calibrationBasis(data.calibration,data.size),series=objectSeries(data),header=['コマ','時刻(s)'];
+ const calibrated=calibrationBasis(data.calibration,data.size)?.unit==='m',series=objectSeries(data),header=['コマ','時刻(s)'];
  for(const object of series){
   const prefix=series.length>1?`物体${object.id+1} `:'';
   header.push(`${prefix}x(px)`,`${prefix}y(px)`);

@@ -569,5 +569,9 @@
   "Unit: ": "Μονάδα: ",
   "Turn on camera correction if you filmed without fixing the camera in place.": "Ενεργοποιήστε τη διόρθωση κίνησης κάμερας αν τραβήξατε το βίντεο χωρίς σταθερή κάμερα.",
   "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "Τα CSV αποθηκεύουν πάντα τους χρόνους και τις συντεταγμένες με έξι δεκαδικά ψηφία. Αυτή η ρύθμιση ελέγχει την εμφάνιση του χρόνου στην οθόνη και στα βίντεο.",
-  "Closing this dialog automatically applies the settings to photos and videos.": "Κλείνοντας αυτό το παράθυρο, οι ρυθμίσεις εφαρμόζονται αυτόματα στις φωτογραφίες και τα βίντεο."
+  "Closing this dialog automatically applies the settings to photos and videos.": "Κλείνοντας αυτό το παράθυρο, οι ρυθμίσεις εφαρμόζονται αυτόματα στις φωτογραφίες και τα βίντεο.",
+  "Align two points to set the axes. Enter a distance only if needed.": "Ευθυγραμμίστε δύο σημεία για να ορίσετε τους άξονες. Εισαγάγετε απόσταση μόνο αν χρειάζεται.",
+  "Distance between points (m, optional)": "Απόσταση μεταξύ σημείων (m, προαιρετική)",
+  "Leave blank to keep pixel (px) units.": "Αφήστε κενό για να διατηρήσετε μονάδες pixel (px).",
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Τα σημεία A και B ορίζουν τους άξονες. Εισαγάγετε απόσταση για μέτρα ή αφήστε κενό για pixel."
 }

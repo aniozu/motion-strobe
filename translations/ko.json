@@ -569,5 +569,9 @@
   "Unit: ": "단위: ",
   "Turn on camera correction if you filmed without fixing the camera in place.": "카메라를 고정하지 않고 촬영했다면 카메라 움직임 보정을 켜세요.",
   "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.": "CSV에는 시간과 좌표가 항상 소수점 이하 여섯 자리까지 저장됩니다. 이 설정은 화면과 동영상에서 시간 표시를 제어합니다.",
-  "Closing this dialog automatically applies the settings to photos and videos.": "이 창을 닫으면 설정이 사진과 동영상에 자동으로 반영됩니다."
+  "Closing this dialog automatically applies the settings to photos and videos.": "이 창을 닫으면 설정이 사진과 동영상에 자동으로 반영됩니다.",
+  "Align two points to set the axes. Enter a distance only if needed.": "두 점을 맞춰 축의 방향을 정합니다. 필요한 경우에만 거리를 입력하세요.",
+  "Distance between points (m, optional)": "두 점 사이 거리(m, 선택 사항)",
+  "Leave blank to keep pixel (px) units.": "비워 두면 픽셀(px) 단위를 유지합니다.",
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "점 A와 B로 축의 방향을 정합니다. 거리를 입력하면 m 단위, 비워 두면 픽셀 단위로 표시합니다."
 }

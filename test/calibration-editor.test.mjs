@@ -3,8 +3,8 @@ function harness(){
  const elements=new Map(),buttons=['a','b'].map(p=>({dataset:{calibrationPoint:p},classList:{toggle(){}},setAttribute(){}})),fitButtons=[0,1].map(id=>({dataset:{calibrationFitObject:String(id)},classList:{toggle(){}},setAttribute(k,v){this[k]=v;}})),ctx={clearRect(){},save(){},restore(){},translate(){},scale(){},drawImage(){},setLineDash(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){},fillText(){}};
  const el=id=>{if(!elements.has(id))elements.set(id,{width:400,height:200,handlers:{},classList:{toggle(){}},setAttribute(){},querySelectorAll(selector){return selector==='[data-calibration-fit-object]'?fitButtons:buttons;},addEventListener(k,f){this.handlers[k]=f;},showModal(){this.open=true;},close(){this.open=false;this.handlers.close?.();},getContext(){return ctx;},getBoundingClientRect(){return {left:10,top:20,width:200,height:100};},setPointerCapture(){}});return elements.get(id);};globalThis.document={getElementById:el};const applied=[],cleared=[];const editor=new CalibrationEditor({onApply:x=>applied.push(x),onClear:()=>cleared.push(true)}),data={size:{width:400,height:200},centers:[{x:80,y:100,confidence:'manual'}]};editor.open({calibration:null,data});editor.image={};editor.update();return {editor,el,applied,cleared,fitButtons};
 }
-test('calibration requires a positive physical length, applies a copy, and stays a draft until applied',()=>{
- const h=harness();assert(h.el('applyCalibration').disabled);h.el('calibrationLength').value='.5';h.el('calibrationLength').oninput();assert.equal(h.el('applyCalibration').disabled,false);assert.equal(h.editor.basis().length,.5);
+test('calibration accepts optional physical length, applies a copy, and stays a draft until applied',()=>{
+ const h=harness();assert.equal(h.el('applyCalibration').disabled,false);assert.equal(h.editor.basis().unit,'px');h.el('calibrationLength').value='.5';h.el('calibrationLength').oninput();assert.equal(h.el('applyCalibration').disabled,false);assert.equal(h.editor.basis().length,.5);
  const c=h.el('calibrationCanvas');c.onpointerdown({clientX:60,clientY:70,pointerId:1});c.onpointermove({clientX:70,clientY:75,pointerId:1});c.onpointerup({clientX:70,clientY:75,pointerId:1});assert.deepEqual(h.editor.draft.a,{x:120,y:110});assert.equal(h.applied.length,0);
  h.el('calibrationAngle').value='30';h.el('calibrationAngle').oninput();assert(Math.abs(h.editor.angle()-30)<1e-8);h.el('applyCalibration').onclick();assert.equal(h.applied.length,1);assert.equal(h.applied[0].length,.5);assert.equal(h.el('calibrationDialog').open,false);
 });
@@ -61,9 +61,9 @@ test('motion checkbox switches between the selected trajectory and AB without mo
 test('checkbox finds available motion, blocks unusable objects and remains separate from length validity',()=>{
  const h=harness(),data={...motionData,objects:[{id:0,centers:[{x:1,y:1,confidence:'manual'},{x:1,y:1,confidence:'auto'},{x:80,y:10,confidence:'uncertain'}]},motionData.objects[1]]};
  h.editor.open({calibration:null,data,objectId:0});assert.equal(h.editor.fitObject,1);assert(h.el('fitCalibrationAngle').disabled);h.editor.image={};h.editor.update();assert.equal(h.el('fitCalibrationAngle').disabled,false);
- setMotion(h,true);assert(h.fitButtons[0].disabled);h.fitButtons[0].onclick();assert.equal(h.editor.fitObject,1);assert(h.el('applyCalibration').disabled);
+ setMotion(h,true);assert(h.fitButtons[0].disabled);h.fitButtons[0].onclick();assert.equal(h.editor.fitObject,1);assert.equal(h.el('applyCalibration').disabled,false);
  h.el('calibrationLength').value='.2';h.el('calibrationLength').oninput();assert.equal(h.el('applyCalibration').disabled,false);
- const fitted=h.editor.draft.axisAngle;h.el('calibrationSpan').value='50';h.el('calibrationSpan').oninput();near(h.editor.draft.axisAngle,fitted);near(h.editor.distance(),50);
+ const fitted=h.editor.draft.axisAngle;h.editor.draft.b={x:350,y:120};h.editor.update();near(h.editor.draft.axisAngle,fitted);near(h.editor.draft.length,.2);
  setMotion(h,false);h.el('calibrationAxis').value='y';h.el('calibrationAxis').onchange();near(h.editor.angle(),90);
  h.editor.open({calibration:null,data:{...data,objects:[data.objects[0]]}});h.editor.image={};h.editor.update();assert(h.el('fitCalibrationAngle').disabled);setMotion(h,true);assert.equal(h.el('fitCalibrationAngle').checked,false);assert.match(h.el('calibrationFitStatus').textContent,/2コマ/);
 });
@@ -72,4 +72,14 @@ test('unchecked motion follows edited AB points, while checked motion keeps the 
  setMotion(h,true);h.editor.draft.b={x:200,y:180};h.editor.update();near(h.editor.angle(),45);
  setMotion(h,false);near(h.editor.angle(),-Math.atan2(30,100)*180/Math.PI);h.el('applyCalibration').onclick();assert.equal(h.applied[0].axisAngle,undefined);assert.equal(h.applied[0].motionObject,undefined);
  h.editor.open({calibration:h.applied[0],data:motionData});assert.equal(h.el('fitCalibrationAngle').checked,false);
+});
+
+test('blank distance applies and reopens pixel axes, while zero or invalid distances cannot be applied',()=>{
+ const h=harness(),input=h.el('calibrationLength');h.el('calibrationAngleNumber').value='30';h.el('calibrationAngleNumber').oninput();
+ assert.equal(h.el('applyCalibration').disabled,false);h.el('applyCalibration').onclick();assert.equal(h.applied[0].length,null);
+ h.editor.open({calibration:h.applied[0],data:h.editor.data});h.editor.image={};h.editor.update();assert.equal(input.value,'');near(h.editor.angle(),30);
+ input.value='.5';input.oninput();assert.equal(h.editor.basis().unit,'m');input.value='';input.oninput();assert.equal(h.editor.basis().unit,'px');near(h.editor.angle(),30);
+ for(const value of ['0','-1','not-a-number']){input.value=value;input.oninput();assert(h.el('applyCalibration').disabled);}
+ input.value='';input.validity={badInput:true};input.oninput();assert(h.el('applyCalibration').disabled);
+ input.validity={badInput:false};input.oninput();assert.equal(h.el('applyCalibration').disabled,false);assert.equal(h.editor.basis().unit,'px');
 });

@@ -148,7 +148,6 @@
   "コピー": "Copy",
   "CSVを保存": "Save CSV",
   "2点を指定。点をドラッグして距離と軸の向きを調整": "Choose two image points. Drag them to set the distance and axis direction.",
-  "画像の2点を合わせて、実際の距離を入力。": "Place two points in the image and enter their actual separation.",
   "点A": "Point A",
   "点B": "Point B",
   "2点間の距離（m）": "Distance between points (m)",
@@ -261,5 +260,9 @@
   "軸の向きはグラフ・座標データの「軸と長さを校正」で変更します。": "Change the axis direction with Calibrate length and axes in Motion graphs or Coordinate data.",
   "グラフ・座標データの「軸と長さを校正」で、距離のm換算と軸の向きを設定します。": "Use Calibrate length and axes in Motion graphs or Coordinate data to convert distances to meters and set the axis direction.",
   "物体1・物体2を選び「動きに角度を合わせる」でx軸を運動に合わせます。長さを測る2点は動きません。「2点の向きに戻す」で元の向きに戻します。": "Choose Object 1 or Object 2 and Align angle with motion to align the x-axis with its motion. The length markers stay in place. Use the two-point direction restores the ruler direction.",
-  "CSVは時刻と座標を常に小数第6位まで保存します。この設定は画面・動画の時刻表示に適用されます。": "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos."
+  "CSVは時刻と座標を常に小数第6位まで保存します。この設定は画面・動画の時刻表示に適用されます。": "CSV always saves times and coordinates with 6 decimal places. This setting controls time labels on screen and in videos.",
+  "2点を合わせ、実際の距離をm単位で入力してください。": "Align two points and enter their real-world distance in meters.",
+  "2点を合わせて軸の向きを決めます。距離は必要に応じて入力してください。": "Align two points to set the axes. Enter a distance only if needed.",
+  "2点間の距離（m・任意）": "Distance between points (m, optional)",
+  "空欄の場合はpx単位で表示します。": "Leave blank to keep pixel (px) units."
 }
