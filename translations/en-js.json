@@ -448,5 +448,12 @@
   "単位: ": "Unit: ",
   "カメラを固定せずに撮影した場合は、補正をONにしてください。": "Turn on camera correction if you filmed without fixing the camera in place.",
   "閉じると、設定が写真と動画に自動で反映されます。": "Closing this dialog automatically applies the settings to photos and videos.",
-  "点A・点Bで軸の向きを設定します。距離を入力するとm単位、空欄ならpx単位で表示します。": "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels."
+  "点A・点Bで軸の向きを設定します。距離を入力するとm単位、空欄ならpx単位で表示します。": "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.",
+  "ストロボ写真": "Strobe photo",
+  "コマ送り": "Frame preview",
+  "プレビューを更新中…": "Updating preview…",
+  "プレビューを表示できません。「写真を作る」でお試しください。": "Preview unavailable. Try Create photo.",
+  "時間間隔を広げてください。": "Increase the interval.",
+  "プレビューを準備中": "Preparing preview",
+  "抽出コマ": "Frames to extract"
 }

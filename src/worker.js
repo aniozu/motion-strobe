@@ -1,3 +1,4 @@
+import {createPhotoPreview} from './photo-preview-worker.js';
 import {shutterAudioConfig} from './shutter-audio.js';
 import {decodeRange,runDecodeRecovery,DecodeFailure} from './decode-recovery.js';
 import {analysisClock,frameTime} from './frame-clock.js';
@@ -13,6 +14,7 @@ import {discoverObject} from './automatic-target.js';
 import {trackSelectedPoint} from './point-tracking.js';
 import {registerFrames} from './stabilization.js';
 let media,cache=new Map(),background,size,job=0,activeDecoder,activeEncoder,photoBase=null,stabilization=null;
+const photoPreview=createPhotoPreview({getMedia:()=>media,respond:message=>postMessage(message)});
 const yieldTurn=()=>new Promise(r=>setTimeout(r,0));
 function centersFor(m,marks=m.anchors||[]){
  const clock=analysisClock(media.clock,m.captureFps);
@@ -23,13 +25,14 @@ function tracksFor(m){
  return (m.objects||[{id:0,anchors:m.anchors||[]}]).map((object,n)=>({id:object.id??n,centers:centersFor(m,object.anchors||[])}));
 }
 self.onmessage=async({data:m})=>{
+ if(m.channel==='photo-preview')return photoPreview.handle(m);
  if(Number.isInteger(m.timeDecimals))setTimeDecimals(m.timeDecimals);
  const send=(type,data={})=>postMessage({type,id:m.id,...data});
  if(m.type==='cancel'){job++;if(activeDecoder?.state!=='closed')activeDecoder?.close();if(activeEncoder?.state!=='closed')activeEncoder?.close();send('cancelled');return;}
  const current=++job;
  try{
  if(m.type==='load'){
-  media=null;cache.clear();background=null;photoBase=null;stabilization=null;
+  photoPreview.cancel();media=null;cache.clear();background=null;photoBase=null;stabilization=null;
   if(typeof VideoDecoder==='undefined'||typeof OffscreenCanvas==='undefined')throw Error('このブラウザーは正確なコマ抽出に対応していません。Chrome、Edge、Safariを最新にしてお試しください。');
   const parsed=await parseVideo(m.file,p=>{if(job!==current)throw Error('キャンセル');send('progress',{stage:'動画を読み込み中',value:p*.9});});if(job!==current)return;
   if(!(await VideoDecoder.isConfigSupported(parsed.config)).supported)throw Error('この動画形式はブラウザーで処理できません。H.264形式のMP4でお試しください。');
@@ -47,12 +50,16 @@ self.onmessage=async({data:m})=>{
   const trackingSeeds=(m.trackingSeeds||[]).filter(index=>Number.isInteger(index)&&index>=0&&index<media.clock.ordered.length);
   const required=new Set([...targets,...backgroundTargets,...trackingSeeds,...(m.stabilize?[referenceIndex,fallbackReferenceIndex]:[])]);const rotated=media.rotation%180!==0;
   size=outputSize(rotated?media.track.video.height:media.track.video.width,rotated?media.track.video.width:media.track.video.height,required.size,m.maxDimension);
+  const previewFrames=photoPreview.takeFrames(size,media.rotation,required);
+  const needed=[...required].filter(index=>!previewFrames.has(index));
   const canvas=new OffscreenCanvas(size.width,size.height),ctx=canvas.getContext('2d',{willReadFrequently:true});
   const extracted=await runDecodeRecovery({media,operation:'コマ抽出',requested:{first:m.first+1,last:m.last+1,background:m.background+1,frames:targets.length},cancelled:()=>job!==current,
    onDiagnostic:diagnostics=>send('diagnostic',{diagnostics}),onRetry:(attempt,label)=>send('progress',{stage:`自動再試行 ${attempt}/3 · ${label}`,value:0}),
    run:async(strategy,diagnostic)=>{
-    cache.clear();ctx.clearRect(0,0,size.width,size.height);
-    await decodeRange({media,first:Math.min(...required),last:Math.max(...required),strategy,diagnostic,cancelled:()=>job!==current,
+    cache.clear();for(const [index,pixels] of previewFrames)cache.set(index,pixels);
+    if(!needed.length)return true;
+    ctx.clearRect(0,0,size.width,size.height);
+    await decodeRange({media,first:Math.min(...needed),last:Math.max(...needed),strategy,diagnostic,cancelled:()=>job!==current,
      setActive:decoder=>{if(decoder||job===current)activeDecoder=decoder;},
      onProgress:p=>send('progress',{stage:`画像を抽出中 ${cache.size}/${required.size}${diagnostic.attempt>1?` · 再試行${diagnostic.attempt}`:''}`,value:p*(m.stabilize?.8:.9)}),
      onFrame:(frame,index)=>{

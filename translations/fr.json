@@ -577,5 +577,13 @@
   "Align two points to set the axes. Enter a distance only if needed.": "Alignez deux points pour orienter les axes. Saisissez une distance uniquement si nécessaire.",
   "Distance between points (m, optional)": "Distance entre les points (m, facultatif)",
   "Leave blank to keep pixel (px) units.": "Laissez vide pour conserver les pixels (px).",
-  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Les points A et B définissent les axes. Saisissez une distance pour les mètres, ou laissez vide pour les pixels."
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Les points A et B définissent les axes. Saisissez une distance pour les mètres, ou laissez vide pour les pixels.",
+  "Strobe photo preview": "Aperçu de la photo stroboscopique",
+  "Preview display": "Affichage de l’aperçu",
+  "Strobe photo": "Photo stroboscopique",
+  "Frame preview": "Aperçu image par image",
+  "Updating preview…": "Mise à jour de l’aperçu…",
+  "Preview unavailable. Try Create photo.": "Aperçu indisponible. Essayez Créer une photo.",
+  "Increase the interval.": "Augmentez l’intervalle.",
+  "Preparing preview": "Préparation de l’aperçu"
 }

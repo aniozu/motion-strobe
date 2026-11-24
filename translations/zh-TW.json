@@ -573,5 +573,13 @@
   "Align two points to set the axes. Enter a distance only if needed.": "對齊兩點以決定座標軸方向。僅在需要時輸入距離。",
   "Distance between points (m, optional)": "兩點間距離（m，選填）",
   "Leave blank to keep pixel (px) units.": "留空時使用像素（px）單位。",
-  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "透過點A和點B設定座標軸方向。輸入距離時使用公尺，留空時使用像素。"
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "透過點A和點B設定座標軸方向。輸入距離時使用公尺，留空時使用像素。",
+  "Strobe photo preview": "頻閃照片預覽",
+  "Preview display": "預覽顯示",
+  "Strobe photo": "頻閃照片",
+  "Frame preview": "逐格預覽",
+  "Updating preview…": "正在更新預覽…",
+  "Preview unavailable. Try Create photo.": "無法顯示預覽，請嘗試建立照片。",
+  "Increase the interval.": "請增大時間間隔。",
+  "Preparing preview": "正在準備預覽"
 }

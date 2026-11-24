@@ -366,3 +366,32 @@ test('resampling reuses an off-grid seed for center and selected-point tracking 
   const result=messages.at(-1);assert.equal(result.type,'auto-detected',JSON.stringify(result));assert.deepEqual(result.marks.map(mark=>mark.index),[2,6,10,14,18]);assert.deepEqual(result.marks.find(mark=>mark.index===10),fixed);assert.deepEqual(result.marks.find(mark=>mark.index===14),skip);assert.equal(decoded.length,packets);
  }
 });
+
+
+test('preview shares the loaded media and hands exact matching frames to the final extractor',async()=>{
+ const file=new Blob([await readFile(new URL('./fixtures/projectile.mp4',import.meta.url))]);
+ const base={first:1,last:50,reference:13,step:6,background:0,backgroundMode:'auto',maxDimension:480};
+ const changed={...base,step:5,reference:14};
+ const compose={...changed,factor:1,sensitivity:30,labels:false,grid:{enabled:false},objects:[{id:0,anchors:[]}]};
+ await send({type:'load',file,id:99001});assert.equal(messages.at(-1).type,'loaded');
+ await send({type:'extract',...changed,id:99002});assert.equal(messages.at(-1).type,'extracted');
+ await send({type:'compose',...compose,id:99003});const baseline=messages.at(-1);assert.equal(baseline.type,'composed');
+ let reads=0;
+ const countedSource={size:file.size,slice:(...args)=>{reads++;return file.slice(...args);}};
+ await send({type:'load',file:countedSource,id:99004});assert.equal(messages.at(-1).type,'loaded');
+ const initialReads=reads;assert(initialReads>0);
+ const preview=(settings,id)=>send({channel:'photo-preview',type:'render',...settings,id});
+ await preview(base,99005);const initial=messages.at(-1);assert.equal(initial.type,'composed');assert.equal(Math.max(initial.size.width,initial.size.height),480);assert.equal(initial.stats.decoded,true);
+ const packets=decoded.length;
+ await preview(changed,99006);const fast=messages.at(-1);assert.equal(fast.type,'composed');assert.equal(fast.stats.decoded,false);assert.equal(fast.stats.reusedBackground,true);assert.equal(decoded.length,packets);
+ assert.deepEqual(fast.indices,[4,9,14,19,24,29,34,39,44,49]);
+ await send({type:'extract',...changed,id:99007});assert.equal(messages.at(-1).type,'extracted');assert.equal(decoded.length,packets);assert.equal(reads,initialReads);
+ await send({type:'compose',...compose,id:99008});const saved=messages.at(-1);assert.equal(saved.type,'composed');
+ const hash=async blob=>createHash('sha256').update(Buffer.from(await blob.arrayBuffer())).digest('hex');
+ assert.equal(await hash(fast.blob),await hash(saved.blob));assert.equal(await hash(saved.blob),await hash(baseline.blob));
+ await preview(changed,99009);assert.equal(messages.at(-1).stats.decoded,true);
+ const highPackets=decoded.length;
+ await send({type:'extract',...changed,maxDimension:960,id:99010});assert.equal(messages.at(-1).type,'extracted');
+ assert.equal(Math.max(messages.at(-1).size.width,messages.at(-1).size.height),960);assert(decoded.length>highPackets);assert.equal(reads,initialReads);
+ await preview(changed,99011);await send({type:'load',file,id:99012});await preview(changed,99013);assert.equal(messages.at(-1).stats.decoded,true);
+});

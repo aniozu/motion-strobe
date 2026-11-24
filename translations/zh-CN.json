@@ -573,5 +573,13 @@
   "Align two points to set the axes. Enter a distance only if needed.": "对齐两点以确定坐标轴方向。仅在需要时输入距离。",
   "Distance between points (m, optional)": "两点间距离（m，选填）",
   "Leave blank to keep pixel (px) units.": "留空时使用像素（px）单位。",
-  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "通过点A和点B设置坐标轴方向。输入距离时使用米，留空时使用像素。"
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "通过点A和点B设置坐标轴方向。输入距离时使用米，留空时使用像素。",
+  "Strobe photo preview": "频闪照片预览",
+  "Preview display": "预览显示",
+  "Strobe photo": "频闪照片",
+  "Frame preview": "逐帧预览",
+  "Updating preview…": "正在更新预览…",
+  "Preview unavailable. Try Create photo.": "无法显示预览，请尝试创建照片。",
+  "Increase the interval.": "请增大时间间隔。",
+  "Preparing preview": "正在准备预览"
 }

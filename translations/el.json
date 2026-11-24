@@ -573,5 +573,13 @@
   "Align two points to set the axes. Enter a distance only if needed.": "Ευθυγραμμίστε δύο σημεία για να ορίσετε τους άξονες. Εισαγάγετε απόσταση μόνο αν χρειάζεται.",
   "Distance between points (m, optional)": "Απόσταση μεταξύ σημείων (m, προαιρετική)",
   "Leave blank to keep pixel (px) units.": "Αφήστε κενό για να διατηρήσετε μονάδες pixel (px).",
-  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Τα σημεία A και B ορίζουν τους άξονες. Εισαγάγετε απόσταση για μέτρα ή αφήστε κενό για pixel."
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Τα σημεία A και B ορίζουν τους άξονες. Εισαγάγετε απόσταση για μέτρα ή αφήστε κενό για pixel.",
+  "Strobe photo preview": "Προεπισκόπηση στροβοσκοπικής φωτογραφίας",
+  "Preview display": "Προβολή προεπισκόπησης",
+  "Strobe photo": "Στροβοσκοπική φωτογραφία",
+  "Frame preview": "Προεπισκόπηση καρέ",
+  "Updating preview…": "Ενημέρωση προεπισκόπησης…",
+  "Preview unavailable. Try Create photo.": "Η προεπισκόπηση δεν είναι διαθέσιμη. Δοκιμάστε τη δημιουργία φωτογραφίας.",
+  "Increase the interval.": "Αυξήστε το διάστημα.",
+  "Preparing preview": "Προετοιμασία προεπισκόπησης"
 }

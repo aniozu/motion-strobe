@@ -10,6 +10,7 @@ function harness(objects){
   let state={count:100,start:2,end:20,reference:2,step:4,period:1/60,background:0,backgroundMode:'auto',factor:1,stage:'sampling'},objectTracks=structuredClone(objects),activeObject=0,anchors=objectTracks[0].anchors,seedIndex=objectTracks[0].seedIndex,centerData,resultData,task,requestId=0,resultBlob,resultUrl,debounce;
   let pendingDetectionResults=[],replayQueue=[],replayActive=false,extracted=false;
   const posts=[],popups=[],preferences={resolution:960},guide={},calibration=null,URL={createObjectURL:()=> 'blob:result',revokeObjectURL(){}};
+  const livePhotoPreview={cancel(){}};
   const centerEditor={setBusy(){},showDetectionResults:results=>popups.push(results)};
   const post=m=>posts.push({...m,id:++requestId}),hideError=()=>{},clearExport=()=>{},suspendPreview=()=>{},setActions=()=>{},trackUsage=()=>{};
   const busy=(name,kind)=>{task=kind;},finishBusy=()=>{task=null;},stage=next=>{state.stage=next;};

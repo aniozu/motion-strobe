@@ -58,5 +58,11 @@ test('native canvas pipeline preserves the stabilized motion, background, tracki
  const retainedSeed=blueCenter(await decodePng(messages.at(-1).blob));assert(retainedSeed);assert(Math.hypot(mark.x-retainedSeed.x,mark.y-retainedSeed.y)<4);
  await send({type:'auto-detect',...resampled,seedIndex:22,anchors:[mark],replay:true,id:14});const replay=messages.at(-1);assert.equal(replay.type,'auto-detected',JSON.stringify(replay));
  assert.deepEqual(replay.marks.map(m=>m.index),[28,34,40,46,52,58,64,70,76,82,88]);assert(replay.marks.filter(m=>m.mode==='center'&&!m.uncertain).length>=8);
+ // The fast preview must also preserve camera correction at the same size.
+ const previewSettings={...settings,maxDimension:320,stabilize:true};
+ await send({type:'extract',...previewSettings,id:901});assert.equal(messages.at(-1).type,'extracted');
+ await send({type:'compose',...previewSettings,id:902});const previewExpected=await decodePng(messages.at(-1).blob);
+ await send({channel:'photo-preview',type:'render',...previewSettings,id:903});
+ const fast=messages.at(-1);assert.equal(fast.type,'composed');assert.equal(hash(await decodePng(fast.blob)),hash(previewExpected),'preview must match camera-corrected production pixels before lossy encoding');
  t.diagnostic(`Static-edge mean squared error ${before.toFixed(1)} → ${after.toFixed(1)}; ${blue} ball pixels remain; ${measured}/13 positions follow the corrected ball; ${video.count} rendered export frames; final hold matches the PNG exactly.`);
 });

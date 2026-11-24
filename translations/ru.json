@@ -573,5 +573,13 @@
   "Align two points to set the axes. Enter a distance only if needed.": "Совместите две точки, чтобы задать оси. Вводите расстояние только при необходимости.",
   "Distance between points (m, optional)": "Расстояние между точками (м, необязательно)",
   "Leave blank to keep pixel (px) units.": "Оставьте поле пустым, чтобы сохранить пиксели (px).",
-  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Точки A и B задают оси. Введите расстояние для метров или оставьте поле пустым для пикселей."
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Точки A и B задают оси. Введите расстояние для метров или оставьте поле пустым для пикселей.",
+  "Strobe photo preview": "Предпросмотр стробоскопического фото",
+  "Preview display": "Режим предпросмотра",
+  "Strobe photo": "Стробоскопическое фото",
+  "Frame preview": "Просмотр кадров",
+  "Updating preview…": "Обновление предпросмотра…",
+  "Preview unavailable. Try Create photo.": "Предпросмотр недоступен. Попробуйте создать фото.",
+  "Increase the interval.": "Увеличьте интервал.",
+  "Preparing preview": "Подготовка предпросмотра"
 }

@@ -573,5 +573,13 @@
   "Align two points to set the axes. Enter a distance only if needed.": "Selaraskan dua titik untuk menentukan sumbu. Masukkan jarak hanya jika diperlukan.",
   "Distance between points (m, optional)": "Jarak antara dua titik (m, opsional)",
   "Leave blank to keep pixel (px) units.": "Kosongkan untuk tetap menggunakan satuan piksel (px).",
-  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Titik A dan B menentukan sumbu. Masukkan jarak untuk meter, atau kosongkan untuk piksel."
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "Titik A dan B menentukan sumbu. Masukkan jarak untuk meter, atau kosongkan untuk piksel.",
+  "Strobe photo preview": "Pratinjau foto stroboskopik",
+  "Preview display": "Tampilan pratinjau",
+  "Strobe photo": "Foto stroboskopik",
+  "Frame preview": "Pratinjau bingkai",
+  "Updating preview…": "Memperbarui pratinjau…",
+  "Preview unavailable. Try Create photo.": "Pratinjau tidak tersedia. Coba Buat foto.",
+  "Increase the interval.": "Perbesar interval.",
+  "Preparing preview": "Menyiapkan pratinjau"
 }

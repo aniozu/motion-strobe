@@ -264,5 +264,9 @@
   "2点を合わせ、実際の距離をm単位で入力してください。": "Align two points and enter their real-world distance in meters.",
   "2点を合わせて軸の向きを決めます。距離は必要に応じて入力してください。": "Align two points to set the axes. Enter a distance only if needed.",
   "2点間の距離（m・任意）": "Distance between points (m, optional)",
-  "空欄の場合はpx単位で表示します。": "Leave blank to keep pixel (px) units."
+  "空欄の場合はpx単位で表示します。": "Leave blank to keep pixel (px) units.",
+  "ストロボ写真のプレビュー": "Strobe photo preview",
+  "プレビューの表示": "Preview display",
+  "ストロボ写真": "Strobe photo",
+  "コマ送り": "Frame preview"
 }

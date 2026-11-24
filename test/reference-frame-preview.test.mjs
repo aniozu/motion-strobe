@@ -26,9 +26,9 @@ function harness(){
  let displayedPreviewInfo=null;
  const calls=[];
  const syncPreviewFrame=()=>calls.push(samplingSurface.frame?.index??null);
- const fn=new Function('state','samplingSurface','previewFrameTarget','$','syncPreviewFrame','getDisplayed','setDisplayed','timeline',
+ const fn=new Function('state','samplingSurface','previewFrameTarget','$','syncPreviewFrame','getDisplayed','setDisplayed','timeline','samplingDisplay',
   'let displayedPreviewInfo=getDisplayed();'+implementation+';return {renderReferencePreview,cancelReferencePreview,get pending(){return referencePreviewAbort!==null;}}');
- const api=fn(state,samplingSurface,previewFrameTarget,()=>video,syncPreviewFrame,()=>displayedPreviewInfo,x=>displayedPreviewInfo=x,timeline);
+ const api=fn(state,samplingSurface,previewFrameTarget,()=>video,syncPreviewFrame,()=>displayedPreviewInfo,x=>displayedPreviewInfo=x,timeline,'frames');
  function complete(req){
   req.resolve({present:()=>{samplingSurface.frame={index:req.index};samplingSurface.active=true;frames.push(req.index);},dispose(){}});
  }

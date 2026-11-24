@@ -573,5 +573,13 @@
   "Align two points to set the axes. Enter a distance only if needed.": "두 점을 맞춰 축의 방향을 정합니다. 필요한 경우에만 거리를 입력하세요.",
   "Distance between points (m, optional)": "두 점 사이 거리(m, 선택 사항)",
   "Leave blank to keep pixel (px) units.": "비워 두면 픽셀(px) 단위를 유지합니다.",
-  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "점 A와 B로 축의 방향을 정합니다. 거리를 입력하면 m 단위, 비워 두면 픽셀 단위로 표시합니다."
+  "Points A and B set the axes. Enter a distance for meters, or leave it blank for pixels.": "점 A와 B로 축의 방향을 정합니다. 거리를 입력하면 m 단위, 비워 두면 픽셀 단위로 표시합니다.",
+  "Strobe photo preview": "스트로보 사진 미리보기",
+  "Preview display": "미리보기 표시",
+  "Strobe photo": "스트로보 사진",
+  "Frame preview": "프레임 미리보기",
+  "Updating preview…": "미리보기 업데이트 중…",
+  "Preview unavailable. Try Create photo.": "미리보기를 표시할 수 없습니다. 사진 만들기를 시도하세요.",
+  "Increase the interval.": "간격을 늘려 주세요.",
+  "Preparing preview": "미리보기 준비 중"
 }
